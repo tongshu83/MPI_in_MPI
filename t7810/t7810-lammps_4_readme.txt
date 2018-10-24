@@ -49,7 +49,6 @@ $ ./build-16k.sh
 
 Execute
 $ cd ../swift-all
-$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
 $ export PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/lammps/src:/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/adios_integration:$PATH
 $ mpirun -n 8 ./lmp_mpi -i in.quench.short
 $ mpirun -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
@@ -58,7 +57,7 @@ OR
 
 $ vi run.sh
 Line 15: #module load mvapich2-gnu-psm/1.9
-Line 34: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
+Line 34: #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
 Line 35: PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/adios_integration:$PATH
 Line 36: PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/lammps/src:$PATH
 
