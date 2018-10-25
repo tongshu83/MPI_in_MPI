@@ -42,5 +42,5 @@ $ mpiexec -n 2 main-ht.x
 or
 
 Submit from the login node (Note: Edit the path in sbatch-bebop.sh)
-$ sbatch MPI/sbatch-bebop.sh
+$ sbatch sbatch-bebop.sh
 
