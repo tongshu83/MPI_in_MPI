@@ -31,12 +31,12 @@ cd korvo_build
 
 if [[ -f korvo_bootstrap.pl ]]
 then
-  rm -v korvo_bootstrap.pl
+	rm -v korvo_bootstrap.pl
 fi
 
 if wget –q https://gtkorvo.github.io/korvo_bootstrap.pl
 then
-  echo WARNING: wget exited with: $?
+	echo WARNING: wget exited with: $?
 fi
 
 # Setup korvo
