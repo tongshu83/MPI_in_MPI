@@ -58,10 +58,12 @@ perl ./korvo_bootstrap.pl stable $ROOT/korvo
 # Line 52: korvogithub configure
 # Line 53: korvogithub cmake
 
+echo "Build the static libraries of korvo ..."
 sed -i 's/^korvogithub configure$/korvogithub configure --disable-shared/' korvo_build_config
 sed -i 's/^korvogithub cmake$/korvogithub cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC -DTARGET_CNL=1 -DPKG_CONFIG_EXECUTABLE=IGNORE/' korvo_build_config
 nice perl ./korvo_build.pl
 
+echo "Build the dynamic libraries of korvo ..."
 rm -rf build_area build_results
 sed -i 's/^korvogithub configure --disable-shared$/korvogithub configure/' korvo_build_config
 sed -i 's/^korvogithub cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC -DTARGET_CNL=1 -DPKG_CONFIG_EXECUTABLE=IGNORE$/korvogithub cmake/' korvo_build_config
