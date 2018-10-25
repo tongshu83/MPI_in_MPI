@@ -1,3 +1,4 @@
+#!/bin/bash -l
 
 if (( ${#ROOT} == 0  ))
 then
@@ -10,7 +11,7 @@ echo Loading modules...
 module unload intel-mkl/2017.3.196-v7uuj6z
 module load gcc/7.1.0
 module load libpsm2/10.3-17
-# module load cmake/3.9.4-3tixtqt
+module load cmake
 echo Modules OK
 
 set -eu
@@ -42,10 +43,7 @@ perl ./korvo_bootstrap.pl stable $ROOT/korvo
 # % DISABLE_TESTING
 # ...
 
-# TODO: What is korvogithub? 
+sed -i 's/korvogithub configure/korvogithub configure --disable-shared/' korvo_build_config
+sed -i 's/korvogithub cmake/korvogithub cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC -DTARGET_CNL=1 -DPKG_CONFIG_EXECUTABLE=IGNORE/' korvo_build_config
 
-korvogithub configure --disable-shared
-korvogithub cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC -DTARGET_CNL=1 -DPKG_CONFIG_EXECUTABLE=IGNORE
-
-perl ./korvo_build.pl
-
+nice perl ./korvo_build.pl
