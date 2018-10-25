@@ -1,22 +1,22 @@
 
-$ cd ~/project/MPI_in_MPI/t7810
+cd ~/project/MPI_in_MPI/t7810
 
-Download ADIOS
-$ wget https://users.nccs.gov/~pnorbert/adios-1.13.1.tar.gz
-$ tar -zxvf adios-1.13.1.tar.gz
-$ cd ~/project/MPI_in_MPI/t7810/adios-1.13.1
-$ mkdir ~/project/MPI_in_MPI/t7810/adios-1.13.1/adios
+# Download ADIOS
+wget https://users.nccs.gov/~pnorbert/adios-1.13.1.tar.gz
+tar -zxvf adios-1.13.1.tar.gz
+mkdir ~/project/MPI_in_MPI/t7810/adios-1.13.1/adios
 
-Set environment variable
-$ export LIBS=-pthread
+# Set environment variable
+export LIBS=-pthread
 
-$ ./configure --prefix=$HOME/project/MPI_in_MPI/t7810/adios-1.13.1/adios [adios install directory] --with-flexpath=$HOME/project/MPI_in_MPI/t7810/korvo-build/korvo [korvo install directory] CFLAGS="-g -O2 -fPIC" CXXFLAGS="-g -O2 -fPIC" FCFLAGS="-g -O2 -fPIC"
---enable-shared=yes --enable-static=yes
-$ make -j 8
-$ make install
+# Build ADIOS
+cd ~/project/MPI_in_MPI/t7810/adios-1.13.1
+./configure --prefix=$HOME/project/MPI_in_MPI/t7810/adios-1.13.1/adios --with-flexpath=$HOME/project/MPI_in_MPI/t7810/korvo-build/korvo CFLAGS="-g -O2 -fPIC" CXXFLAGS="-g -O2 -fPIC" FCFLAGS="-g -O2 -fPIC"
+make -j 8
+make install
 
-Set environment variables
-$ export ADIOS_HOME=$HOME/project/MPI_in_MPI/t7810/adios-1.13.1/adios [adios install directory]
-$ export PATH=$ADIOS_HOME/bin:$PATH
-$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADIOS_HOME/lib [lib install directory]
+# Set environment variables
+export ADIOS_HOME=$HOME/project/MPI_in_MPI/t7810/adios-1.13.1/adios
+export PATH=$ADIOS_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADIOS_HOME/lib
 
