@@ -69,7 +69,9 @@ sed -i 's/^korvogithub configure --disable-shared$/korvogithub configure/' korvo
 sed -i 's/^korvogithub cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC -DTARGET_CNL=1 -DPKG_CONFIG_EXECUTABLE=IGNORE$/korvogithub cmake/' korvo_build_config
 nice perl ./korvo_build.pl
 
-export KORVO_HOME=$ROOT/korvo
-export PATH=$KORVO_HOME/bin:$PATH
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$KORVO_HOME/lib
+cd ..
+
+# export KORVO_HOME=$ROOT/korvo
+# export PATH=$KORVO_HOME/bin:$PATH
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$KORVO_HOME/lib
 

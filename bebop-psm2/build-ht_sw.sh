@@ -5,20 +5,22 @@ set -eu
 # Download Example-Heat_Transfer
 if [ -d Example-Heat_Transfer ]
 then
-        rm -rv Example-Heat_Transfer
+	rm -rf Example-Heat_Transfer
 fi
 git clone https://github.com/CODARcode/Example-Heat_Transfer.git
 
-# Build heat trasfer
+# Build heat transfer
 cd Example-Heat_Transfer
 sed -i 's/^CC=cc$/CC=mpicc #cc/' Makefile
 sed -i 's/^FC=ftn$/FC=mpif90 #ftn/' Makefile
+echo "Build heat transfer ..."
 make
 
 # Build stage write
 cd stage_write
 sed -i 's/^CC=cc$/CC=mpicc #cc/' Makefile
 sed -i 's/^FC=ftn$/FC=mpif90 #ftn/' Makefile
+echo "Build stage write ..."
 make
 
 # Testing
