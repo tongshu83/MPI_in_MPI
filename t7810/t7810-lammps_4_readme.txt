@@ -7,7 +7,6 @@ $ cd Example-LAMMPS
 
 Compile LAMMPS
 $ cd lammps/src
-$ #rm -f liblammps.so
 $ make yes-kspace yes-manybody yes-molecule yes-user-adios_staging
 $ make mpi -j8
 $ make mpi -j8 mode=shlib
