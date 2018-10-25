@@ -14,13 +14,17 @@ fi
 set -eu
 
 # Download ADIOS
+if [ -f adios-1.13.1.tar.gz ]
+then
+	rm -fv adios-1.13.1.tar.gz
+fi
 if wget -q https://users.nccs.gov/~pnorbert/adios-1.13.1.tar.gz
 then
 	echo WARNING: wget exited with: $?
 fi
 if [ -d adios-1.13.1 ]
 then
-	rm -rv adios-1.13.1
+	rm -rf adios-1.13.1
 fi
 tar -zxvf adios-1.13.1.tar.gz
 
