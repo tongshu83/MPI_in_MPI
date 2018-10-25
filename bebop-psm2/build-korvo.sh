@@ -2,8 +2,8 @@
 
 if (( ${#ROOT} == 0  ))
 then
-  echo "Set ROOT!"
-  exit 1
+	echo "Set ROOT!"
+	exit 1
 fi
 
 if [ -d $ROOT ]
