@@ -30,18 +30,14 @@ echo Modules OK
 set -eu
 
 # Download korvo
-if [ ! -d korvo_build ]
+if [ -d korvo_build ]
 then
+	rm -rf korvo_build/*
+else
 	mkdir korvo_build
 fi
 
 cd korvo_build
-
-if [[ -f korvo_bootstrap.pl ]]
-then
-	rm -v korvo_bootstrap.pl
-fi
-
 if wget –q https://gtkorvo.github.io/korvo_bootstrap.pl
 then
 	echo WARNING: wget exited with: $?

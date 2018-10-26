@@ -28,3 +28,5 @@ cd ..
 mpiexec -n 12 ./heat_transfer_adios2 heat 4 3 40 50 6 5 &
 mpiexec -n 3 ./stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI ""
 
+cd ..
+
