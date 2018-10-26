@@ -23,7 +23,8 @@ cd $WORKFLOW_ROOT
 # Set the output directory
 export TURBINE_OUTPUT=$WORKFLOW_ROOT/experiment
 mkdir -pv $TURBINE_OUTPUT
-#cp heat_transfer.xml $TURBINE_OUTPUT/heat_transfer.xml
+mkdir -pv $TURBINE_OUTPUT/run
+cp $TURBINE_OUTPUT/heat_transfer.xml $TURBINE_OUTPUT/run/heat_transfer.xml
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
