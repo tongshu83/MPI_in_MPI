@@ -5,5 +5,5 @@ all:
 	mpicc -o main-lammps.x main-lammps.c
 clean:
 	rm -f main-sh.x main-mpi.x main-ht.x main-lammps.x
-	rm -f time_*.txt output_*.txt
+	rm -f time_*.txt output_*.txt log.lammps log.quench restart.glass_273K
 
