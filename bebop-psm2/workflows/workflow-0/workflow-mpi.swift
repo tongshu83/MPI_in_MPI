@@ -7,9 +7,9 @@ import sys;
 
 (void v) setup_run(string dir) "turbine" "0.0"
 [
-"""
-file mkdir <<dir>>
-"""
+	"""
+	file mkdir <<dir>>
+	"""
 ];
 
 main()
@@ -17,8 +17,8 @@ main()
 	// Commands and process counts
 	int procs[] = [2, 2];
 	string cmds[];
-	cmds[0] = "/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x";
-	cmds[1] = "/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x";
+	cmds[0] = "/blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x";
+	cmds[1] = "/blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x";
 
 	// Command line arguments
 	string args[][];
@@ -29,8 +29,8 @@ main()
 	string envs[][];
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string outdir = "%s/run" % turbine_output;
-        envs[0] = [ "swift_chdir="+outdir ];
-        envs[1] = [ "swift_chdir="+outdir ];
+	envs[0] = [ "swift_chdir="+outdir ];
+	envs[1] = [ "swift_chdir="+outdir ];
 	//envs[0] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_heat_transfer_adios2.txt" ];
 	//envs[1] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_stage_write.txt" ];
 

@@ -7,9 +7,9 @@ import sys;
 
 (void v) setup_run(string dir) "turbine" "0.0"
 [
-"""
-file mkdir <<dir>>
-"""
+	"""
+	file mkdir <<dir>>
+	"""
 ];
 
 main()
@@ -29,8 +29,8 @@ main()
 	string envs[][];
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string outdir = "%s/run" % turbine_output;
-        //envs[0] = [ "swift_chdir="+outdir ];
-        //envs[1] = [ "swift_chdir="+outdir ];
+	//envs[0] = [ "swift_chdir="+outdir ];
+	//envs[1] = [ "swift_chdir="+outdir ];
 	envs[0] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_script1.txt" ];
 	envs[1] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_script2.txt" ];
 
