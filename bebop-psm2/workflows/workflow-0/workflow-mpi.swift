@@ -14,8 +14,10 @@ import sys;
 
 main()
 {
-	// Commands and process counts
+	// Process counts
 	int procs[] = [2, 2];
+
+	// Commands
 	string cmds[];
 	cmds[0] = "/blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x";
 	cmds[1] = "/blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x";
