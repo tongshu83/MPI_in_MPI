@@ -59,23 +59,31 @@ echo "build swift-all ..."
 ./build-16k.sh
 
 # Execute
-# cd ../swift-all
-# export PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/lammps/src:/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/adios_integration:$PATH
-# mpirun -n 8 ./lmp_mpi -i in.quench.short &
-# mpirun -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
-
-# OR
-# Edit vi run.sh
-# Line 15: #module load mvapich2-gnu-psm/1.9
-# Line 34: #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
-# Line 35: PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/adios_integration:$PATH
-# Line 36: PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/lammps/src:$PATH
+echo "Testing ..."
 cd ..
-sed -i 's/^module load mvapich2-gnu-psm\/1.9$/# module load mvapich2-gnu-psm\/1.9/' swift-all/run.sh
-sed -i 's/^export LD_LIBRARY_PATH=\/home\/ltang\/Install\/lz4-1.8.1.2\/lib$/# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\/usr\/lib\/x86_64-linux-gnu/' swift-all/run.sh
-sed -i 's/PATH=\/home\/ltang\/Example-LAMMPS\/adios_integration:$PATH/PATH='"$PWD"'\/adios_integration:$PATH/' swift-all/run.sh
-sed -i 's/PATH=\/home\/ltang\/Example-LAMMPS\/lammps\/src:$PATH/PATH='"$PWD"'\/lammps\/src:$PATH/' swift-all/run.sh
-cd swift-all
-./run.sh
+APP=1
+if [ $APP -eq 1 ]
+then
+	export PATH=$PWD/lammps/src:$PWD/adios_integration:$PATH
+	cd swift-all
+	mpirun -n 8 ./lmp_mpi -i in.quench.short &
+	mpirun -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
+else
+	cd swift-all
+	# Edit run.sh
+	# Line 15: #module load mvapich2-gnu-psm/1.9
+	# Line 34: #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
+	# Line 35: PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/adios_integration:$PATH
+	# Line 36: PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/lammps/src:$PATH
+	sed -i 's/^module load mvapich2-gnu-psm\/1.9$/# module load mvapich2-gnu-psm\/1.9/' run.sh
+	sed -i 's/^export LD_LIBRARY_PATH=\/home\/ltang\/Install\/lz4-1.8.1.2\/lib$/# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\/usr\/lib\/x86_64-linux-gnu/' run.sh
+	#sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/adios_integration:\$PATH$/PATH='"$PWD"'\/adios_integration:$PATH/' run.sh
+	sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/adios_integration:\$PATH$/PATH=\/home\/tshu\/project\/bebop\/MPI_in_MPI\/bebop-psm2\/Example-LAMMPS\/swift-all\/adios_integration:$PATH/' run.sh
+	#sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/lammps\/src:\$PATH$/PATH='"$PWD"'\/lammps\/src:$PATH/' run.sh
+	sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/lammps\/src:\$PATH$/PATH=\/home\/tshu\/project\/bebop\/MPI_in_MPI\/bebop-psm2\/Example-LAMMPS\/swift-all\/lammps\/src:$PATH/' run.sh
+	sed -i 's/in.quench/in.quench.short/' run.sh
+	./run.sh
+fi
+
 cd ../..
 
