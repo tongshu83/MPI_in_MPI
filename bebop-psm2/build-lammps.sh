@@ -25,13 +25,13 @@ make mpi -j8 mode=shlib
 # Compile voro++-0.4.6
 cd ../../voro++-0.4.6/src
 echo
-echo "build voro++-0.4.6 ..."
+echo "Build voro++-0.4.6 ..."
 make -j8 CXX=mpicxx CFLAGS=-fPIC
 
 # Compile adios_integration
 cd ../../adios_integration
 echo
-echo "build adios_integration ..."
+echo "Build adios_integration ..."
 make -j8
 
 # Compile swift-liblammps
@@ -41,7 +41,7 @@ make -j8
 cd ../swift-liblammps
 sed -i 's/^MPICC=$( which cc )$/MPICC=$( which mpicc )/' build.sh
 echo
-echo "build swift-liblammps ..."
+echo "Build swift-liblammps ..."
 ./build.sh
 
 # Compile swift-voro_adios
@@ -51,54 +51,51 @@ echo "build swift-liblammps ..."
 cd ../swift-voro_adios
 sed -i 's/^MPICXX=$( which CC )$/MPICXX=$( which mpicxx )/' build.sh
 echo
-echo "build swift-voro_adios ..."
+echo "Build swift-voro_adios ..."
 ./build.sh
 
 # Compile swift-all
 cd ../swift-all
 echo
-echo "build swift-all ..."
+echo "Build swift-all ..."
 ./build-16k.sh
 
 # Execute
-echo
-echo "Testing ..."
 cd ..
-APP=1
-if [ $APP -eq 1 ]
+echo
+echo "Testing lammps and voro ..."
+# export PATH=$PWD/lammps/src:$PWD/adios_integration:$PATH
+# cd swift-all
+# mpiexec -n 8 ./lmp_mpi -i in.quench.short &
+# mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
+#
+# OR
+#
+# Edit run.sh
+# Line 15: #module load mvapich2-gnu-psm/1.9
+# Line 34: #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
+# Line 35: PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/adios_integration:$PATH
+# Line 36: PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/lammps/src:$PATH
+sed -i 's/^module load mvapich2-gnu-psm\/1.9$/# module load mvapich2-gnu-psm\/1.9/' swift-all/run.sh
+sed -i 's/^export LD_LIBRARY_PATH=\/home\/ltang\/Install\/lz4-1.8.1.2\/lib$/# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\/usr\/lib\/x86_64-linux-gnu/' swift-all/run.sh
+sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/adios_integration:\$PATH$/PATH='"${PWD//\//\\/}"'\/adios_integration:$PATH/' swift-all/run.sh
+sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/lammps\/src:\$PATH$/PATH='"${PWD//\//\\/}"'\/lammps\/src:$PATH/' swift-all/run.sh
+sed -i 's/in.quench/in.quench.short/' swift-all/run.sh
+cd swift-all
+./run.sh
+
+if [ ! -d experiment ]
 then
-	export PATH=$PWD/lammps/src:$PWD/adios_integration:$PATH
-	cd swift-all
-	mpiexec -n 8 ./lmp_mpi -i in.quench.short &
-	mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
-
-	if [ ! -d experiment ]
-	then
-		mkdir experiment
-	fi
-	cd experiment
-	rm -f in.quench in.quench.short restart.liquid CuZr.fs
-	ln -s ../in.quench in.quench
-	ln -s ../in.quench.short in.quench.short
-	ln -s ../restart.liquid restart.liquid
-	ln -s ../CuZr.fs CuZr.fs
-	cd ..
-	cp -f ../../sbatch-bebop-lammps.sh sbatch-bebop-lammps.sh
-
-else
-	# Edit run.sh
-	# Line 15: #module load mvapich2-gnu-psm/1.9
-	# Line 34: #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
-	# Line 35: PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/adios_integration:$PATH
-	# Line 36: PATH=/home/tshu/project/MPI_in_MPI/t7810/Example-LAMMPS/lammps/src:$PATH
-	sed -i 's/^module load mvapich2-gnu-psm\/1.9$/# module load mvapich2-gnu-psm\/1.9/' swift-all/run.sh
-	sed -i 's/^export LD_LIBRARY_PATH=\/home\/ltang\/Install\/lz4-1.8.1.2\/lib$/# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\/usr\/lib\/x86_64-linux-gnu/' swift-all/run.sh
-	sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/adios_integration:\$PATH$/PATH='"${PWD//\//\\/}"'\/adios_integration:$PATH/' swift-all/run.sh
-	sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/lammps\/src:\$PATH$/PATH='"${PWD//\//\\/}"'\/lammps\/src:$PATH/' swift-all/run.sh
-	sed -i 's/in.quench/in.quench.short/' swift-all/run.sh
-	cd swift-all
-	./run.sh
+	mkdir experiment
 fi
+cd experiment
+rm -f in.quench in.quench.short restart.liquid CuZr.fs 
+ln -s ../in.quench in.quench
+ln -s ../in.quench.short in.quench.short
+ln -s ../restart.liquid restart.liquid
+ln -s ../CuZr.fs CuZr.fs 
+cd ..
+cp -f ../../sbatch-bebop-lammps.sh sbatch-bebop-lammps.sh
 
 cd ../..
 
