@@ -66,8 +66,8 @@ if [ $APP -eq 1 ]
 then
 	export PATH=$PWD/lammps/src:$PWD/adios_integration:$PATH
 	cd swift-all
-	mpirun -n 8 ./lmp_mpi -i in.quench.short &
-	mpirun -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
+	mpiexec -n 8 ./lmp_mpi -i in.quench.short &
+	mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
 else
 	cd swift-all
 	# Edit run.sh
