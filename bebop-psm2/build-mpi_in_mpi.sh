@@ -5,6 +5,7 @@ set -eu
 if [ ! -d MPI ]
 then
 	echo "Missing MPI!"
+	exit 1
 fi
 cd MPI
 make clean
@@ -14,6 +15,7 @@ cd ..
 if [ ! -d Example-Heat_Transfer ]
 then
         echo "Missing Example-Heat_Transfer!"
+	exit 1
 fi
 cd Example-Heat_Transfer
 if [ ! -d experiment ]

@@ -2,13 +2,19 @@
 
 if (( ${#ROOT} == 0  ))
 then
-	echo "Set ROOT!"
+	echo "Set ROOT as the parent installation directory!"
 	exit 1
 fi
 
 if [ -d $ROOT ]
 then
-	mkdir $ROOT/adios
+	if [ ! -d $ROOT/adios ]
+	then
+		mkdir $ROOT/adios
+	fi
+else
+	echo "There does not exist $ROOT!"
+	exit 1
 fi
 
 set -eu
@@ -37,6 +43,7 @@ make install
 
 cd ..
 
+source ./env_adios.sh
 # export ADIOS_HOME=$ROOT/adios
 # export PATH=$ADIOS_HOME/bin:$PATH
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADIOS_HOME/lib

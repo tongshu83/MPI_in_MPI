@@ -5,7 +5,7 @@ set -eu
 # Download Example-LAMMPS
 if [ -d Example-LAMMPS ]
 then
-        rm -rv Example-LAMMPS
+        rm -rf Example-LAMMPS
 fi
 git clone https://github.com/CODARcode/Example-LAMMPS.git
 
@@ -14,16 +14,22 @@ cd Example-LAMMPS
 
 # Compile LAMMPS
 cd lammps/src
+echo
+echo "Build lammps ..."
 make yes-kspace yes-manybody yes-molecule yes-user-adios_staging
 make mpi -j8
 make mpi -j8 mode=shlib
 
 # Compile voro++-0.4.6
 cd ../../voro++-0.4.6/src
+echo
+echo "build voro++-0.4.6 ..."
 make -j8 CXX=mpicxx CFLAGS=-fPIC
 
 # Compile adios_integration
 cd ../../adios_integration
+echo
+echo "build adios_integration ..."
 make -j8
 
 # Compile swift-liblammps
@@ -32,6 +38,8 @@ make -j8
 # Line 7: MPICC=$( which mpicc )
 cd ../swift-liblammps
 sed -i 's/^MPICC=$( which cc )$/MPICC=$( which mpicc )/' build.sh
+echo
+echo "build swift-liblammps ..."
 ./build.sh
 
 # Compile swift-voro_adios
@@ -40,10 +48,14 @@ sed -i 's/^MPICC=$( which cc )$/MPICC=$( which mpicc )/' build.sh
 # Line 7: MPICXX=$( which mpicxx )
 cd ../swift-voro_adios
 sed -i 's/^MPICXX=$( which CC )$/MPICXX=$( which mpicxx )/' build.sh
+echo
+echo "build swift-voro_adios ..."
 ./build.sh
 
 # Compile swift-all
 cd ../swift-all
+echo
+echo "build swift-all ..."
 ./build-16k.sh
 
 # Execute

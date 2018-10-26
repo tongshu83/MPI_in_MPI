@@ -2,21 +2,29 @@
 
 if (( ${#ROOT} == 0  ))
 then
-	echo "Set ROOT!"
+	echo "Set ROOT as the parent installation directory!!"
 	exit 1
 fi
 
 if [ -d $ROOT ]
 then
-	mkdir $ROOT/korvo
+	if [ ! -d $ROOT/korvo ]
+	then
+		mkdir $ROOT/korvo
+	fi
+else
+	echo "There does not exist $ROOT!"
+	exit 1
 fi
 
 # Load modules gcc/7.1.0, libpsm2/10.3-17, and cmake/3.12.2-4zllpyo
+# module spider cmake/3.12.2-4zllpyo
 echo Loading modules...
 module unload intel-mkl/2017.3.196-v7uuj6z
 module load gcc/7.1.0
 module load libpsm2/10.3-17
-module load cmake
+module load intel/17.0.4-74uvhji
+module load cmake/3.12.2-4zllpyo
 echo Modules OK
 
 set -eu
@@ -58,11 +66,13 @@ perl ./korvo_bootstrap.pl stable $ROOT/korvo
 # Line 52: korvogithub configure
 # Line 53: korvogithub cmake
 
+echo
 echo "Build the static libraries of korvo ..."
 sed -i 's/^korvogithub configure$/korvogithub configure --disable-shared/' korvo_build_config
 sed -i 's/^korvogithub cmake$/korvogithub cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC -DTARGET_CNL=1 -DPKG_CONFIG_EXECUTABLE=IGNORE/' korvo_build_config
 nice perl ./korvo_build.pl
 
+echo
 echo "Build the dynamic libraries of korvo ..."
 rm -rf build_area build_results
 sed -i 's/^korvogithub configure --disable-shared$/korvogithub configure/' korvo_build_config
@@ -71,6 +81,7 @@ nice perl ./korvo_build.pl
 
 cd ..
 
+source ./env_korvo.sh
 # export KORVO_HOME=$ROOT/korvo
 # export PATH=$KORVO_HOME/bin:$PATH
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$KORVO_HOME/lib
