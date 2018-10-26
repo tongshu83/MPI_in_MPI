@@ -10,27 +10,43 @@ fi
 cd MPI
 make clean
 make
+
 cd ..
+make clean
+make
 
 if [ ! -d Example-Heat_Transfer ]
 then
         echo "Missing Example-Heat_Transfer!"
 	exit 1
 fi
-cd Example-Heat_Transfer
-if [ ! -d experiment ]
+rm -f heat_transfer.xml
+ln -s Example-Heat_Transfer/heat_transfer.xml heat_transfer.xml
+
+
+if [ ! -d Example-LAMMPS ]
 then
-        mkdir experiment
+        echo "Missing Example-LAMMPS!"
+        exit 1
 fi
-cp -f heat_transfer.xml experiment/heat_transfer.xml
-cd ..
-cp -f sbatch-bebop-ht.sh Example-Heat_Transfer/sbatch-bebop-ht.sh
+rm -f in.quench in.quench.short restart.liquid CuZr.fs
+ln -s Example-LAMMPS/swift-all/in.quench in.quench
+ln -s Example-LAMMPS/swift-all/in.quench.short in.quench.short
+ln -s Example-LAMMPS/swift-all/restart.liquid restart.liquid
+ln -s Example-LAMMPS/swift-all/CuZr.fs CuZr.fs
 
 if [ ! -d experiment ]
 then
 	mkdir experiment
 fi
-cp -f Example-Heat_Transfer/heat_transfer.xml experiment/heat_transfer.xml
-make clean
-make
+cd experiment
+rm -f heat_transfer.xml
+ln -s ../Example-Heat_Transfer/heat_transfer.xml heat_transfer.xml
+rm -f in.quench in.quench.short restart.liquid CuZr.fs
+ln -s ../Example-LAMMPS/swift-all/in.quench in.quench
+ln -s ../Example-LAMMPS/swift-all/in.quench.short in.quench.short
+ln -s ../Example-LAMMPS/swift-all/restart.liquid restart.liquid
+ln -s ../Example-LAMMPS/swift-all/CuZr.fs CuZr.fs
+
+cd ..
 

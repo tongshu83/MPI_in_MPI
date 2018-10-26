@@ -13,4 +13,5 @@ export I_MPI_FABRICS=shm:tmi
 /usr/bin/time -v -o time_main-sh.txt mpiexec -n 2 /home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/main-sh.x 
 /usr/bin/time -v -o time_main-mpi.txt mpiexec -n 2 /home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/main-mpi.x
 /usr/bin/time -v -o time_main-ht.txt mpiexec -n 2 /home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/main-ht.x
+/usr/bin/time -v -o time_main-lammps.txt mpiexec -n 2 /home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/main-lammps.x
 
