@@ -79,8 +79,8 @@ then
 	ln -s ../in.quench.short in.quench.short
 	ln -s ../restart.liquid restart.liquid
 	ln -s ../CuZr.fs CuZr.fs
-	cd ../../..
-	cp -f sbatch-bebop-lammps.sh Example-LAMMPS/swift-all/sbatch-bebop-lammps.sh
+	cd ..
+	cp -f ../../sbatch-bebop-lammps.sh sbatch-bebop-lammps.sh
 
 else
 	cd swift-all
