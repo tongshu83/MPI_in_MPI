@@ -28,9 +28,19 @@ make
 # Testing
 cd ..
 echo
-echo "Testing ..."
+echo "Testing Heat_Transfer ..."
 mpiexec -n 12 ./heat_transfer_adios2 heat 4 3 40 50 6 5 &
 mpiexec -n 3 ./stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI ""
+
+if [ ! -d experiment ]
+then
+        mkdir experiment
+fi
+cd experiment
+rm -f heat_transfer.xml
+ln -s ../heat_transfer.xml heat_transfer.xml
+cd ..
+cp -f ../sbatch-bebop-ht.sh sbatch-bebop-ht.sh
 
 cd ..
 

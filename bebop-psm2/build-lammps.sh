@@ -68,6 +68,20 @@ then
 	cd swift-all
 	mpiexec -n 8 ./lmp_mpi -i in.quench.short &
 	mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
+
+	if [ ! -d experiment ]
+	then
+		mkdir experiment
+	fi
+	cd experiment
+	rm -f in.quench in.quench.short restart.liquid CuZr.fs
+	ln -s ../in.quench in.quench
+	ln -s ../in.quench.short in.quench.short
+	ln -s ../restart.liquid restart.liquid
+	ln -s ../CuZr.fs CuZr.fs
+	cd ../../..
+	cp -f sbatch-bebop-lammps.sh Example-LAMMPS/swift-all/sbatch-bebop-lammps.sh
+
 else
 	cd swift-all
 	# Edit run.sh
