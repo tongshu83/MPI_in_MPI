@@ -29,7 +29,8 @@ echo Modules OK
 
 set -eu
 
-# Download korvo
+echo
+echo "Download korvo ..."
 if [ -d korvo_build ]
 then
 	rm -rf korvo_build/*

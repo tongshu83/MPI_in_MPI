@@ -56,7 +56,8 @@ source ./env_ant.sh
 # export PATH=$ANT_HOME/bin:$PATH
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ANT_HOME/lib
 
-# Download swift-t
+echo
+echo "Delete and then download Swift/T ..."
 if [ -d swift-t ]
 then
         rm -rf swift-t
@@ -66,10 +67,10 @@ git clone https://github.com/swift-lang/swift-t.git
 # Setup swift-t
 cd swift-t
 dev/build/init-settings.sh
-sed -i 's/^export SWIFT_T_PREFIX=\/tmp\/swift-t-install$/export SWIFT_T_PREFIX='"$ROOT"'\/swift-t-install/' dev/build/swift-t-settings.sh
-# sed -i 's/^export SWIFT_T_PREFIX=\/tmp\/swift-t-install$/export SWIFT_T_PREFIX=\/home\/tshu\/project\/bebop\/MPI_in_MPI\/bebop-psm2\/install\/swift-t-install/' dev/build/swift-t-settings.sh
+sed -i 's/^export SWIFT_T_PREFIX=\/tmp\/swift-t-install$/export SWIFT_T_PREFIX='"${ROOT//\//\\/}"'\/swift-t-install/' dev/build/swift-t-settings.sh
 
-# Build swift-t
+echo
+echo "Build Swift/T ..."
 dev/build/build-swift-t.sh
 
 cd ..

@@ -19,7 +19,8 @@ fi
 
 set -eu
 
-# Download ADIOS
+echo
+echo "Download ADIOS ..."
 if [ -f adios-1.13.1.tar.gz ]
 then
 	rm -fv adios-1.13.1.tar.gz
@@ -37,6 +38,8 @@ tar -zxvf adios-1.13.1.tar.gz
 export LIBS=-pthread
 
 cd adios-1.13.1
+echo
+echo "Build ADIOS ..."
 ./configure --prefix=$ROOT/adios --with-flexpath=$ROOT/korvo CFLAGS="-g -O2 -fPIC" CXXFLAGS="-g -O2 -fPIC" FCFLAGS="-g -O2 -fPIC"
 make -j 8
 make install

@@ -7,10 +7,14 @@ then
 	echo "Missing MPI!"
 	exit 1
 fi
+echo
+echo "Build a single MPI ..."
 cd MPI
 make clean
 make
 
+echo
+echo "Build MPI_in_MPI ..."
 cd ..
 make clean
 make
