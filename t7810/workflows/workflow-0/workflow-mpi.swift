@@ -19,8 +19,8 @@ main()
 
     // Commands
     string cmds[];
-    cmds[0] = "/home/tshu/project/MPI_in_MPI/t7810/MPI/hello.x";
-    cmds[1] = "/home/tshu/project/MPI_in_MPI/t7810/MPI/hello.x";
+    cmds[0] = "../../../../MPI/hello.x";
+    cmds[1] = "../../../../MPI/hello.x";
 
     // Command line arguments
     string args[][];

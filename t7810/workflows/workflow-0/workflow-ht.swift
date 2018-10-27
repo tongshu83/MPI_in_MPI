@@ -22,8 +22,8 @@ main()
 
     // Commands
     string cmds[];
-    cmds[0] = "/home/tshu/project/MPI_in_MPI/t7810/Example-Heat_Transfer/heat_transfer_adios2";
-    cmds[1] = "/home/tshu/project/MPI_in_MPI/t7810/Example-Heat_Transfer/stage_write/stage_write";
+    cmds[0] = "../../../../Example-Heat_Transfer/heat_transfer_adios2";
+    cmds[1] = "../../../../Example-Heat_Transfer/stage_write/stage_write";
 
     // Command line arguments
     string args[][];
