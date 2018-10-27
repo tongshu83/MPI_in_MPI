@@ -19,8 +19,8 @@ main()
 
 	// Commands
 	string cmds[];
-	cmds[0] = "/blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x";
-	cmds[1] = "/blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x";
+	cmds[0] = "../../../../MPI/hello.x";
+	cmds[1] = "../../../../MPI/hello.x";
 
 	// Command line arguments
 	string args[][];

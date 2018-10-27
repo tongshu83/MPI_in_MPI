@@ -19,8 +19,8 @@ main()
 
 	// Commands
 	string cmds[];
-	cmds[0] = "/blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/scripts/script1.sh";
-	cmds[1] = "/blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/scripts/script2.sh";
+	cmds[0] = "../../../../scripts/script1.sh";
+	cmds[1] = "../../../../scripts/script2.sh";
 
 	// Command line arguments
 	string args[][];
