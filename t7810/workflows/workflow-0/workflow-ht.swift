@@ -5,12 +5,13 @@ import stats;
 import string;
 import sys;
 
-(void v) setup_run(string dir) "turbine" "0.0"
+(void v) setup_run(string outdir, string infile) "turbine" "0.0"
 [
     """
-    file delete -force -- <<dir>>
-    file mkdir <<dir>>
-    file copy heat_transfer.xml <<dir>>
+    file delete -force -- <<outdir>>
+    file mkdir <<outdir>>
+    cd <<outdir>>
+    file link -symbolic heat_transfer.xml <<infile>>
     """
 ];
 
@@ -45,8 +46,10 @@ main()
     // Color settings
     colors = "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11; 12, 13, 14";
 
+    string infile = "%s/heat_transfer.xml" % turbine_output;
+
     printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
-    setup_run(outdir) =>
+    setup_run(outdir, infile) =>
         exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs, colors);
     printf("swift: received exit code: %d", exit_code);
     if (exit_code != 0)
