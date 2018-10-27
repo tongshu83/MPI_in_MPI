@@ -6,8 +6,8 @@ set -eu
 
 if [[ ${#} != 1 ]]
 then
-  echo "Usage: ./workflow.sh workflow_name"
-  exit 1
+	echo "Usage: ./workflow.sh workflow_name"
+	exit 1
 fi
 
 WORKFLOW_SWIFT=$1.swift
