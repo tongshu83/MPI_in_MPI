@@ -1,0 +1,17 @@
+*.x
+*.out
+*.log
+adios-*
+*.fs
+Example-*
+build_*
+korvo*
+in.*
+restart.liquid
+heat_transfer.xml
+apache*
+experiment/
+swift-t/
+turbine-directory.txt
+# This is generated in build-mpi_in_mpi by m4
+main-mpi.c
