@@ -14,6 +14,8 @@ module load tcl/8.6.6-x4wnbsg
 echo Modules OK
 
 export ROOT=$PWD/install
+# export ROOT=$HOME/Public/sfw/bebop/codar-install
+
 source env_korvo.sh
 source env_adios.sh
 source env_ant.sh
