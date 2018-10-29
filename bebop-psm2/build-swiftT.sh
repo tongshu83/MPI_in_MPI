@@ -12,10 +12,7 @@ fi
 
 if [ -d $ROOT ]
 then
-	if [ ! -d $ROOT/swift-t-install ]
-	then 
-		mkdir $ROOT/swift-t-install
-	fi
+	mkdir -pv $ROOT/swift-t-install
 else 
 	echo "There does not exist $ROOT!"
 	exit 1

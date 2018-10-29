@@ -1,5 +1,9 @@
 #!/bin/bash -l
 
+echo
+echo "MPI in MPI starts ..."
+echo
+
 set -eu
 
 if [ ! -d MPI ]
@@ -42,10 +46,7 @@ ln -s Example-LAMMPS/swift-all/in.quench.short in.quench.short
 ln -s Example-LAMMPS/swift-all/restart.liquid restart.liquid
 ln -s Example-LAMMPS/swift-all/CuZr.fs CuZr.fs
 
-if [ ! -d experiment ]
-then
-	mkdir experiment
-fi
+mkdir -pv experiment
 cd experiment
 rm -f heat_transfer.xml
 ln -s ../Example-Heat_Transfer/heat_transfer.xml heat_transfer.xml
@@ -56,4 +57,8 @@ ln -s ../Example-LAMMPS/swift-all/restart.liquid restart.liquid
 ln -s ../Example-LAMMPS/swift-all/CuZr.fs CuZr.fs
 
 cd ..
+
+echo
+echo "MPI in MPI is done!"
+echo
 

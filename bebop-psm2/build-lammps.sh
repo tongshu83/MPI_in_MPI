@@ -88,10 +88,7 @@ sed -i 's/in.quench/in.quench.short/' swift-all/run.sh
 cd swift-all
 ./run.sh
 
-if [ ! -d experiment ]
-then
-	mkdir experiment
-fi
+mkdir -pv experiment
 cd experiment
 rm -f in.quench in.quench.short restart.liquid CuZr.fs 
 ln -s ../in.quench in.quench
