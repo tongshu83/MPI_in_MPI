@@ -1,11 +1,12 @@
 #!/bin/bash -l
 
+echo
+echo "Heat transfer and stage write start ..."
+echo
+echo
+
 set -eu
 
-echo HT START
-echo
-
-echo
 echo "Download Example-Heat_Transfer ..."
 if [ -d Example-Heat_Transfer ]
 then
@@ -33,10 +34,7 @@ echo "Testing heat transfer and stage write ..."
 mpiexec -n 12 ./heat_transfer_adios2 heat 4 3 40 50 6 5 &
 mpiexec -n 3 ./stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI ""
 
-if [ ! -d experiment ]
-then
-        mkdir experiment
-fi
+mkdir -pv experiment
 cd experiment
 rm -f heat_transfer.xml
 ln -s ../heat_transfer.xml heat_transfer.xml
@@ -46,5 +44,6 @@ cp -f ../sbatch-bebop-ht.sh sbatch-bebop-ht.sh
 cd ..
 
 echo
-echo HT OK
+echo "Heat transfer and stage write are done!"
 echo
+

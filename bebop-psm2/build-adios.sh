@@ -1,6 +1,7 @@
 #!/bin/bash -l
 
-echo "ADIOS START"
+echo
+echo "ADIOS starts ..."
 echo
 
 if (( ${#ROOT} == 0  ))
@@ -11,10 +12,7 @@ fi
 
 if [ -d $ROOT ]
 then
-	if [ ! -d $ROOT/adios ]
-	then
-		mkdir $ROOT/adios
-	fi
+	mkdir -pv $ROOT/adios
 else
 	echo "There does not exist $ROOT!"
 	exit 1
@@ -45,7 +43,8 @@ echo
 echo "Build ADIOS ..."
 set -x
 ./configure --prefix=$ROOT/adios \
-            --with-flexpath=$ROOT/korvo CFLAGS="-g -O2 -fPIC" CXXFLAGS="-g -O2 -fPIC" FCFLAGS="-g -O2 -fPIC"
+	--with-flexpath=$ROOT/korvo \
+	CFLAGS="-g -O2 -fPIC" CXXFLAGS="-g -O2 -fPIC" FCFLAGS="-g -O2 -fPIC"
 make -j 8
 make install
 set +x
@@ -58,5 +57,5 @@ source ./env_adios.sh
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADIOS_HOME/lib
 
 echo
-echo "ADIOS OK"
+echo "ADIOS is done!"
 echo

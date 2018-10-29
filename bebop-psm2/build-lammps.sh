@@ -1,5 +1,9 @@
 #!/bin/bash -l
 
+echo
+echo "Lammps and voro start ..."
+echo
+
 set -eu
 
 echo
@@ -98,4 +102,8 @@ cd ..
 cp -f ../../sbatch-bebop-lammps.sh sbatch-bebop-lammps.sh
 
 cd ../..
+
+echo
+echo "Lammps and voro are done!"
+echo
 

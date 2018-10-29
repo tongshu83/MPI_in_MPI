@@ -1,6 +1,7 @@
 #!/bin/bash -l
 
-echo "KORVO START"
+echo
+echo "KORVO starts ..."
 echo
 
 if (( ${#ROOT} == 0  ))
@@ -11,14 +12,20 @@ fi
 
 if [ -d $ROOT ]
 then
-	if [ ! -d $ROOT/korvo ]
-	then
-		mkdir $ROOT/korvo
-	fi
+	mkdir -pv $ROOT/korvo
 else
 	echo "There does not exist $ROOT!"
 	exit 1
 fi
+
+# echo "Loading modules ..."
+# module unload intel-mkl/2017.3.196-v7uuj6z
+# module load intel/17.0.4-74uvhji
+# module load intel-mpi/2017.3-dfphq6k
+# module load gcc/7.1.0
+# module load libpsm2/10.3-17
+# module load cmake/3.12.2-4zllpyo
+# echo "Modules are loaded!"
 
 set -eu
 
@@ -28,7 +35,7 @@ if [ -d korvo_build ]
 then
 	rm -rf korvo_build/*
 else
-	mkdir korvo_build
+	mkdir -pv korvo_build
 fi
 
 cd korvo_build
@@ -77,5 +84,6 @@ source ./env_korvo.sh
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$KORVO_HOME/lib
 
 echo
-echo "KORVO OK"
+echo "KORVO is done!"
 echo
+

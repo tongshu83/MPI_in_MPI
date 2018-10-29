@@ -1,5 +1,9 @@
 #!/bin/bash -l
 
+echo
+echo "Swift/T starts ..."
+echo
+
 if (( ${#ROOT} == 0  ))
 then
 	echo "Set ROOT as the parent installation directory!"
@@ -16,6 +20,12 @@ else
 	echo "There does not exist $ROOT!"
 	exit 1
 fi
+
+# echo "Loading Modules ..."
+# module load intel/17.0.4-74uvhji
+# module load jdk/8u141-b15-mopj6qr
+# module load tcl/8.6.6-x4wnbsg
+# echo "Modules are loaded!"
 
 set -eu
 
@@ -71,4 +81,8 @@ cd ..
 source ./env_swiftT.sh
 # export SWIFT_T_HOME=$ROOT/swift-t-install
 # export PATH=$SWIFT_T_HOME/turbine/bin:$SWIFT_T_HOME/stc/bin:$PATH
+
+echo
+echo "Swift/T is done!"
+echo
 
