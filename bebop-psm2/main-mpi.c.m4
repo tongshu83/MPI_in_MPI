@@ -9,7 +9,7 @@ changecom(`dnl')
 #include <mpi.h>
 
 define(`getenv', `esyscmd(printf -- "$`$1'")')
-#define PWD getenv(PWD)
+#define PWD "getenv(PWD)"
 
 int main(int argc, char* argv[])
 {
@@ -39,14 +39,14 @@ int main(int argc, char* argv[])
 	size_t cmdlen;
 	if (rank == 0) {
 		char cmd1[] = "/usr/bin/time -v -o time_mpi1.txt mpiexec -n 2 -hosts ";
-		char cmd2[] = " PWD/MPI/hello.x";
+		char cmd2[] = " " PWD "/MPI/hello.x";
 		size_t cmdlen = strlen(cmd1) + strlen(machname) + strlen(cmd2) + 1;
 		char* mpicmd = (char*) malloc(cmdlen * sizeof(char));
 		sprintf(mpicmd, "%s%s%s", cmd1, machname, cmd2);
 		system(mpicmd);
 	} else {
 		char cmd1[] = "/usr/bin/time -v -o time_mpi2.txt mpiexec -n 2 -hosts ";
-		char cmd2[] = " PWD/MPI/hello.x";
+		char cmd2[] = " " PWD "/MPI/hello.x";
 		size_t cmdlen = strlen(cmd1) + strlen(machname) + strlen(cmd2) + 1;
 		char* mpicmd = (char*) malloc(cmdlen * sizeof(char));
 		sprintf(mpicmd, "%s%s%s", cmd1, machname, cmd2);
