@@ -17,13 +17,6 @@ else
 	exit 1
 fi
 
-# Load module tcl/8.6.6-x4wnbsg and jdk/8u141-b15-mopj6qr
-echo Loading Modules...
-module load intel/17.0.4-74uvhji
-module load jdk/8u141-b15-mopj6qr
-module load tcl/8.6.6-x4wnbsg
-echo Modules OK
-
 set -eu
 
 # Download Java

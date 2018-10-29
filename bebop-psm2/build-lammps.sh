@@ -8,8 +8,8 @@ if [ -d Example-LAMMPS ]
 then
         rm -rf Example-LAMMPS
 fi
-git clone https://github.com/CODARcode/Example-LAMMPS.git
-
+# git clone https://github.com/CODARcode/Example-LAMMPS.git
+git clone git@github.com:CODARcode/Example-LAMMPS.git
 
 # Build Example-LAMMPS
 cd Example-LAMMPS

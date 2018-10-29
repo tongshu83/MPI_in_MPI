@@ -2,6 +2,9 @@
 
 set -eu
 
+echo HT START
+echo
+
 echo
 echo "Download Example-Heat_Transfer ..."
 if [ -d Example-Heat_Transfer ]
@@ -42,3 +45,6 @@ cp -f ../sbatch-bebop-ht.sh sbatch-bebop-ht.sh
 
 cd ..
 
+echo
+echo HT OK
+echo

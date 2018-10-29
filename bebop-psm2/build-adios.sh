@@ -1,5 +1,8 @@
 #!/bin/bash -l
 
+echo "ADIOS START"
+echo
+
 if (( ${#ROOT} == 0  ))
 then
 	echo "Set ROOT as the parent installation directory!"
@@ -33,16 +36,19 @@ if [ -d adios-1.13.1 ]
 then
 	rm -rf adios-1.13.1
 fi
-tar -zxvf adios-1.13.1.tar.gz
+tar -zxf adios-1.13.1.tar.gz
 
 export LIBS=-pthread
 
 cd adios-1.13.1
 echo
 echo "Build ADIOS ..."
-./configure --prefix=$ROOT/adios --with-flexpath=$ROOT/korvo CFLAGS="-g -O2 -fPIC" CXXFLAGS="-g -O2 -fPIC" FCFLAGS="-g -O2 -fPIC"
+set -x
+./configure --prefix=$ROOT/adios \
+            --with-flexpath=$ROOT/korvo CFLAGS="-g -O2 -fPIC" CXXFLAGS="-g -O2 -fPIC" FCFLAGS="-g -O2 -fPIC"
 make -j 8
 make install
+set +x
 
 cd ..
 
@@ -51,3 +57,6 @@ source ./env_adios.sh
 # export PATH=$ADIOS_HOME/bin:$PATH
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADIOS_HOME/lib
 
+echo
+echo "ADIOS OK"
+echo

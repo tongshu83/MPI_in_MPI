@@ -1,5 +1,8 @@
 #!/bin/bash -l
 
+echo "KORVO START"
+echo
+
 if (( ${#ROOT} == 0  ))
 then
 	echo "Set ROOT as the parent installation directory!!"
@@ -16,16 +19,6 @@ else
 	echo "There does not exist $ROOT!"
 	exit 1
 fi
-
-# Load modules gcc/7.1.0, libpsm2/10.3-17, and cmake/3.12.2-4zllpyo
-# module spider cmake/3.12.2-4zllpyo
-echo Loading modules...
-module unload intel-mkl/2017.3.196-v7uuj6z
-module load gcc/7.1.0
-module load libpsm2/10.3-17
-module load intel/17.0.4-74uvhji
-module load cmake/3.12.2-4zllpyo
-echo Modules OK
 
 set -eu
 
@@ -83,3 +76,6 @@ source ./env_korvo.sh
 # export PATH=$KORVO_HOME/bin:$PATH
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$KORVO_HOME/lib
 
+echo
+echo "KORVO OK"
+echo
