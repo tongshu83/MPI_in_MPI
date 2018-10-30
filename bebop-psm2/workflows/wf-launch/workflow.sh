@@ -31,7 +31,7 @@ MACHINE="" #"-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf
 ENVS="" # "-e <key>=<value>" Set an environment variable in the job environment.
 
 set -x
-stc -p $WORKFLOW_ROOT/$WORKFLOW_SWIFT
+stc -p -u $WORKFLOW_ROOT/$WORKFLOW_SWIFT
 # -p: Disable the C preprocessor
 
 turbine -l $MACHINE -n $PROCS $ENVS $WORKFLOW_ROOT/$WORKFLOW_TIC
