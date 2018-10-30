@@ -26,7 +26,6 @@ main()
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string outdir = "%s/run" % turbine_output;
 	string envs[] = [ "swift_chdir="+outdir ];
-	// string envs[] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_script1.txt" ];
 
 	printf("swift: launching with environment variables: %s", cmd);
 	setup_run(outdir) =>
