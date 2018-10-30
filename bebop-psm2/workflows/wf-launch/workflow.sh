@@ -22,8 +22,8 @@ cd $WORKFLOW_ROOT
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=36
-export PPN=36
+export PROCS=4
+export PPN=4
 export WALLTIME=00:01:00
 
 MACHINE="" #"-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, theta, or slurm
