@@ -21,9 +21,6 @@ echo
 echo "Build MPI_in_MPI ..."
 cd ..
 make clean
-
-m4 main-mpi.c.m4 > main-mpi.c
-mpicc -E main-mpi.c > main-mpi.out
 make
 
 if [ ! -d Example-Heat_Transfer ]
