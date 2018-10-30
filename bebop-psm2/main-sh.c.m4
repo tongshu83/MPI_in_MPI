@@ -39,14 +39,14 @@ int main(int argc, char* argv[])
 	size_t cmdlen;
 	if (rank == 0) {
 		char cmd1[] = "/usr/bin/time -v -o time_script1.txt mpiexec -n 2 -hosts ";
-		char cmd2[] = " " PWD "/scripts/script1.sh";
+		char cmd2[] = " /blues/gpfs" PWD "/scripts/script1.sh";
 		size_t cmdlen = strlen(cmd1) + strlen(machname) + strlen(cmd2) + 1;
 		char* mpicmd = (char*) malloc(cmdlen * sizeof(char));
 		sprintf(mpicmd, "%s%s%s", cmd1, hostname, cmd2);
 		system(mpicmd);
 	} else {
 		char cmd1[] = "/usr/bin/time -v -o time_script2.txt mpiexec -n 2 -hosts ";
-		char cmd2[] = " " PWD "/scripts/script2.sh";
+		char cmd2[] = " /blues/gpfs" PWD "/scripts/script2.sh";
 		size_t cmdlen = strlen(cmd1) + strlen(machname) + strlen(cmd2) + 1;
 		char* mpicmd = (char*) malloc(cmdlen * sizeof(char));
 		sprintf(mpicmd, "%s%s%s", cmd1, hostname, cmd2);
