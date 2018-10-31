@@ -17,7 +17,7 @@ main()
 
 	// Command
 	string cmd;
-	cmd = "../../../../scripts/script.sh";
+	cmd = "../../../../scripts/script1.sh";
 
 	// Command line arguments
 	string args[] = [""];
