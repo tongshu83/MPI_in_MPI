@@ -13,7 +13,6 @@ export I_MPI_FABRICS=shm:tmi
 /usr/bin/time -v -o time_heat_transfer_adios2.txt mpiexec -n 42 -ppn 1 -hosts bdw-0098,bdw-0099 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/heat_transfer_adios2 heat 7 6 40 50 6 5 > output_heat_transfer_adios2.txt 2>&1 &
 /usr/bin/time -v -o time_stage_write.txt mpiexec -n 30 -ppn 1 -hosts bdw-0098,bdw-0099 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI "" > output_stage_write.txt 2>&1
 
-
 # /usr/bin/time -v -o time_heat_transfer_adios2.txt mpiexec -n 42 -ppn 1 -hosts bdw-0098 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/heat_transfer_adios2 heat 7 6 40 50 6 5 > output_heat_transfer_adios2.txt 2>&1 &
 # /usr/bin/time -v -o time_stage_write.txt mpiexec -n 37 -ppn 1 -hosts bdw-0099 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI "" > output_stage_write.txt 2>&1
 
