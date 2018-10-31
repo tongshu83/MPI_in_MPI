@@ -10,8 +10,14 @@
 
 export I_MPI_FABRICS=shm:tmi
 
-/usr/bin/time -v -o time_lmp_mpi.txt mpiexec -n 8 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-LAMMPS/swift-all/lmp_mpi -i in.quench.short > output_lmp_mpi.txt 2>&1 &
-/usr/bin/time -v -o time_voro_adios_omp_staging.txt mpiexec -n 4 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-LAMMPS/swift-all/voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH > output_voro_adios_omp_staging.txt 2>&1
+/usr/bin/time -v -o time_lmp_mpi.txt mpiexec -n 48 -ppn 1 -hosts bdw-0098,bdw-0099 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-LAMMPS/swift-all/lmp_mpi -i in.quench.short > output_lmp_mpi.txt 2>&1 &
+/usr/bin/time -v -o time_voro_adios_omp_staging.txt mpiexec -n 24 -ppn 1 -hosts bdw-0098,bdw-0099 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-LAMMPS/swift-all/voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH > output_voro_adios_omp_staging.txt 2>&1
+
+# /usr/bin/time -v -o time_lmp_mpi.txt mpiexec -n 38 -ppn 1 -hosts bdw-0098 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-LAMMPS/swift-all/lmp_mpi -i in.quench.short > output_lmp_mpi.txt 2>&1 &
+# /usr/bin/time -v -o time_voro_adios_omp_staging.txt mpiexec -n 37 -ppn 1 -hosts bdw-0099 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-LAMMPS/swift-all/voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH > output_voro_adios_omp_staging.txt 2>&1
+
+# /usr/bin/time -v -o time_lmp_mpi.txt mpiexec -n 8 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-LAMMPS/swift-all/lmp_mpi -i in.quench.short > output_lmp_mpi.txt 2>&1 &
+# /usr/bin/time -v -o time_voro_adios_omp_staging.txt mpiexec -n 4 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-LAMMPS/swift-all/voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH > output_voro_adios_omp_staging.txt 2>&1
 
 #srun -n 8 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-LAMMPS/swift-all/lmp_mpi -i in.quench.short &
 #srun -n 4 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-LAMMPS/swift-all/voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
