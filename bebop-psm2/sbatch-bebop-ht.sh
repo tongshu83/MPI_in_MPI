@@ -10,9 +10,12 @@
 
 export I_MPI_FABRICS=shm:tmi
 
-/usr/bin/time -v -o time_heat_transfer_adios2.txt mpiexec -n 12 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/heat_transfer_adios2 heat 4 3 40 50 6 5 > output_heat_transfer_adios2.txt 2>&1 &
-/usr/bin/time -v -o time_stage_write.txt mpiexec -n 3 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI "" > output_stage_write.txt 2>&1
+/usr/bin/time -v -o time_heat_transfer_adios2.txt mpiexec -n 60 -ppn 1 -hosts bdw-0387 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/heat_transfer_adios2 heat 10 6 40 50 6 5 > output_heat_transfer_adios2.txt 2>&1 &
+/usr/bin/time -v -o time_stage_write.txt mpiexec -n 37 -ppn 1 -hosts bdw-0390 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI "" > output_stage_write.txt 2>&1
 
-#srun -n 12 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/heat_transfer_adios2 heat 4 3 40 50 6 5  &
-#srun -n 3 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI ""
+# /usr/bin/time -v -o time_heat_transfer_adios2.txt mpiexec -n 60 -ppn 1 -hosts bdw-0387,bdw-0390 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/heat_transfer_adios2 heat 10 6 40 50 6 5 > output_heat_transfer_adios2.txt 2>&1 &
+# /usr/bin/time -v -o time_stage_write.txt mpiexec -n 12 -ppn 1 -hosts bdw-0387,bdw-0390 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI "" > output_stage_write.txt 2>&1
+
+# srun -n 12 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/heat_transfer_adios2 heat 4 3 40 50 6 5  &
+# srun -n 3 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/Example-Heat_Transfer/stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI ""
 
