@@ -10,6 +10,7 @@
 
 export I_MPI_FABRICS=shm:tmi
 
-/usr/bin/time -v -o time_hello.txt mpiexec -n 2 -ppn 1 -hosts bdw-0387,bdw-0390 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x
+/usr/bin/time -v -o time_hello1.txt mpiexec -n 36 -ppn 1 -hosts bdw-0387,bdw-0390 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x &
+/usr/bin/time -v -o time_hello2.txt mpiexec -n 36 -ppn 1 -hosts bdw-0387,bdw-0390 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x
 # srun -n 2 -N 2 -w bdw-0551,bdw-0552 /blues/gpfs/home/tshu/project/bebop/MPI_in_MPI/bebop-psm2/MPI/hello.x
 

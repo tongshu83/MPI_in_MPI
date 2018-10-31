@@ -7,16 +7,15 @@
 
 int main(int argc, char* argv[])
 {
-	int rank, size;
-	char hostname[HOST_NAME_MAX];
-
-	printf("Hello\n");
+	printf("Hello.\n");
 	fflush(stdout);
 
 	MPI_Init(0,0);
 
+	char hostname[HOST_NAME_MAX];
 	gethostname(hostname, HOST_NAME_MAX);
 
+	int rank, size;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
