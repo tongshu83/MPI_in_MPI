@@ -57,6 +57,7 @@ int main(int argc, char* argv[])
 			sprintf(mpicmd, "%s%d%s%d%s%s%s", cmd1, i, cmd2, proc, cmd3, machname, cmd4);
 			printf("MPI command: %s\n", mpicmd);
 			system(mpicmd);
+			free(mpicmd);
 
 			printf("Bye (Process %d).\n", pid);
 			fflush(stdout);
