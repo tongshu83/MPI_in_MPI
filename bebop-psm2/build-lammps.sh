@@ -12,8 +12,8 @@ if [ -d Example-LAMMPS ]
 then
         rm -rf Example-LAMMPS
 fi
-# git clone https://github.com/CODARcode/Example-LAMMPS.git
-git clone git@github.com:CODARcode/Example-LAMMPS.git
+git clone https://github.com/CODARcode/Example-LAMMPS.git
+# git clone git@github.com:CODARcode/Example-LAMMPS.git
 
 # Build Example-LAMMPS
 cd Example-LAMMPS
@@ -85,6 +85,15 @@ sed -i 's/^export LD_LIBRARY_PATH=\/home\/ltang\/Install\/lz4-1.8.1.2\/lib$/# ex
 sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/adios_integration:\$PATH$/PATH='"${PWD//\//\\/}"'\/adios_integration:$PATH/' swift-all/run.sh
 sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/lammps\/src:\$PATH$/PATH='"${PWD//\//\\/}"'\/lammps\/src:$PATH/' swift-all/run.sh
 sed -i 's/in.quench/in.quench.short/' swift-all/run.sh
+echo >> swift-all/run.sh
+echo '# mpiexec -n 48 -ppn 1 -hosts bdw-0098,bdw-0099 lmp_mpi -i in.quench.short &' >> swift-all/run.sh
+echo '# mpiexec -n 24 -ppn 1 -hosts bdw-0098,bdw-0099 voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH' >> swift-all/run.sh
+echo >> swift-all/run.sh
+echo '# mpiexec -n 38 -ppn 1 -hosts bdw-0098 lmp_mpi -i in.quench.short &' >> swift-all/run.sh
+echo '# mpiexec -n 37 -ppn 1 -hosts bdw-0099 voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH' >> swift-all/run.sh
+echo >> swift-all/run.sh
+echo '# mpiexec -n 24 -ppn 1 -hosts bdw-0098,bdw-0099 lmp_mpi -i in.quench.short &' >> swift-all/run.sh
+echo '# mpiexec -n 12 -ppn 1 -hosts bdw-0030 voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH' >> swift-all/run.sh
 cd swift-all
 ./run.sh
 
