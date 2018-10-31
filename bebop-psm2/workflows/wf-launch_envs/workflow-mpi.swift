@@ -5,9 +5,9 @@ import sys;
 
 (void v) setup_run(string dir) "turbine" "0.0"
 [
-	"""
+"""
 	file mkdir <<dir>>
-	"""
+"""
 ];
 
 main()
@@ -24,11 +24,11 @@ main()
 
 	// Environment variables
 	string turbine_output = getenv("TURBINE_OUTPUT");
-	string outdir = "%s/run" % turbine_output;
-	string envs[] = [ "swift_chdir="+outdir ];
+	string dir = "%s/run" % turbine_output;
+	string envs[] = [ "swift_chdir="+dir ];
 
 	printf("swift: launching with environment variables: %s", cmd);
-	setup_run(outdir) =>
+	setup_run(dir) =>
 		exit_code = @par=proc launch_envs(cmd, args, envs);
 	printf("swift: received exit code: %d", exit_code);
 	if (exit_code != 0)

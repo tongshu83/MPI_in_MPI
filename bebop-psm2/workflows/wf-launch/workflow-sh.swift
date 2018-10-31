@@ -10,10 +10,13 @@ main()
 
 	// Command
 	string cmd;
-	cmd = "../../scripts/script1.sh";
+	cmd = "../../../../scripts/script1.sh";
 
 	// Command line arguments
 	string args[] = [""];
+
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run" % turbine_output;
 
 	printf("swift: launching: %s", cmd);
 	exit_code = @par=proc launch(cmd, args);

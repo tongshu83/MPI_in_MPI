@@ -6,9 +6,9 @@ import sys;
 
 (void v) setup_run(string dir) "turbine" "0.0"
 [
-	"""
+"""
 	file mkdir <<dir>>
-	"""
+"""
 ];
 
 main()
@@ -18,8 +18,8 @@ main()
 
 	// Commands
 	string cmds[];
-	cmds[0] = "../../../../MPI/hello.x";
-	cmds[1] = "../../../../MPI/hello.x";
+	cmds[0] = "../../../../../MPI/hello.x";
+	cmds[1] = "../../../../../MPI/hello.x";
 
 	// Command line arguments
 	string args[][];
@@ -29,17 +29,17 @@ main()
 	// Environment variables
 	string envs[][];
 	string turbine_output = getenv("TURBINE_OUTPUT");
-	string outdir = "%s/run" % turbine_output;
-	envs[0] = [ "swift_chdir="+outdir ];
-	envs[1] = [ "swift_chdir="+outdir ];
-	// envs[0] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_hello1.txt" ];
-	// envs[1] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_hello2.txt" ];
+	string dir = "%s/run" % turbine_output;
+	envs[0] = [ "swift_chdir="+dir ];
+	envs[1] = [ "swift_chdir="+dir ];
+	// envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_hello1.txt" ];
+	// envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_hello2.txt" ];
 
 	// Color settings
 	colors = "0, 2; 1, 3";
 
 	printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
-	setup_run(outdir) =>
+	setup_run(dir) =>
 		exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs, colors);
 	printf("swift: received exit code: %d", exit_code);
 	if (exit_code != 0)
