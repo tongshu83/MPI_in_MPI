@@ -86,14 +86,14 @@ sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/adios_integration:\$PATH$/PATH='"
 sed -i 's/^PATH=\/home\/ltang\/Example-LAMMPS\/lammps\/src:\$PATH$/PATH='"${PWD//\//\\/}"'\/lammps\/src:$PATH/' swift-all/run.sh
 sed -i 's/in.quench/in.quench.short/' swift-all/run.sh
 echo >> swift-all/run.sh
-echo '# mpiexec -n 48 -ppn 1 -hosts bdw-0098,bdw-0099 lmp_mpi -i in.quench.short &' >> swift-all/run.sh
-echo '# mpiexec -n 24 -ppn 1 -hosts bdw-0098,bdw-0099 voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH' >> swift-all/run.sh
+echo '# mpiexec -n 48 -ppn 1 -hosts bdw-0171,bdw-0172 lmp_mpi -i in.quench.short &' >> swift-all/run.sh
+echo '# mpiexec -n 24 -ppn 1 -hosts bdw-0171,bdw-0172 voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH' >> swift-all/run.sh
 echo >> swift-all/run.sh
-echo '# mpiexec -n 38 -ppn 1 -hosts bdw-0098 lmp_mpi -i in.quench.short &' >> swift-all/run.sh
-echo '# mpiexec -n 37 -ppn 1 -hosts bdw-0099 voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH' >> swift-all/run.sh
+echo '# mpiexec -n 38 -ppn 1 -hosts bdw-0171 lmp_mpi -i in.quench.short &' >> swift-all/run.sh
+echo '# mpiexec -n 37 -ppn 1 -hosts bdw-0172 voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH' >> swift-all/run.sh
 echo >> swift-all/run.sh
-echo '# mpiexec -n 24 -ppn 1 -hosts bdw-0098,bdw-0099 lmp_mpi -i in.quench.short &' >> swift-all/run.sh
-echo '# mpiexec -n 12 -ppn 1 -hosts bdw-0030 voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH' >> swift-all/run.sh
+echo '# mpiexec -n 72 -ppn 1 -hosts bdw-0171,bdw-0172 lmp_mpi -i in.quench.short &' >> swift-all/run.sh
+echo '# mpiexec -n 36 -ppn 1 -hosts bdw-0167 voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH' >> swift-all/run.sh
 cd swift-all
 ./run.sh
 
