@@ -1,17 +1,20 @@
 all:
-	m4 main-sh.c.m4 > main-sh.c
-	# mpicc -E main-sh.c > main-sh.out
-	m4 main-mpi.c.m4 > main-mpi.c
-	# mpicc -E main-mpi.c > main-mpi.out
-	m4 main-ht.c.m4 > main-ht.c
-	# mpicc -E main-ht.c > main-ht.out
-	m4 main-lammps.c.m4 > main-lammps.c
-	# mpicc -E main-lammps.c > main-lammps.out
-	mpicc -o main-sh.x main-sh.c
-	mpicc -o main-mpi.x main-mpi.c
-	mpicc -o main-ht.x main-ht.c
-	mpicc -o main-lammps.x main-lammps.c
+	m4 mpi-sh.c.m4 > mpi-sh.c
+	# mpicc -E mpi-sh.c > mpi-sh.out
+	m4 mpi-mpi.c.m4 > mpi-mpi.c
+	# mpicc -E mpi-mpi.c > mpi-mpi.out
+	m4 mpi-ht.c.m4 > mpi-ht.c
+	# mpicc -E mpi-ht.c > mpi-ht.out
+	m4 mpi-lammps.c.m4 > mpi-lammps.c
+	# mpicc -E mpi-lammps.c > mpi-lammps.out
+	mpicc -o mpi-sh.x mpi-sh.c
+	mpicc -o mpi-mpi.x mpi-mpi.c
+	mpicc -o mpi-ht.x mpi-ht.c
+	mpicc -o mpi-lammps.x mpi-lammps.c
+	m4 c-mpi.c.m4 > c-mpi.c
+	gcc -o c-mpi.x c-mpi.c
 clean:
-	rm -f main-sh.x main-mpi.x main-ht.x main-lammps.x main-sh.out main-mpi.out main-ht.out main-lammps.out
+	rm -f mpi-sh.x mpi-mpi.x mpi-ht.x mpi-lammps.x mpi-sh.out mpi-mpi.out mpi-ht.out mpi-lammps.out
+	rm -f c-mpi.c c-mpi.x
 	rm -f time_*.txt output_*.txt log.lammps log.quench restart.glass_273K
 
