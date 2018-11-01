@@ -21,8 +21,8 @@ import sys;
 
 	// Commands
 	string cmds[];
-	cmds[0] = "../../../../../../scripts/script1.sh";
-	cmds[1] = "../../../../../../scripts/script2.sh";
+	cmds[0] = "../../../../../../MPI/hello.x";
+	cmds[1] = "../../../../../../MPI/hello.x";
 
 	// Command line arguments
 	string args[][];
@@ -33,8 +33,8 @@ import sys;
 	string envs[][];
 	envs[0] = [ "swift_chdir="+dir ];
 	envs[1] = [ "swift_chdir="+dir ];
-	// envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script1.txt" ];
-	// envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script2.txt" ];
+	// envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_hello1.txt" ];
+	// envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_hello2.txt" ];
 
 	printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
 	setup_run(dir) =>

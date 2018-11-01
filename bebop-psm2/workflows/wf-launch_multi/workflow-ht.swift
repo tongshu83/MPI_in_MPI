@@ -4,18 +4,21 @@ import stats;
 import string;
 import sys;
 
-(void v) setup_run(string outdir, string infile) "turbine" "0.0"
+(void v) setup_run(string dir, string infile) "turbine" "0.0"
 [
 """
-	file delete -force -- <<outdir>>
-	file mkdir <<outdir>>
-	cd <<outdir>>
+	file delete -force -- <<dir>>
+	file mkdir <<dir>>
+	cd <<dir>>
 	file link -symbolic heat_transfer.xml <<infile>>
 """
 ];
 
 main()
 {
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run" % turbine_output;
+
 	// Process counts
 	int procs[] = [2, 2];
 
@@ -35,12 +38,10 @@ main()
 
 	// Environment variables
 	string envs[][];
-	string turbine_output = getenv("TURBINE_OUTPUT");
-	string outdir = "%s/run" % turbine_output;
-	envs[0] = [ "swift_chdir="+outdir ];
-	envs[1] = [ "swift_chdir="+outdir ];
-	// envs[0] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_heat_transfer_adios2.txt" ];
-	// envs[1] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_stage_write.txt" ];
+	envs[0] = [ "swift_chdir="+dir ];
+	envs[1] = [ "swift_chdir="+dir ];
+	// envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_heat_transfer_adios2.txt" ];
+	// envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_stage_write.txt" ];
 
 	// Color settings
 	// colors = "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11; 12, 13, 14";
@@ -49,7 +50,7 @@ main()
 	string infile = "%s/heat_transfer.xml" % turbine_output;
 
 	printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
-	setup_run(outdir, infile) =>
+	setup_run(dir, infile) =>
 		exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs, colors);
 	printf("swift: received exit code: %d", exit_code);
 	if (exit_code != 0)

@@ -13,6 +13,9 @@ import sys;
 
 main()
 {
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run" % turbine_output;
+
 	// Process counts
 	int procs[] = [2, 2];
 
@@ -28,8 +31,6 @@ main()
 
 	// Environment variables
 	string envs[][];
-	string turbine_output = getenv("TURBINE_OUTPUT");
-	string dir = "%s/run" % turbine_output;
 	envs[0] = [ "swift_chdir="+dir ];
 	envs[1] = [ "swift_chdir="+dir ];
 	// envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script1.txt" ];

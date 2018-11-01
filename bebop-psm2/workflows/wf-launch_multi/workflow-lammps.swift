@@ -4,12 +4,12 @@ import stats;
 import string;
 import sys;
 
-(void v) setup_run(string outdir, string infile1, string infile2, string infile3) "turbine" "0.0"
+(void v) setup_run(string dir, string infile1, string infile2, string infile3) "turbine" "0.0"
 [
 """
-	file delete -force -- <<outdir>>
-	file mkdir <<outdir>>
-	cd <<outdir>>
+	file delete -force -- <<dir>>
+	file mkdir <<dir>>
+	cd <<dir>>
 	file link -symbolic in.quench.short <<infile1>>
 	file link -symbolic restart.liquid <<infile2>>
 	file link -symbolic CuZr.fs <<infile3>>
@@ -18,6 +18,9 @@ import sys;
 
 main()
 {
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run" % turbine_output;
+
 	// Process counts
 	int procs[] = [2, 2];
 
@@ -37,12 +40,10 @@ main()
 
 	// Environment variables
 	string envs[][];
-	string turbine_output = getenv("TURBINE_OUTPUT");
-	string outdir = "%s/run" % turbine_output;
-	envs[0] = [ "swift_chdir="+outdir ];
-	envs[1] = [ "swift_chdir="+outdir ];
-	// envs[0] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_lmp_mpi.txt" ];
-	// envs[1] = [ "swift_chdir="+outdir, "swift_output="+outdir/"output_voro_adios_omp_staging.txt" ];
+	envs[0] = [ "swift_chdir="+dir ];
+	envs[1] = [ "swift_chdir="+dir ];
+	// envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_lmp_mpi.txt" ];
+	// envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_voro_adios_omp_staging.txt" ];
 
 	// Color settings
 	// colors = "0, 1, 2, 3, 4, 5, 6, 7; 8, 9, 10, 11";
@@ -53,7 +54,7 @@ main()
 	string infile3 = "%s/CuZr.fs" % turbine_output;
 
 	printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
-	setup_run(outdir, infile1, infile2, infile3) =>
+	setup_run(dir, infile1, infile2, infile3) =>
 		exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs, colors);
 	printf("swift: received exit code: %d", exit_code);
 	if (exit_code != 0)
