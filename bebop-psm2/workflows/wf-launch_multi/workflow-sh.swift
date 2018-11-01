@@ -4,6 +4,10 @@ import stats;
 import string;
 import sys;
 
+app printenv (string env) {
+	"/usr/bin/printenv" env 
+}
+
 (void v) setup_run(string dir) "turbine" "0.0"
 [
 """
@@ -40,6 +44,7 @@ main()
 	colors = "0, 2; 1, 3";
 
 	printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
+	printenv("PPN");
 	setup_run(dir) =>
 		exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs, colors);
 	printf("swift: received exit code: %d", exit_code);
