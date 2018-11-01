@@ -3,6 +3,10 @@ import launch;
 import string;
 import sys;
 
+app printenv (string env) {
+	"/usr/bin/printenv" env
+}
+
 main()
 {
 	// Process counts
@@ -16,6 +20,7 @@ main()
 	string args[] = [""];
 
 	printf("swift: launching: %s", cmd);
+	printenv("PPN");
 	exit_code = @par=proc launch(cmd, args);
 	printf("swift: received exit code: %d", exit_code);
 	if (exit_code != 0)
