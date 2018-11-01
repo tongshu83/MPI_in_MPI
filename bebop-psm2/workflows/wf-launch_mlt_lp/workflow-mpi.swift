@@ -55,7 +55,7 @@ main()
 			codes[i] = launch("%000i_%000i" % (par0, par1), par0, par1);
 			if (codes[i] != 0)
 			{
-				printf("swift: The multi-launched application %d did not succeed with exit code: %d.", i, codes[i]);
+				printf("swift: The multi-launched application with parameters (%d, %d) did not succeed with exit code: %d.", par0, par1, codes[i]);
 			}
 		}
 	}

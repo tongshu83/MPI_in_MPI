@@ -57,8 +57,8 @@ main()
 {
 	int codes[];
 
-	int pars_low[] = [2, 1, 2];
-	int pars_up[] = [3, 1, 3];
+	int pars_low[] = [1, 1, 1];
+	int pars_up[] = [5, 5, 7];
 	foreach par0 in [pars_low[0] : pars_up[0]]
 	{
 		foreach par1 in [pars_low[1] : pars_up[1]]
@@ -69,7 +69,7 @@ main()
 				codes[i] = launch("%000i_%000i_%000i" % (par0, par1, par2), par0, par1, par2);
 				if (codes[i] != 0)
 				{
-					printf("swift: The multi-launched application %d did not succeed with exit code: %d.", i, codes[i]);
+					printf("swift: The multi-launched application with parameters (%d, %d, %d) did not succeed with exit code: %d.", par0, par1, par2, codes[i]);
 				}
 			}
 		}
