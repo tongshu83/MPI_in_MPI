@@ -51,7 +51,7 @@ main()
 	{
 		foreach par1 in [pars_low[1] : pars_up[1]]
 		{
-			int i = (par0 - pars_low[0]) * (pars_up[1] - pars_low[1]) + (par1 - pars_low[1]);
+			int i = (par0 - pars_low[0]) * (pars_up[1] - pars_low[1] + 1) + (par1 - pars_low[1]);
 			codes[i] = launch("%000i_%000i" % (par0, par1), par0, par1);
 			if (codes[i] != 0)
 			{
