@@ -1,4 +1,4 @@
 #!/bin/bash
 
-echo "script.sh (HOSTNAME = $HOSTNAME, PMI_RANK = $PMI_RANK)"
+echo "script1.sh (HOSTNAME = $HOSTNAME, PMI_RANK = $PMI_RANK)"
 
