@@ -16,7 +16,7 @@ echo "Build a single MPI ..."
 cd MPI
 make clean
 make
-mkdir -pv MPI/experiment
+mkdir -pv experiment
 
 echo
 echo "Build MPI_in_MPI ..."
