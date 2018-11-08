@@ -1,0 +1,4 @@
+export MPIBASH_HOME=$ROOT/mpibash
+export PATH=$MPIBASH_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$MPIBASH_HOME/libexec/mpibash:$LD_LIBRARY_PATH
+

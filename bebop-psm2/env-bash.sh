@@ -1,0 +1,4 @@
+export BASH_HOME=$ROOT/bash-5.0-beta
+export PATH=$BASH_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$BASH_HOME/lib:$LD_LIBRARY_PATH
+
