@@ -1,4 +1,5 @@
 import io;
+import files;
 import launch;
 import stats;
 import string;
@@ -38,7 +39,7 @@ import sys;
 	setup_run(dir) =>
 		exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs);
 	if (exit_code == 0) {
-		string cmd[] = [ "../../../../get_maxtime.sh", dir/"time_script*.txt" ];
+		string cmd[] = [ "./get_maxtime.sh", dir/"time_script*.txt" ];
 		sleep(1) =>
 			(time_output, time_exit_code) = system(cmd);
 		if (time_exit_code == 0) {
@@ -48,7 +49,7 @@ import sys;
 				string output = "%i\t%i\t%f\t" % (proc1, proc2, exectime);
 				file out <dir/"time.txt"> = write(output);
 			} else {
-				printf("swift: The execution time (%f seconds) of the multi-launched application with parameters (%d, %d) is negative.", exectime, par0, par1);
+				printf("swift: The execution time (%f seconds) of the multi-launched application with parameters (%d, %d) is negative.", exectime, proc1, proc2);
 			}
 		} else {
 			exectime = -1.0;
