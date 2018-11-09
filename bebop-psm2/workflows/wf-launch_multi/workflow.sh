@@ -33,7 +33,7 @@ then
 	cd -
 fi
 
-if [[ $1 = "workflow-lammps" ]]
+if [[ $1 = "workflow-lmp" ]]
 then
 	cd $TURBINE_OUTPUT
 	ln -s ../in.quench in.quench

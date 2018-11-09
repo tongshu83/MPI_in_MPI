@@ -35,10 +35,10 @@ main()
 
 	// Environment variables
 	string envs[][];
-	envs[0] = [ "swift_chdir="+dir ];
-	envs[1] = [ "swift_chdir="+dir ];
-	// envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script1.txt" ];
-	// envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script2.txt" ];
+	// envs[0] = [ "swift_chdir="+dir ];
+	// envs[1] = [ "swift_chdir="+dir ];
+	envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script1.txt", "swift_exectime="+dir/"time_script1.txt" ];
+	envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script2.txt", "swift_exectime="+dir/"time_script2.txt" ];
 
 	// Color settings
 	colors = "0, 2; 1, 3";

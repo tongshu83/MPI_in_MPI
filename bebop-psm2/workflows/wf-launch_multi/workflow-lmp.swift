@@ -40,10 +40,10 @@ main()
 
 	// Environment variables
 	string envs[][];
-	envs[0] = [ "swift_chdir="+dir ];
-	envs[1] = [ "swift_chdir="+dir ];
-	// envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_lmp_mpi.txt" ];
-	// envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_voro_adios_omp_staging.txt" ];
+	// envs[0] = [ "swift_chdir="+dir ];
+	// envs[1] = [ "swift_chdir="+dir ];
+	envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_lmp_mpi.txt", "swift_exectime="+dir/"time_lmp_mpi.txt" ];
+	envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_voro_adios_omp_staging.txt", "swift_exectime="+dir/"time_voro_adios_omp_staging.txt" ];
 
 	// Color settings
 	// colors = "0, 1, 2, 3, 4, 5, 6, 7; 8, 9, 10, 11";
