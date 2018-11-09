@@ -41,10 +41,10 @@ import sys;
 
 	// Environment variables
 	string envs[][];
-	envs[0] = [ "swift_chdir="+dir ];
-	envs[1] = [ "swift_chdir="+dir ];
-	// envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_heat_transfer_adios2.txt" ];
-	// envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_stage_write.txt" ];
+	// envs[0] = [ "swift_chdir="+dir ];
+	// envs[1] = [ "swift_chdir="+dir ];
+	envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_heat_transfer_adios2.txt", "swift_exectime="+dir/"time_heat_transfer_adios2.txt" ];
+	envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_stage_write.txt", "swift_exectime="+dir/"time_stage_write.txt" ];
 
 	string infile = "%s/heat_transfer.xml" % turbine_output;
 

@@ -40,10 +40,10 @@ import sys;
 
 	// Environment variables
 	string envs[][];
-	envs[0] = [ "swift_chdir="+dir ];
-	envs[1] = [ "swift_chdir="+dir ];
-	// envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_lmp_mpi.txt" ];
-	// envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_voro_adios_omp_staging.txt" ];
+	// envs[0] = [ "swift_chdir="+dir ];
+	// envs[1] = [ "swift_chdir="+dir ];
+	envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_lmp_mpi.txt", "swift_exectime="+dir/"time_lmp_mpi.txt" ];
+	envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_voro_adios_omp_staging.txt", "swift_exectime="+dir/"time_voro_adios_omp_staging.txt" ];
 
 	string infile1 = "%s/in.quench.short" % turbine_output;
 	string infile2 = "%s/restart.liquid" % turbine_output;
