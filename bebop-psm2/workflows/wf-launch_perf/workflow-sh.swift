@@ -74,7 +74,7 @@ main()
 		foreach par1 in [pars_low[1] : pars_up[1]]
 		{
 			int i = (par0 - pars_low[0]) * (pars_up[1] - pars_low[1] + 1) + (par1 - pars_low[1]);
-			exectime[i] = launch("%000i_%000i" % (par0, par1), par0, par1);
+			exectime[i] = launch("%0.1i_%0.1i" % (par0, par1), par0, par1);
 			if (exectime[i] >= 0.0) {
 				codes[i] = 0;
 			} else {
