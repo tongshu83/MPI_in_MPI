@@ -57,6 +57,7 @@ import sys;
 main()
 {
 	int codes[];
+
 	int pars_low[] = [1, 1];
 	int pars_up[] = [16, 16];
 	foreach par0 in [pars_low[0] : pars_up[0]]
