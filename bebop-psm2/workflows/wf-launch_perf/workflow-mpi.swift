@@ -22,8 +22,8 @@ import sys;
 
 	// Commands
 	string cmds[];
-	cmds[0] = "../../../../../../scripts/script1.sh";
-	cmds[1] = "../../../../../../scripts/script2.sh";
+	cmds[0] = "../../../../../../MPI/hello.x";
+	cmds[1] = "../../../../../../MPI/hello.x";
 
 	// Command line arguments
 	string args[][];
@@ -32,15 +32,15 @@ import sys;
 
 	// Environment variables
 	string envs[][];
-	envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script1.txt", "swift_exectime="+dir/"time_script1.txt" ];
-	envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script2.txt", "swift_exectime="+dir/"time_script2.txt" ];
+	envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_hello1.txt", "swift_exectime="+dir/"time_hello1.txt" ];
+	envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_hello2.txt", "swift_exectime="+dir/"time_hello2.txt" ];
 
 	printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
 	setup_run(dir) =>
 		exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs);
 
 	if (exit_code == 0) {
-		string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_script*.txt" ];
+		string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_hello*.txt" ];
 		sleep(1) =>
 			(time_output, time_exit_code) = system(cmd);
 		if (time_exit_code == 0) {

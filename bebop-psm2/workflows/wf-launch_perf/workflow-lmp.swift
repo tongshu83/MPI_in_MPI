@@ -5,10 +5,15 @@ import stats;
 import string;
 import sys;
 
-(void v) setup_run(string dir) "turbine" "0.0"
+(void v) setup_run(string dir, string infile1, string infile2, string infile3) "turbine" "0.0"
 [
 """
+	file delete -force -- <<dir>>
 	file mkdir <<dir>>
+	cd <<dir>>
+	file link -symbolic in.quench.short <<infile1>>
+	file link -symbolic restart.liquid <<infile2>>
+	file link -symbolic CuZr.fs <<infile3>>
 """
 ];
 
@@ -22,25 +27,33 @@ import sys;
 
 	// Commands
 	string cmds[];
-	cmds[0] = "../../../../../../scripts/script1.sh";
-	cmds[1] = "../../../../../../scripts/script2.sh";
+	cmds[0] = "../../../../../../Example-LAMMPS/swift-all/lmp_mpi";
+	cmds[1] = "../../../../../../Example-LAMMPS/swift-all/voro_adios_omp_staging";
 
 	// Command line arguments
 	string args[][];
-	args[0] = [""];
-	args[1] = [""];
+
+	// mpiexec -n 8 ./lmp_mpi -i in.quench.short
+	args[0] = split("-i in.quench.short", " ");
+
+	// mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
+	args[1] = split("dump.bp adios_atom_voro.bp FLEXPATH", " ");
 
 	// Environment variables
 	string envs[][];
-	envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script1.txt", "swift_exectime="+dir/"time_script1.txt" ];
-	envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_script2.txt", "swift_exectime="+dir/"time_script2.txt" ];
+	envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_lmp_mpi.txt", "swift_exectime="+dir/"time_lmp_mpi.txt" ];
+	envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_voro_adios_omp_staging.txt", "swift_exectime="+dir/"time_voro_adios_omp_staging.txt" ];
+
+	string infile1 = "%s/in.quench.short" % turbine_output;
+	string infile2 = "%s/restart.liquid" % turbine_output;
+	string infile3 = "%s/CuZr.fs" % turbine_output;
 
 	printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
-	setup_run(dir) =>
+	setup_run(dir, infile1, infile2, infile3) =>
 		exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs);
 
 	if (exit_code == 0) {
-		string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_script*.txt" ];
+		string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_*.txt" ];
 		sleep(1) =>
 			(time_output, time_exit_code) = system(cmd);
 		if (time_exit_code == 0) {
@@ -67,8 +80,8 @@ main()
 	float exectime[];
 	int codes[];
 
-	int pars_low[] = [2, 2];
-	int pars_up[] = [3, 3];
+	int pars_low[] = [1, 1];
+	int pars_up[] = [16, 16];
 	foreach par0 in [pars_low[0] : pars_up[0]]
 	{
 		foreach par1 in [pars_low[1] : pars_up[1]]
