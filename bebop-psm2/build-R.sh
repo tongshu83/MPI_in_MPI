@@ -1,0 +1,83 @@
+#!/bin/bash -l
+
+echo
+echo "R starts ..."
+echo
+
+if (( ${#ROOT} == 0  ))
+then
+	echo "Set ROOT as the parent installation directory!"
+	exit 1
+fi
+
+if [ -d $ROOT ]
+then
+	mkdir -pv $ROOT/R-3.5.1
+else 
+	echo "There does not exist $ROOT!"
+	exit 1
+fi
+
+# echo "Loading Modules ..."
+# module load python/2.7.15-b5bimol
+# module load readline/7.0-3qkdfwk
+# module load bzip2/1.0.6-hcvyuh5
+# module load xz/5.2.4-okshegf
+# module load curl/7.60.0-6ldg322
+# module load libxml2/2.9.8-eqqbnqd
+# echo "Modules are loaded!"
+
+set -eu
+
+echo
+echo "Download and install R ..."
+echo
+
+# Download R
+if [ -f R-3.5.1.tar.gz ]
+then
+	rm -fv R-3.5.1.tar.gz
+fi
+if wget -q wget https://cran.r-project.org/src/base/R-3/R-3.5.1.tar.gz
+then
+	echo WARNING: wget exited with: $?
+fi
+if [ -d $ROOT/R-3.5.1 ]
+then
+        rm -rf $ROOT/R-3.5.1
+fi
+tar -zxvf R-3.5.1.tar.gz -C $ROOT
+source ./env_R.sh
+# export R_HOME=$ROOT/R-3.5.1
+# export PATH=$R_HOME/bin:$PATH
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib64/R/lib
+
+
+echo
+echo "Install mlrMBO ..."
+echo
+./install-mlrMBO.sh
+
+
+echo
+echo "Setup and rebuild Swift/T with Python and R ..."
+echo
+
+# Setup Swift/T
+cd swift-t
+PYTHON_EXE=$( which python )
+sed -i 's/^ENABLE_PYTHON=0/ENABLE_PYTHON=1/' dev/build/swift-t-settings.sh
+sed -i 's@^PYTHON_EXE=""$@PYTHON_EXE='"$PYTHON_EXE"'@' dev/build/swift-t-settings.sh
+sed -i 's/^ENABLE_R=0$/ENABLE_R=1/' dev/build/swift-t-settings.sh
+sed -i 's@^# R_INSTALL=/path/to/R$@R_INSTALL='"$ROOT"'/R-3.5.1/lib64/R@' dev/build/swift-t-settings.sh
+sed -i 's@^# RCPP_INSTALL=/path/to/Rcpp$@RCPP_INSTALL='"$ROOT"'/R-3.5.1/lib64/R/library/Rcpp@' dev/build/swift-t-settings.sh
+sed -i 's@^# RINSIDE_INSTALL=/path/to/RInside$@RINSIDE_INSTALL='"$ROOT"'/R-3.5.1/lib64/R/library/RInside@' dev/build/swift-t-settings.sh
+
+# Rebuild Swift/T
+dev/build/build-swift-t.sh
+cd ..
+
+echo
+echo "R is done!"
+echo
+
