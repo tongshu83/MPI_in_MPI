@@ -59,7 +59,7 @@ import sys;
 			exectime = string2float(time_output);
 			if (exectime >= 0.0) {
 				printf("exectime(%i, %i, %i): %f", ht_proc_x, ht_proc_y, sw_proc, exectime);
-				string output = "%i\t%i\t%i\t%f\t" % (ht_proc_x, ht_proc_y, sw_proc, exectime);
+				string output = "%0.2i\t%0.2i\t%0.2i\t%f\t" % (ht_proc_x, ht_proc_y, sw_proc, exectime);
 				file out <dir/"time.txt"> = write(output);
 			} else {
 				printf("swift: The execution time (%f seconds) of the multi-launched application with parameters (%d, %d, %d) is negative.", exectime, ht_proc_x, ht_proc_y, sw_proc);
@@ -88,7 +88,7 @@ main()
 			foreach par2 in [pars_low[2] : pars_up[2]]
 			{
 				int i = (par0 - pars_low[0]) * (pars_up[1] - pars_low[1] + 1) * (pars_up[2] - pars_low[2] + 1) + (par1 - pars_low[1]) * (pars_up[2] - pars_low[2] + 1) + (par2 - pars_low[2]);
-				exectime[i] = launch("%0.1i_%0.1i_%0.1i" % (par0, par1, par2), par0, par1, par2);
+				exectime[i] = launch("%0.2i_%0.2i_%0.2i" % (par0, par1, par2), par0, par1, par2);
 				if (exectime[i] >= 0.0) {
 					codes[i] = 0;
 				} else {

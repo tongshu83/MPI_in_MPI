@@ -60,7 +60,7 @@ import sys;
 			exectime = string2float(time_output);
 			if (exectime >= 0.0) {
 				printf("exectime(%i, %i): %f", proc1, proc2, exectime);
-				string output = "%i\t%i\t%f\t" % (proc1, proc2, exectime);
+				string output = "%0.2i\t%0.2i\t%f\t" % (proc1, proc2, exectime);
 				file out <dir/"time.txt"> = write(output);
 			} else {
 				printf("swift: The execution time (%f seconds) of the multi-launched application with parameters (%d, %d) is negative.", exectime, proc1, proc2);

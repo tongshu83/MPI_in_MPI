@@ -22,7 +22,7 @@ do
 		echo "" >> $rootdir/$outfile.dat
 	fi
 done
-sort $rootdir/$outfile.dat
+# sort $rootdir/$outfile.dat
 
 exit 0
 
