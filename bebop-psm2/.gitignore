@@ -13,6 +13,7 @@ heat_transfer.xml
 apache*
 experiment/
 swift-t/
+eqr/
 turbine-directory.txt
 # This is generated in build-mpi_in_mpi by m4
 main-mpi.c
