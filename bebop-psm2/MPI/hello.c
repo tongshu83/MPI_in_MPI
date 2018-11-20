@@ -19,6 +19,8 @@ int main(int argc, char* argv[])
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+	printf("PATH=");
+	system("printenv PATH");
 	printf("hostname:  %s\n", hostname);
 	printf("rank/size: %i/%i\n", rank, size);
 

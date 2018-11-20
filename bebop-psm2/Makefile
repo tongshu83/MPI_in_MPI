@@ -13,8 +13,10 @@ all:
 	mpicc -o mpi-lmp.x mpi-lmp.c
 	m4 c-mpi.c.m4 > c-mpi.c
 	gcc -o c-mpi.x c-mpi.c
+	m4 c-lmp.c.m4 > c-lmp.c
+	gcc -o c-lmp.x c-lmp.c
 clean:
 	rm -f mpi-sh.x mpi-mpi.x mpi-ht.x mpi-lmp.x mpi-sh.out mpi-mpi.out mpi-ht.out mpi-lmp.out
-	rm -f c-mpi.c c-mpi.x
+	rm -f c-mpi.c c-mpi.x c-lmp.c c-lmp.x
 	rm -f time_*.txt output_*.txt log.lammps log.quench restart.glass_273K
 
