@@ -92,16 +92,16 @@ ENVS="-e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R/lib:$R/library/Rcpp/libs:$R/library
 # "-e <key>=<value>" Set an environment variable in the job environment.
 
 set -x
-stc -p -u -I $EQR $WORKFLOW_ROOT/$WORKFLOW_SWIFT
+stc -p -u -I $EQR -r $EQR $WORKFLOW_ROOT/$WORKFLOW_SWIFT
 # -p: Disable the C preprocessor
 # -u: Only compile if target is not up-to-date
 # -I: Add a directory to the import and include search path.
 
-turbine -l $MACHINE -n $PROCS -r $EQR $ENVS $WORKFLOW_ROOT/$WORKFLOW_TIC ${CMD_LINE_ARGS[@]}
+turbine -l $MACHINE -n $PROCS $ENVS $WORKFLOW_ROOT/$WORKFLOW_TIC ${CMD_LINE_ARGS[@]}
 # -l: Enable mpiexec -l ranked output formatting
 # -n <procs>: The total number of Turbine MPI processes
 
-#swift-t -p -l $MACHINE -n $PROCS -I $EQR -r $EQR $ENVS $WORKFLOW_ROOT/workflow.swift ${CMD_LINE_ARGS[@]}
+# swift-t -p -l $MACHINE -n $PROCS -I $EQR -r $EQR $ENVS $WORKFLOW_ROOT/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
 
 echo WORKFLOW COMPLETE.
 

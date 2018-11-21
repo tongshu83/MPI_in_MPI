@@ -58,6 +58,7 @@ file mkdir <<dir>>
 	setup_run(dir) =>
 		exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs);
 
+	float exectime;
 	if (exit_code == 0) {
 		string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_script*.txt" ];
 		sleep(1) =>
