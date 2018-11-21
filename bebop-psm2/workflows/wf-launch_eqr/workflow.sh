@@ -46,7 +46,7 @@ fi
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=8
+export PROCS=14
 export PPN=1
 export WALLTIME=00:01:00
 
@@ -80,7 +80,7 @@ if [[ $1 = "workflow-lmp" ]]
 then
 	PARAM_SET_FILE=$WORKFLOW_ROOT/data/params-lmp.R
 fi
-MAX_ITERATIONS=2
+MAX_ITERATIONS=10
 MAX_CONCURRENT_EVALUATIONS=2
 
 # Construct the command line given to Swift/T
@@ -89,20 +89,25 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
 		-pp=$MAX_CONCURRENT_EVALUATIONS
 	)
 
-ENVS="-e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R/lib:$R/library/Rcpp/libs:$R/library/RInside/lib:$R/library/RInside/libs:$EQR -e R=$R_HOME -e EQR=$EQR_HOME"
+ENVS="-e R=$R_HOME -e EQR=$EQR_HOME -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R/lib:$R/library/Rcpp/libs:$R/library/RInside/lib:$R/library/RInside/libs:$EQR"
 # "-e <key>=<value>" Set an environment variable in the job environment.
 
 set -x
 stc -p -u -I $EQR -r $EQR $WORKFLOW_ROOT/$WORKFLOW_SWIFT
-# -p: Disable the C preprocessor
+# -p: Disable preprocessing via CPP
+# -r <DIRECTORY>: Add an RPATH for a Swift/T extension
 # -u: Only compile if target is not up-to-date
-# -I: Add a directory to the import and include search path.
+# -I <DIRECTORY>: Add an include path. TURBINE_HOME/export is always included to get standard library
 
 turbine -l $MACHINE -n $PROCS $ENVS $WORKFLOW_ROOT/$WORKFLOW_TIC ${CMD_LINE_ARGS[@]}
-# -l: Enable mpiexec -l ranked output formatting
-# -n <procs>: The total number of Turbine MPI processes
+# -e <variable>=<value>: Set an environment variable
+# -l: Enable MPI line numbering
+# -m <machine>: Set scheduler type: cobalt, cray, pbs, etc.
+# -n <procs>: Set total number of processes
 
 # swift-t -p -l $MACHINE -n $PROCS -I $EQR -r $EQR $ENVS $WORKFLOW_ROOT/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
+# -I <DIRECTORY>: Add an include path. TURBINE_HOME/export is always included to get standard library
+# -r <DIRECTORY>: Add an RPATH for a Swift/T extension
 
 echo WORKFLOW COMPLETE.
 

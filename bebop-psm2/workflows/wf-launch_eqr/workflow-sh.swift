@@ -25,7 +25,7 @@ int propose_points = toint(argv("pp", "3"));
 (void v) setup_run(string dir) "turbine" "0.0"
 [
 """
-file mkdir <<dir>>
+	file mkdir <<dir>>
 """
 ];
 
@@ -148,6 +148,7 @@ param.set.file='%s',
 			(param_set, max_budget, max_iterations,
 			 design_size, propose_points);
 		string algorithm = workflow_root/"mlrMBO3.R";
+		printf("algorithm: '%s'", algorithm);
 		EQR_init_script(ME, algorithm) =>
 			EQR_get(ME) =>
 			EQR_put(ME, algo_params) =>
@@ -161,7 +162,7 @@ param.set.file='%s',
 
 main() {
 	printf("turbine workers: %i", turbine_workers());
-//	assert(strlen(workflow_root) > 0, "Set WORKFLOW_ROOT!");
+	assert(strlen(workflow_root) > 1, "Set WORKFLOW_ROOT!");
 
 	int ME_ranks[];
 	foreach r_rank, i in r_ranks{
