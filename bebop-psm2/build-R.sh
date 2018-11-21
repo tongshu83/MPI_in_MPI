@@ -38,7 +38,7 @@ if [ -f R-3.5.1.tar.gz ]
 then
 	rm -fv R-3.5.1.tar.gz
 fi
-if wget -q wget https://cran.r-project.org/src/base/R-3/R-3.5.1.tar.gz
+if wget -q https://cran.r-project.org/src/base/R-3/R-3.5.1.tar.gz
 then
 	echo WARNING: wget exited with: $?
 fi
