@@ -43,7 +43,7 @@ sed -i 's@^R_LIB=.*$@R_LIB=$R_HOME/lib@' settings.sh
 sed -i 's@^R_INSIDE=.*$@R_INSIDE=$R_HOME/library/RInside@' settings.sh
 sed -i 's@^RCPP=.*$@RCPP=$R_HOME/library/Rcpp@' settings.sh
 TCLSH_EXE=$( which tclsh )
-TCL_HOME="${TCLSH_EXE/\/bin\/tclsh/}"
+TCL_HOME=${TCLSH_EXE/\/bin\/tclsh/}
 sed -i 's@^TCL_INCLUDE=.*$@TCL_INCLUDE='"$TCL_HOME"'/include@' settings.sh
 sed -i 's@^TCL_LIB=.*$@TCL_LIB='"$TCL_HOME"'/lib@' settings.sh
 

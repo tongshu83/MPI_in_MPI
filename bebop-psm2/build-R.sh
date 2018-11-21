@@ -42,11 +42,11 @@ if wget -q wget https://cran.r-project.org/src/base/R-3/R-3.5.1.tar.gz
 then
 	echo WARNING: wget exited with: $?
 fi
-if [ -d $ROOT/R-3.5.1 ]
-then
-        rm -rf $ROOT/R-3.5.1
-fi
-tar -zxvf R-3.5.1.tar.gz -C $ROOT
+tar -zxvf R-3.5.1.tar.gz
+cd R-3.5.1
+./configure --prefix=$ROOT/R-3.5.1 --without-ICU --enable-R-shlib
+make -j 8
+make install
 source ./env_R.sh
 # export R_HOME=$ROOT/R-3.5.1/lib64/R
 # export PATH=$R_HOME/bin:$PATH

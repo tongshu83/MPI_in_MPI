@@ -25,7 +25,7 @@ cd $WORKFLOW_ROOT
 # Set the output directory
 export TURBINE_OUTPUT=$WORKFLOW_ROOT/experiment/$EXPID
 mkdir -pv $TURBINE_OUTPUT
-cp -f $WORKFLOW_ROOT/get_maxtime.sh $TURBINE_OUTPUT/get_maxtime.sh 
+cp -f $WORKFLOW_ROOT/get_maxtime.sh $TURBINE_OUTPUT/get_maxtime.sh
 
 if [[ $1 = "workflow-ht" ]]
 then
