@@ -46,9 +46,9 @@ fi
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=34
+export PROCS=8
 export PPN=1
-export WALLTIME=00:10:00
+export WALLTIME=00:01:00
 
 MACHINE="-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, theta, or slurm. The empty string means the local machine.
 
@@ -65,6 +65,7 @@ R=$R_HOME
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R/lib:$R/library/Rcpp/libs:$R/library/RInside/lib:$R/library/RInside/libs
 
 EQR=$EQR_HOME
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$EQR
 
 # mlrMBO settings
 if [[ $1 = "workflow-sh" || $1 = "workflow-mpi" ]]
@@ -79,7 +80,7 @@ if [[ $1 = "workflow-lmp" ]]
 then
 	PARAM_SET_FILE=$WORKFLOW_ROOT/data/params-lmp.R
 fi
-MAX_ITERATIONS=10
+MAX_ITERATIONS=2
 MAX_CONCURRENT_EVALUATIONS=2
 
 # Construct the command line given to Swift/T
@@ -88,7 +89,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
 		-pp=$MAX_CONCURRENT_EVALUATIONS
 	)
 
-ENVS="-e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R/lib:$R/library/Rcpp/libs:$R/library/RInside/lib:$R/library/RInside/libs -e R_HOME=$R_HOME -e EQR_HOME=$EQR_HOME"
+ENVS="-e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R/lib:$R/library/Rcpp/libs:$R/library/RInside/lib:$R/library/RInside/libs:$EQR -e R=$R_HOME -e EQR=$EQR_HOME"
 # "-e <key>=<value>" Set an environment variable in the job environment.
 
 set -x

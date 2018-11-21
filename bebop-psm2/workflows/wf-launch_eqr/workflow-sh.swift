@@ -83,7 +83,7 @@ file mkdir <<dir>>
 	result = float2string(exectime);
 }
 
-(void v) loop(location ME, int ME_rank)
+(void v) loop(location ME)
 {
 	for (boolean b = true, int i = 1; 
 			b; 
@@ -151,7 +151,7 @@ param.set.file='%s',
 		EQR_init_script(ME, algorithm) =>
 			EQR_get(ME) =>
 			EQR_put(ME, algo_params) =>
-			loop(ME, ME_rank) => {
+			loop(ME) => {
 				EQR_stop(ME) =>
 					EQR_delete_R(ME);
 				o = propagate();
