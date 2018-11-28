@@ -29,4 +29,6 @@ source env_korvo.sh
 source env_adios.sh
 source env_ant.sh
 source env_swiftT.sh
+# source env_R.sh
+# source env_eqr.sh
 

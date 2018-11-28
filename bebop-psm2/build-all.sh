@@ -20,5 +20,12 @@ source build-swiftT.sh
 # source env_swiftT.sh
 source build-lammps.sh
 source build-mpi_in_mpi.sh
+source build-R.sh
+# source env_R.sh
+# source build-R-3.4.3.sh
+# source env_R-3.4.3.sh
+source build-swiftT_PyR.sh
+source build-eqr.sh
+# source env_eqr.sh
 } 2>& 1 | tee $BUILD_LOG
 
