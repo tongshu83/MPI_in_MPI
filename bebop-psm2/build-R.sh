@@ -47,6 +47,8 @@ cd R-3.5.1
 ./configure --prefix=$ROOT/R-3.5.1 --without-ICU --enable-R-shlib
 make -j 8
 make install
+
+cd ..
 source ./env_R.sh
 # export R_HOME=$ROOT/R-3.5.1/lib64/R
 # export PATH=$R_HOME/bin:$PATH

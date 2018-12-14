@@ -16,7 +16,7 @@ module load cmake/3.12.2-4zllpyo
 module load jdk/8u141-b15-mopj6qr
 module load tcl/8.6.6-x4wnbsg
 
-module load python/2.7.15-b5bimol
+# module load python/2.7.15-b5bimol
 module load readline/7.0-3qkdfwk
 module load bzip2/1.0.6-hcvyuh5
 module load xz/5.2.4-okshegf

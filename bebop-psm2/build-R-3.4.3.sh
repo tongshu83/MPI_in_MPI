@@ -48,7 +48,9 @@ cd R-3.4.3
 ./configure --prefix=$ROOT/R-3.4.3 --without-ICU --enable-R-shlib
 make -j 8
 make install
-source ./env_R.sh
+
+cd ..
+source ./env_R-3.4.3.sh
 # export R_HOME=$ROOT/R-3.4.3/lib64/R
 # export PATH=$R_HOME/bin:$PATH
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
