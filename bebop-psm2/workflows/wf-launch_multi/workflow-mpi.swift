@@ -33,8 +33,8 @@ main()
 	string envs[][];
 	// envs[0] = [ "swift_chdir="+dir ];
 	// envs[1] = [ "swift_chdir="+dir ];
-	envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_hello1.txt", "swift_exectime="+dir/"time_hello1.txt" ];
-	envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_hello2.txt", "swift_exectime="+dir/"time_hello2.txt" ];
+	envs[0] = [ "OMP_NUM_THREADS=2", "swift_chdir="+dir, "swift_output="+dir/"output_hello1.txt", "swift_exectime="+dir/"time_hello1.txt" ];
+	envs[1] = [ "OMP_NUM_THREADS=3", "swift_chdir="+dir, "swift_output="+dir/"output_hello2.txt", "swift_exectime="+dir/"time_hello2.txt" ];
 
 	// Color settings
 	colors = "0, 2; 1, 3";
