@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <mpi.h>
+#include <omp.h>
 
 int main(int argc, char* argv[])
 {
@@ -19,10 +20,21 @@ int main(int argc, char* argv[])
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-	printf("PATH=");
-	system("printenv PATH");
 	printf("hostname:  %s\n", hostname);
 	printf("rank/size: %i/%i\n", rank, size);
+
+	printf("OMP_NUM_THREADS=");
+	system("printenv OMP_NUM_THREADS");
+	if (argc > 1) {
+		omp_set_num_threads(atoi(argv[1]));
+	}
+
+	#pragma omp parallel
+	{
+		int id = omp_get_thread_num();
+		int nthrds = omp_get_num_threads();
+		printf("%d/%d: hello world!\n", id, nthrds);
+	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_Finalize();
@@ -31,3 +43,4 @@ int main(int argc, char* argv[])
 	fflush(stdout);
 	return 0;
 }
+
