@@ -3,6 +3,10 @@ import launch;
 import string;
 import sys;
 
+app printenv (string env) {
+	"/usr/bin/printenv" env
+}
+
 (void v) setup_run(string dir) "turbine" "0.0"
 [
 """
@@ -12,22 +16,24 @@ import sys;
 
 main()
 {
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run" % turbine_output;
+
 	// Process counts
 	int proc = 2;
 
 	// Command
 	string cmd;
-	cmd = "../../../../MPI/hello.x";
+	cmd = "../../../../../MPI/hello.x";
 
 	// Command line arguments
 	string args[] = [""];
 
 	// Environment variables
-	string turbine_output = getenv("TURBINE_OUTPUT");
-	string dir = "%s/run" % turbine_output;
-	string envs[] = [ "swift_chdir="+dir ];
+	string envs[] = [ "OMP_NUM_THREADS=2", "swift_chdir="+dir ];
 
 	printf("swift: launching with environment variables: %s", cmd);
+	printenv("PPN");
 	setup_run(dir) =>
 		exit_code = @par=proc launch_envs(cmd, args, envs);
 	printf("swift: received exit code: %d", exit_code);
