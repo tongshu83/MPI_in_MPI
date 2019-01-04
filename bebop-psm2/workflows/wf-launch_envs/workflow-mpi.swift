@@ -23,8 +23,7 @@ main()
 	int proc = 2;
 
 	// Command
-	string cmd;
-	cmd = "../../../../../MPI/hello.x";
+	string cmd = "../../../../../MPI/hello.x";
 
 	// Command line arguments
 	string args[] = [""];

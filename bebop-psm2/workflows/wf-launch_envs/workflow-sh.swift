@@ -23,8 +23,7 @@ main()
 	int proc = 2;
 
 	// Command
-	string cmd;
-	cmd = "../../../../../scripts/script1.sh";
+	string cmd = "../../../../../scripts/script1.sh";
 
 	// Command line arguments
 	string args[] = [""];
