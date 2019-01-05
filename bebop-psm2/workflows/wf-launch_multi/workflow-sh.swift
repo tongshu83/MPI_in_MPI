@@ -5,7 +5,7 @@ import string;
 import sys;
 
 app printenv (string env) {
-	"/usr/bin/printenv" env 
+	"/usr/bin/printenv" env
 }
 
 (void v) setup_run(string dir) "turbine" "0.0"

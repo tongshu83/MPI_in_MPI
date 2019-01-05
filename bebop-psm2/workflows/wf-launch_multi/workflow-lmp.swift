@@ -27,6 +27,9 @@ main()
 	{
 		string turbine_output = getenv("TURBINE_OUTPUT");
 		string dir = "%s/run" % turbine_output;
+		string infile1 = "%s/in.quench.short" % turbine_output;
+		string infile2 = "%s/restart.liquid" % turbine_output;
+		string infile3 = "%s/CuZr.fs" % turbine_output;
 
 		// Process counts
 		int procs[] = [2, 2];
@@ -56,14 +59,10 @@ main()
 		// colors = "0, 1, 2, 3, 4, 5, 6, 7; 8, 9, 10, 11";
 		colors = "0, 1; 2, 3";
 
-		string infile1 = "%s/in.quench.short" % turbine_output;
-		string infile2 = "%s/restart.liquid" % turbine_output;
-		string infile3 = "%s/CuZr.fs" % turbine_output;
-
 		printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
 		sleep(1) =>
 			setup_run(dir, infile1, infile2, infile3) =>
-				exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs, colors);
+			exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs, colors);
 		printf("swift: received exit code: %d", exit_code);
 		if (exit_code != 0)
 		{
