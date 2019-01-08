@@ -22,9 +22,10 @@ int main(int argc, char* argv[])
 
 	printf("hostname:  %s\n", hostname);
 	printf("rank/size: %i/%i\n", rank, size);
+	fflush(stdout);
 
-	printf("OMP_NUM_THREADS=");
-	system("printenv OMP_NUM_THREADS");
+	system("echo -n OMP_NUM_THREADS=; printenv OMP_NUM_THREADS");
+	fflush(stdout);
 	if (argc > 1) {
 		omp_set_num_threads(atoi(argv[1]));
 	}
@@ -34,6 +35,7 @@ int main(int argc, char* argv[])
 		int id = omp_get_thread_num();
 		int nthrds = omp_get_num_threads();
 		printf("%d/%d: hello world!\n", id, nthrds);
+		fflush(stdout);
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
