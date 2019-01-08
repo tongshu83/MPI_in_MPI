@@ -13,7 +13,7 @@ then
 	mv $rootdir/$outfile.dat $rootdir/$outfile-bak.dat
 fi
 
-# echo "#Proc\t#Thread\t#Proc\t#Thread\tIOstep\t" >> $rootdir/$outfile.dat
+echo -e "#Proc\t#Thread\t#Proc\t#Thread\tIOstep\tExecTime" >> $rootdir/$outfile.dat
 for runid in $(ls $rootdir/run)
 do
 	path="$rootdir/run/$runid"

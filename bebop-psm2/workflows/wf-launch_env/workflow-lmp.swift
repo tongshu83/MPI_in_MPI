@@ -23,34 +23,34 @@ app printenv (string env) {
 (void v) setup_run(string dir) "turbine" "0.0"
 [
 """
-        cd <<dir>>
+	cd <<dir>>
 """
 ];
 
 main()
 {
 	string workflow_root = getenv("WORKFLOW_ROOT");
-	string turbine_output = getenv("TURBINE_OUTPUT");
-	string dir = "%s/run" % turbine_output;
-	string infile1 = "%s/in.quench.short" % turbine_output;
-	string infile2 = "%s/restart.liquid" % turbine_output;
-	string infile3 = "%s/CuZr.fs" % turbine_output;
-
 	string cmd0[] = split(workflow_root/"lmp.sh 100 POSIX", " ");
 	(output0, exit_code0) = system(cmd0);
 	if (exit_code0 != 0)
 	{
-		printf("swift: %s failed with exit code %d.", workflow_root/"lmp.sh 100 POSIX", exit_code0);
+		printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2], exit_code0);
 	}
 	else
 	{
+		string turbine_output = getenv("TURBINE_OUTPUT");
+		string dir = "%s/run" % turbine_output;
+		string infile1 = "%s/in.quench.short" % turbine_output;
+		string infile2 = "%s/restart.liquid" % turbine_output;
+		string infile3 = "%s/CuZr.fs" % turbine_output;
+
 		int proc1 = 2;
 		string cmd1 = "../../../../../Example-LAMMPS/swift-all/lmp_mpi"; 
 		string args1[] = split("-i in.quench.short", " ");	// mpiexec -n 8 ./lmp_mpi -i in.quench.short
 		string envs1[] = [ "OMP_NUM_THREADS=4", 
-		                   "swift_chdir="+dir, 
-		                   "swift_output="+dir/"output_lmp_mpi.txt", 
-		                   "swift_exectime="+dir/"time_lmp_mpi.txt" ];
+		       "swift_chdir="+dir, 
+		       "swift_output="+dir/"output_lmp_mpi.txt", 
+		       "swift_exectime="+dir/"time_lmp_mpi.txt" ];
 
 		printf("swift: launching with environment variables: %s", cmd1);
 		sleep(1) =>
@@ -76,9 +76,9 @@ main()
 				string cmd3 = "../../../../../Example-LAMMPS/swift-all/voro_adios_omp_staging";
 				string args3[] = split("dump.bp adios_atom_voro.bp BP", " ");     // mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp BP
 				string envs3[] = [ "OMP_NUM_THREADS=4", 
-				                   "swift_chdir="+dir, 
-				                   "swift_output="+dir/"output_voro_adios_omp_staging.txt", 
-				                   "swift_exectime="+dir/"time_voro_adios_omp_staging.txt" ];
+				       "swift_chdir="+dir, 
+				       "swift_output="+dir/"output_voro_adios_omp_staging.txt", 
+				       "swift_exectime="+dir/"time_voro_adios_omp_staging.txt" ];
 
 				printf("swift: launching with environment variables: %s", cmd3);
 				sleep(1) =>

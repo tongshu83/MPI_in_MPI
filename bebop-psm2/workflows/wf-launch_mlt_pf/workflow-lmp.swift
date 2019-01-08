@@ -11,7 +11,7 @@ import sys;
 	file delete -force -- <<dir>>
 	file mkdir <<dir>>
 	cd <<dir>>
-	file link -symbolic in.quench.short <<infile1>>
+	file link -symbolic in.quench <<infile1>>
 	file link -symbolic restart.liquid <<infile2>>
 	file link -symbolic CuZr.fs <<infile3>>
 """
@@ -20,19 +20,24 @@ import sys;
 (float exectime) launch(string run_id, int params[])
 {
 	string workflow_root = getenv("WORKFLOW_ROOT");
-	string cmd0[] = [ workflow_root/"lmp.sh", int2string(params[4]), "FLEXPATH" ];
+	string cmd0[] = [ workflow_root/"lmp.sh", int2string(params[2]), "FLEXPATH" ];
 	(output0, exit_code0) = system(cmd0);
 
-	if (exit_code0 == 0)
+	if (exit_code0 != 0)
+	{
+		printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2], exit_code0);
+		exit_code = exit_code0;
+	}
+	else
 	{
 		string turbine_output = getenv("TURBINE_OUTPUT");
 		string dir = "%s/run/%s" % (turbine_output, run_id);
-		string infile1 = "%s/in.quench.short" % turbine_output;
+		string infile1 = "%s/in.quench" % turbine_output;
 		string infile2 = "%s/restart.liquid" % turbine_output;
 		string infile3 = "%s/CuZr.fs" % turbine_output;
 
 		// Process counts
-		int procs[] = [params[0], params[2]];
+		int procs[] = [params[0], params[3]];
 
 		// Commands
 		string cmds[];
@@ -42,8 +47,8 @@ import sys;
 		// Command line arguments
 		string args[][];
 
-		// mpiexec -n 8 ./lmp_mpi -i in.quench.short
-		args[0] = split("-i in.quench.short", " ");
+		// mpiexec -n 8 ./lmp_mpi -i in.quench
+		args[0] = split("-i in.quench", " ");
 
 		// mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
 		args[1] = split("dump.bp adios_atom_voro.bp FLEXPATH", " ");
@@ -51,7 +56,7 @@ import sys;
 		// Environment variables
 		string envs[][];
 		envs[0] = [ "OMP_NUM_THREADS="+int2string(params[1]), "swift_chdir="+dir, "swift_output="+dir/"output_lmp_mpi.txt", "swift_exectime="+dir/"time_lmp_mpi.txt" ];
-		envs[1] = [ "OMP_NUM_THREADS="+int2string(params[3]), "swift_chdir="+dir, "swift_output="+dir/"output_voro_adios_omp_staging.txt", "swift_exectime="+dir/"time_voro_adios_omp_staging.txt" ];
+		envs[1] = [ "OMP_NUM_THREADS="+int2string(params[4]), "swift_chdir="+dir, "swift_output="+dir/"output_voro_adios_omp_staging.txt", "swift_exectime="+dir/"time_voro_adios_omp_staging.txt" ];
 
 		printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
 		sleep(1) =>
@@ -87,9 +92,9 @@ main()
 	float exectime[];
 	int codes[];
 
-	int params_start[] = [2, 2, 2, 2, 50];
-	int params_stop[] = [8, 8, 8, 8, 200];
-	int params_step[] = [2, 2, 2, 2, 50];
+	int params_start[] = [1, 1, 50, 1, 1];
+	int params_stop[] = [8, 4, 200, 8, 4];
+	int params_step[] = [1, 1, 50, 1, 1];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,

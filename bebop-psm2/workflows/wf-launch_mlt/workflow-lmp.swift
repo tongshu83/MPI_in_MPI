@@ -20,10 +20,15 @@ import sys;
 main()
 {
 	string workflow_root = getenv("WORKFLOW_ROOT");
-	string cmd[] = [ workflow_root/"lmp.sh", "100", "FLEXPATH" ];
-	(pre_output, pre_exit_code) = system(cmd);
+	string cmd0[] = [ workflow_root/"lmp.sh", "100", "FLEXPATH" ];
+	(output0, exit_code0) = system(cmd0);
 
-	if (pre_exit_code == 0)
+	if (exit_code0 != 0)
+	{
+		printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2], exit_code0);
+		exit_code = exit_code0;
+	}
+	else
 	{
 		string turbine_output = getenv("TURBINE_OUTPUT");
 		string dir = "%s/run" % turbine_output;

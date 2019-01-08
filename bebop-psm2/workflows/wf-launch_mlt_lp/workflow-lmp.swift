@@ -22,7 +22,12 @@ import sys;
 	string cmd0[] = [ workflow_root/"lmp.sh", int2string(params[4]), "FLEXPATH" ];
 	(output0, exit_code0) = system(cmd0);
 
-	if (exit_code0 == 0)
+	if (exit_code0 != 0)
+	{
+		printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2], exit_code0);
+		exit_code = exit_code0;
+	}
+	else
 	{
 		string turbine_output = getenv("TURBINE_OUTPUT");
 		string dir = "%s/run/%s" % (turbine_output, run_id);
@@ -63,9 +68,9 @@ main()
 {
 	int codes[];
 
-	int params_start[] = [2, 2, 2, 2, 100];	// [1, 1, 1, 1, 20];
-	int params_stop[] = [3, 3, 3, 3, 200];	// [16, 16, 8, 8, 200];
-	int params_step[] = [1, 1, 1, 1, 100];	// [1, 1, 1, 1, 20];
+	int params_start[] = [2, 2, 2, 2, 100];
+	int params_stop[] = [3, 3, 3, 3, 200];
+	int params_step[] = [1, 1, 1, 1, 100];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
