@@ -88,8 +88,8 @@ main()
 	float exectime[];
 	int codes[];
 
-	int params_start[] = [1, 1, 50];
-	int params_stop[] = [2, 2, 100];
+	int params_start[] = [2, 2, 50];
+	int params_stop[] = [8, 4, 200];
 	int params_step[] = [1, 1, 50];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1, 
