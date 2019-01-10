@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 
 		char cmd1[] = "/usr/bin/time -v -o time_heat_transfer_adios2.txt mpiexec -n ";
 		char cmd2[] = " -hosts ";
-		char cmd3[] = " /blues/gpfs" PWD "/Example-Heat_Transfer/heat_transfer_adios2 heat ";
+		char cmd3[] = " -env OMP_NUM_THREADS=2 /blues/gpfs" PWD "/Example-Heat_Transfer/heat_transfer_adios2 heat ";
 		char cmd4[] = " 40 50 6 5 > output_heat_transfer_adios2.txt 2>&1 &";
 		size_t cmdlen = strlen(cmd1) + strlen(cmd2) + strlen(machname) + strlen(cmd3) + strlen(cmd4) + 32;
 		char* mpicmd = (char*) malloc(cmdlen * sizeof(char));
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 
 		char cmd1[] = "/usr/bin/time -v -o time_stage_write.txt mpiexec -n ";
 		char cmd2[] = " -hosts ";
-		char cmd3[] = " /blues/gpfs" PWD "/Example-Heat_Transfer/stage_write/stage_write heat.bp staged.bp FLEXPATH \"\" MPI \"\" > output_stage_write.txt 2>&1 &";
+		char cmd3[] = " -env OMP_NUM_THREADS=2 /blues/gpfs" PWD "/Example-Heat_Transfer/stage_write/stage_write heat.bp staged.bp FLEXPATH \"\" MPI \"\" > output_stage_write.txt 2>&1 &";
 		size_t cmdlen = strlen(cmd1) + strlen(cmd2) + strlen(machname) + strlen(cmd3) + 11;
 		char* mpicmd = (char*) malloc(cmdlen * sizeof(char));
 		sprintf(mpicmd, "%s%d%s%s%s", cmd1, proc, cmd2, machname, cmd3);

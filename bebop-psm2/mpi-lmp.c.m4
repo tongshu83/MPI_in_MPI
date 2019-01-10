@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	if (rank == 0) {
 		char cmd1[] = "/usr/bin/time -v -o time_lmp_mpi.txt mpiexec -n ";
 		char cmd2[] = " -ppn 1 -hosts ";
-		char cmd3[] = " /blues/gpfs" PWD "/Example-LAMMPS/swift-all/lmp_mpi -i in.quench.short > output_lmp_mpi.txt 2>&1";
+		char cmd3[] = " -env OMP_NUM_THREADS=2 /blues/gpfs" PWD "/Example-LAMMPS/swift-all/lmp_mpi -i in.quench.short > output_lmp_mpi.txt 2>&1";
 		size_t cmdlen = strlen(cmd1) + strlen(cmd2) + strlen(machname) + strlen(cmd3) + 11;
 		char* mpicmd = (char*) malloc(cmdlen * sizeof(char));
 		sprintf(mpicmd, "%s%d%s%s%s", cmd1, proc, cmd2, machname, cmd3);
@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 	if (rank == 1) {
 		char cmd1[] = "/usr/bin/time -v -o time_voro_adios_omp_staging.txt mpiexec -n ";
 		char cmd2[] = " -ppn 1 -hosts ";
-		char cmd3[] = " /blues/gpfs" PWD "/Example-LAMMPS/swift-all/voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH > output_voro_adios_omp_staging.txt 2>&1";
+		char cmd3[] = " -env OMP_NUM_THREADS=2 /blues/gpfs" PWD "/Example-LAMMPS/swift-all/voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH > output_voro_adios_omp_staging.txt 2>&1";
 		size_t cmdlen = strlen(cmd1) + strlen(cmd2) + strlen(machname) + strlen(cmd3) + 11;
 		char* mpicmd = (char*) malloc(cmdlen * sizeof(char));
 		sprintf(mpicmd, "%s%d%s%s%s", cmd1, proc, cmd2, machname, cmd3);

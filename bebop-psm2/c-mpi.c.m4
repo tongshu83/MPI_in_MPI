@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 			char cmd1[] = "/usr/bin/time -v -o time_mpi_";
 			char cmd2[] = ".txt mpiexec -n ";
 			char cmd3[] = " -ppn 1 -hosts ";
-			char cmd4[] = " /blues/gpfs" PWD "/MPI/hello.x";
+			char cmd4[] = " -env OMP_NUM_THREADS=2 /blues/gpfs" PWD "/MPI/hello.x";
 			size_t cmdlen = strlen(cmd1) + strlen(cmd2) + strlen(machname) + strlen(cmd3) + strlen(cmd4) + 21;
 			char* mpicmd = (char*) malloc(cmdlen * sizeof(char));
 			sprintf(mpicmd, "%s%d%s%d%s%s%s", cmd1, i, cmd2, proc, cmd3, machname, cmd4);
