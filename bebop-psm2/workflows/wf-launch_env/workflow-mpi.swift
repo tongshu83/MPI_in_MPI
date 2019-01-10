@@ -19,8 +19,8 @@ main()
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string dir = "%s/run" % turbine_output;
 
-	// Process counts
-	int proc = 2;
+	// Worker counts
+	int nwork = 2;
 
 	// Command
 	string cmd = "../../../../../MPI/hello.x";
@@ -29,12 +29,12 @@ main()
 	string args[] = [""];
 
 	// Environment variables
-	string envs[] = [ "OMP_NUM_THREADS=2", "swift_chdir="+dir ];
+	string envs[] = [ "OMP_NUM_THREADS=2", "swift_chdir="+dir, "swift_numproc=3", "swift_ppw=2" ];
 
 	printf("swift: launching with environment variables: %s", cmd);
 	printenv("PPN");
 	setup_run(dir) =>
-		exit_code = @par=proc launch_envs(cmd, args, envs);
+		exit_code = @par=nwork launch_envs(cmd, args, envs);
 	printf("swift: received exit code: %d", exit_code);
 	if (exit_code != 0)
 	{
