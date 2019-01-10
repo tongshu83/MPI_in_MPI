@@ -11,7 +11,7 @@ import sys;
 	file delete -force -- <<dir>>
 	file mkdir <<dir>>
 	cd <<dir>>
-	file link -symbolic in.quench <<infile1>>
+	file copy -force -- <<infile1>> in.quench
 	file link -symbolic restart.liquid <<infile2>>
 	file link -symbolic CuZr.fs <<infile3>>
 """
@@ -20,39 +20,39 @@ import sys;
 (float exectime) launch(string run_id, int params[])
 {
 	string workflow_root = getenv("WORKFLOW_ROOT");
-	string cmd0[] = [ workflow_root/"lmp.sh", int2string(params[2]), "POSIX" ];
-	(output0, exit_code0) = system(cmd0);
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run/%s" % (turbine_output, run_id);
+	string infile1 = "%s/in.quench" % turbine_output;
+	string infile2 = "%s/restart.liquid" % turbine_output;
+	string infile3 = "%s/CuZr.fs" % turbine_output;
+
+	string cmd0[] = [ workflow_root/"lmp.sh", int2string(params[2]), "POSIX", dir/"in.quench"];
+	setup_run(dir, infile1, infile2, infile3) =>
+		(output0, exit_code0) = system(cmd0);
 
 	if (exit_code0 != 0)
 	{
 		exectime = -1.0;
-		printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2], exit_code0);
+		printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2]+" "+cmd0[3], exit_code0);
 	}
 	else
 	{
-		string turbine_output = getenv("TURBINE_OUTPUT"); 
-		string dir = "%s/run/%s" % (turbine_output, run_id);
-		string infile1 = "%s/in.quench" % turbine_output;
-		string infile2 = "%s/restart.liquid" % turbine_output;
-		string infile3 = "%s/CuZr.fs" % turbine_output;
-
-		int proc1 = params[0];
-		string cmd1 = "../../../../../../Example-LAMMPS/swift-all/lmp_mpi"; 
-		string args1[] = split("-i in.quench", " ");	// mpiexec -n 8 ./lmp_mpi -i in.quench
-		string envs1[] = [ "OMP_NUM_THREADS="+int2string(params[1]), 
+		int proc = params[0];
+		string cmd = "../../../../../../Example-LAMMPS/swift-all/lmp_mpi"; 
+		string args[] = split("-i in.quench", " ");	// mpiexec -n 8 ./lmp_mpi -i in.quench
+		string envs[] = [ "OMP_NUM_THREADS="+int2string(params[1]), 
 		       "swift_chdir="+dir, 
 		       "swift_output="+dir/"output_lmp_mpi.txt", 
 		       "swift_exectime="+dir/"time_lmp_mpi.txt" ];
 
-		printf("swift: launching with environment variables: %s", cmd1);
+		printf("swift: launching with environment variables: %s", cmd);
 		sleep(1) =>
-			setup_run(dir, infile1, infile2, infile3) =>
-			exit_code1 = @par=proc1 launch_envs(cmd1, args1, envs1);
+			exit_code = @par=proc launch_envs(cmd, args, envs);
 
-		if (exit_code1 != 0)
+		if (exit_code != 0)
 		{
 			exectime = -1.0;
-			printf("swift: %s failed with exit code %d.", cmd1, exit_code1);
+			printf("swift: The launched application %s with parameters (%d, %d, %d) did not succeed with exit code: %d.", cmd, params[0], params[1], params[2], exit_code);
 		}
 		else
 		{
@@ -89,7 +89,7 @@ main()
 	int codes[];
 
 	int params_start[] = [1, 1, 50];
-	int params_stop[] = [8, 4, 200];
+	int params_stop[] = [2, 2, 100];
 	int params_step[] = [1, 1, 50];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1, 
@@ -104,7 +104,7 @@ main()
 				int i = (param0 - params_start[0]) %/ params_step[0] * params_num[1] * params_num[2] 
 					+ (param1 - params_start[1]) %/ params_step[1] * params_num[2] 
 					+ (param2 - params_start[2]) %/ params_step[2];
-				exectime[i] = launch("%0.2i_%0.2i_%0.3i" % (param0, param1, param2), [param0, param1, param2]);
+				exectime[i] = launch("%0.1i_%0.1i_%0.3i" % (param0, param1, param2), [param0, param1, param2]);
 
 				if (exectime[i] >= 0.0) {
 					codes[i] = 0;

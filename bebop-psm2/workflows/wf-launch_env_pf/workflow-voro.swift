@@ -85,7 +85,7 @@ main()
 		foreach param1 in [params_start[1] : params_stop[1] : params_step[1]]
 		{
 			int i = (param0 - params_start[0]) %/ params_step[0] * params_num[1] + (param1 - params_start[1]) %/ params_step[1];
-			exectime[i] = launch("%0.2i_%0.2i" % (param0, param1), [param0, param1]);
+			exectime[i] = launch("%0.1i_%0.1i" % (param0, param1), [param0, param1]);
 
 			if (exectime[i] >= 0.0) {
 				codes[i] = 0;
