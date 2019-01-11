@@ -144,6 +144,7 @@ main()
 							+ (param3 - params_start[3]) %/ params_step[3] * params_num[4]
 							+ (param4 - params_start[4]) %/ params_step[4];
 						codes[i] = launch("%0.1i_%0.1i_%0.3i_%0.1i_%0.1i" % (param0, param1, param2, param3, param4), [param0, param1, param2, param3, param4]);
+
 						if (codes[i] != 0)
 						{
 							printf("swift: The launched applications with parameters (%d, %d, %d, %d, %d) did not succeed with exit code: %d.",
@@ -153,6 +154,10 @@ main()
 				}
 			}
 		}
+	}
+	if (sum_integer(codes) == 0)
+	{
+		printf("swift: all the launched applications succeed.");
 	}
 }
 
