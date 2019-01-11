@@ -16,8 +16,8 @@ import sys;
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string dir = "%s/run/%s" % (turbine_output, run_id);
 
-	// Process counts
-	int procs[] = [params[0], params[2]];
+	// Worker counts
+	int nworks[] = [2, 2];
 
 	// Commands
 	string cmds[];
@@ -31,12 +31,22 @@ import sys;
 
 	// Environment variables
 	string envs[][];
-	envs[0] = [ "OMP_NUM_THREADS="+int2string(params[1]), "swift_chdir="+dir, "swift_output="+dir/"output_script1.txt", "swift_exectime="+dir/"time_script1.txt" ];
-	envs[1] = [ "OMP_NUM_THREADS="+int2string(params[3]), "swift_chdir="+dir, "swift_output="+dir/"output_script2.txt", "swift_exectime="+dir/"time_script2.txt" ];
+	envs[0] = [ "OMP_NUM_THREADS="+int2string(params[1]), 
+		"swift_chdir="+dir, 
+		"swift_output="+dir/"output_script1.txt", 
+		"swift_exectime="+dir/"time_script1.txt", 
+		"swift_numproc=%i" % params[0], 
+		"swift_ppw=2" ];
+	envs[1] = [ "OMP_NUM_THREADS="+int2string(params[3]), 
+		"swift_chdir="+dir, 
+		"swift_output="+dir/"output_script2.txt", 
+		"swift_exectime="+dir/"time_script2.txt", 
+		"swift_numproc=%i" % params[2], 
+		"swift_ppw=2" ];
 
 	printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
 	setup_run(dir) =>
-		exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs);
+		exit_code = @par=sum_integer(nworks) launch_multi(nworks, cmds, args, envs);
 }
 
 main()
@@ -47,9 +57,9 @@ main()
 	int params_stop[] = [3, 3, 3, 3];
 	int params_step[] = [1, 1, 1, 1];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1, 
-	                     (params_stop[1] - params_start[1]) %/ params_step[1] + 1, 
-	                     (params_stop[2] - params_start[2]) %/ params_step[2] + 1, 
-	                     (params_stop[3] - params_start[3]) %/ params_step[3] + 1 ];
+	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1, 
+	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1, 
+	    (params_stop[3] - params_start[3]) %/ params_step[3] + 1 ];
 
 	foreach param0 in [params_start[0] : params_stop[0] : params_step[0]]
 	{
@@ -72,6 +82,10 @@ main()
 				}
 			}
 		} 
+	}
+	if (sum_integer(codes) == 0)
+	{
+		printf("swift: all the multi-launched applications succeed.");
 	}
 }
 

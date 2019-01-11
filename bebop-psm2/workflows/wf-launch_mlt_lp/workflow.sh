@@ -36,8 +36,8 @@ fi
 if [[ $1 = "workflow-lmp" ]]
 then
 	cd $TURBINE_OUTPUT
-	ln -s ../in.quench in.quench
-	ln -s ../in.quench.short in.quench.short
+	cp -f ../in.quench in.quench
+	cp -f ../in.quench.short in.quench.short
 	ln -s ../restart.liquid restart.liquid
 	ln -s ../CuZr.fs CuZr.fs
 	cd -
@@ -45,7 +45,7 @@ fi
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=8 # 34
+export PROCS=6 # 34
 export PPN=1
 export WALLTIME=00:15:00
 

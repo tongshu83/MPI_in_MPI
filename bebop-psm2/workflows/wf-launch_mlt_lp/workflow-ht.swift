@@ -14,13 +14,18 @@ import sys;
 """
 ];
 
-(int exit_code) launch(string run_id, int ht_proc_x, int ht_proc_y, int sw_proc)
+(int exit_code) launch(string run_id, int params[]) 
 {
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string dir = "%s/run/%s" % (turbine_output, run_id);
+	string infile = "%s/heat_transfer.xml" % turbine_output;
+	int ppw = 5;
 
-	// Process counts
-	int procs[] = [ht_proc_x * ht_proc_y, sw_proc];
+	// Worker counts
+	int nworks[] = [2, 2];
+        int ht_proc_x = params[0];
+        int ht_proc_y = params[1];
+        int sw_proc = params[2];
 
 	// Commands
 	string cmds[];
@@ -41,35 +46,50 @@ import sys;
 
 	// Environment variables
 	string envs[][];
-	// envs[0] = [ "swift_chdir="+dir ];
-	// envs[1] = [ "swift_chdir="+dir ];
-	envs[0] = [ "swift_chdir="+dir, "swift_output="+dir/"output_heat_transfer_adios2.txt", "swift_exectime="+dir/"time_heat_transfer_adios2.txt" ];
-	envs[1] = [ "swift_chdir="+dir, "swift_output="+dir/"output_stage_write.txt", "swift_exectime="+dir/"time_stage_write.txt" ];
-
-	string infile = "%s/heat_transfer.xml" % turbine_output;
+	envs[0] = [ "OMP_NUM_THREADS=4", 
+		"swift_chdir="+dir, 
+		"swift_output="+dir/"output_heat_transfer_adios2.txt", 
+		"swift_exectime="+dir/"time_heat_transfer_adios2.txt", 
+		"swift_numproc=%i" % (ht_proc_x * ht_proc_y), 
+		"swift_ppw=%i" % ppw ];
+	envs[1] = [ "OMP_NUM_THREADS=2", 
+		"swift_chdir="+dir, 
+		"swift_output="+dir/"output_stage_write.txt", 
+		"swift_exectime="+dir/"time_stage_write.txt", 
+		"swift_numproc=%i" % sw_proc, 
+		"swift_ppw=%i" % ppw ];
 
 	printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
 	setup_run(dir, infile) =>
-		exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs);
+		exit_code = @par=sum_integer(nworks) launch_multi(nworks, cmds, args, envs);
 }
 
 main()
 {
 	int codes[];
 
-	int pars_low[] = [1, 1, 1];
-	int pars_up[] = [5, 5, 7];
-	foreach par0 in [pars_low[0] : pars_up[0]]
+	int params_start[] = [2, 2, 5];
+	int params_stop[] = [3, 3, 6];
+	int params_step[] = [1, 1, 1];
+	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
+	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
+	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1 ];
+
+	foreach param0 in [params_start[0] : params_stop[0] : params_step[0]]
 	{
-		foreach par1 in [pars_low[1] : pars_up[1]]
+		foreach param1 in [params_start[1] : params_stop[1] : params_step[1]]
 		{
-			foreach par2 in [pars_low[2] : pars_up[2]]
+			foreach param2 in [params_start[2] : params_stop[2] : params_step[2]]
 			{
-				int i = (par0 - pars_low[0]) * (pars_up[1] - pars_low[1] + 1) * (pars_up[2] - pars_low[2] + 1) + (par1 - pars_low[1]) * (pars_up[2] - pars_low[2] + 1) + (par2 - pars_low[2]);
-				codes[i] = launch("%0.1i_%0.1i_%0.1i" % (par0, par1, par2), par0, par1, par2);
+				int i = (param0 - params_start[0]) %/ params_step[0] * params_num[1] * params_num[2] 
+					+ (param1 - params_start[1]) %/ params_step[1] * params_num[2] 
+					+ (param2 - params_start[2]) %/ params_step[2];
+				codes[i] = launch("%0.1i_%0.1i_%0.1i" % (param0, param1, param2), [param0, param1, param2]);
+
 				if (codes[i] != 0)
 				{
-					printf("swift: The multi-launched application with parameters (%d, %d, %d) did not succeed with exit code: %d.", par0, par1, par2, codes[i]);
+					printf("swift: The multi-launched application with parameters (%d, %d, %d) did not succeed with exit code: %d.",
+							param0, param1, param2, codes[i]);
 				}
 			}
 		}

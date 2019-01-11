@@ -10,7 +10,7 @@ import sys;
 	file delete -force -- <<dir>>
 	file mkdir <<dir>>
 	cd <<dir>>
-	file link -symbolic in.quench.short <<infile1>>
+	file copy -force -- <<infile1>> in.quench.short
 	file link -symbolic restart.liquid <<infile2>>
 	file link -symbolic CuZr.fs <<infile3>>
 """
@@ -19,24 +19,26 @@ import sys;
 (int exit_code) launch(string run_id, int params[])
 {
 	string workflow_root = getenv("WORKFLOW_ROOT");
-	string cmd0[] = [ workflow_root/"lmp.sh", int2string(params[4]), "FLEXPATH" ];
-	(output0, exit_code0) = system(cmd0);
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run/%s" % (turbine_output, run_id);
+	string infile1 = "%s/in.quench.short" % turbine_output;
+	string infile2 = "%s/restart.liquid" % turbine_output;
+	string infile3 = "%s/CuZr.fs" % turbine_output;
+	int ppw = 35;
+
+	string cmd0[] = [ workflow_root/"lmp.sh", int2string(params[2]), "FLEXPATH", dir/"in.quench.short" ];
+	setup_run(dir, infile1, infile2, infile3) =>
+		(output0, exit_code0) = system(cmd0);
 
 	if (exit_code0 != 0)
 	{
-		printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2], exit_code0);
+		printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2]+" "+cmd0[3], exit_code0);
 		exit_code = exit_code0;
 	}
 	else
 	{
-		string turbine_output = getenv("TURBINE_OUTPUT");
-		string dir = "%s/run/%s" % (turbine_output, run_id);
-		string infile1 = "%s/in.quench.short" % turbine_output;
-		string infile2 = "%s/restart.liquid" % turbine_output;
-		string infile3 = "%s/CuZr.fs" % turbine_output;
-
-		// Process counts
-		int procs[] = [params[0], params[2]];
+		// Worker counts
+		int nworks[] = [2, 2];
 
 		// Commands
 		string cmds[];
@@ -54,13 +56,22 @@ import sys;
 
 		// Environment variables
 		string envs[][];
-		envs[0] = [ "OMP_NUM_THREADS="+int2string(params[1]), "swift_chdir="+dir, "swift_output="+dir/"output_lmp_mpi.txt", "swift_exectime="+dir/"time_lmp_mpi.txt" ];
-		envs[1] = [ "OMP_NUM_THREADS="+int2string(params[3]), "swift_chdir="+dir, "swift_output="+dir/"output_voro_adios_omp_staging.txt", "swift_exectime="+dir/"time_voro_adios_omp_staging.txt" ];
+		envs[0] = [ "OMP_NUM_THREADS="+int2string(params[1]), 
+			"swift_chdir="+dir, 
+			"swift_output="+dir/"output_lmp_mpi.txt", 
+			"swift_exectime="+dir/"time_lmp_mpi.txt", 
+			"swift_numproc=%i" % params[0], 
+			"swift_ppw=%i" % ppw ];
+		envs[1] = [ "OMP_NUM_THREADS="+int2string(params[4]), 
+			"swift_chdir="+dir, 
+			"swift_output="+dir/"output_voro_adios_omp_staging.txt", 
+			"swift_exectime="+dir/"time_voro_adios_omp_staging.txt", 
+			"swift_numproc=%i" % params[3], 
+			"swift_ppw=%i" % ppw ];
 
 		printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
 		sleep(1) =>
-			setup_run(dir, infile1, infile2, infile3) =>
-			exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs);
+			exit_code = @par=sum_integer(nworks) launch_multi(nworks, cmds, args, envs);
 	}
 }
 
@@ -68,9 +79,9 @@ main()
 {
 	int codes[];
 
-	int params_start[] = [2, 2, 2, 2, 100];
-	int params_stop[] = [3, 3, 3, 3, 200];
-	int params_step[] = [1, 1, 1, 1, 100];
+	int params_start[] = [35, 2, 100, 35, 2];
+	int params_stop[] = [70, 3, 200, 70, 3];
+	int params_step[] = [35, 1, 100, 35, 1];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
@@ -92,7 +103,8 @@ main()
 							+ (param2 - params_start[2]) %/ params_step[2] * params_num[3] * params_num[4]
 							+ (param3 - params_start[3]) %/ params_step[3] * params_num[4] 
 							+ (param4 - params_start[4]) %/ params_step[4];
-						codes[i] = launch("%0.2i_%0.2i_%0.2i_%0.2i_%0.3i" % (param0, param1, param2, param3, param4), [param0, param1, param2, param3, param4]);
+						codes[i] = launch("%0.1i_%0.1i_%0.3i_%0.1i_%0.1i" % (param0, param1, param2, param3, param4), [param0, param1, param2, param3, param4]);
+
 						if (codes[i] != 0)
 						{
 							printf("swift: The multi-launched application with parameters (%d, %d, %d, %d, %d) did not succeed with exit code: %d.",
@@ -102,6 +114,10 @@ main()
 				}
 			}
 		}
+	}
+	if (sum_integer(codes) == 0)
+	{
+		printf("swift: all the multi-launched applications succeed.");
 	}
 }
 
