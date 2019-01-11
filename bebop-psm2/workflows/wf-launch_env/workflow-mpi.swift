@@ -29,7 +29,12 @@ main()
 	string args[] = [""];
 
 	// Environment variables
-	string envs[] = [ "OMP_NUM_THREADS=2", "swift_chdir="+dir, "swift_numproc=3", "swift_ppw=2" ];
+	string envs[] = [ "OMP_NUM_THREADS=2", 
+	       "swift_chdir="+dir, 
+	       "swift_output="+dir/"output_hello.txt",
+	       "swift_exectime="+dir/"time_hello.txt",
+	       "swift_numproc=3", 
+	       "swift_ppw=2" ];
 
 	printf("swift: launching with environment variables: %s", cmd);
 	printenv("PPN");

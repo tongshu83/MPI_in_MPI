@@ -39,6 +39,7 @@ main()
 	string cmd0[] = [ workflow_root/"lmp.sh", "100", "POSIX", dir/"in.quench.short"];
 	setup_input(dir, infile1, infile2, infile3) =>
 		(output0, exit_code0) = system(cmd0);
+
 	if (exit_code0 != 0)
 	{
 		printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2]+" "+cmd0[3], exit_code0);
@@ -59,6 +60,7 @@ main()
 		sleep(1) =>
 			setup_run(dir) =>
 			exit_code1 = @par=nwork1 launch_envs(cmd1, args1, envs1);
+
 		if (exit_code1 != 0)
 		{
 			printf("swift: %s failed with exit code %d.", cmd1, exit_code1);
@@ -69,6 +71,7 @@ main()
 			sleep(1) =>
 				setup_run(dir) => 
 				(output2, exit_code2) = system(cmd2);
+
 			if (exit_code2 != 0)
 			{
 				printf("swift: %s failed with exit code %d.", "bpmeta --nthreads 8 dump.bp", exit_code2);
@@ -89,6 +92,7 @@ main()
 				sleep(1) =>
 					setup_run(dir) =>
 					exit_code3 = @par=nwork3 launch_envs(cmd3, args3, envs3);
+
 				if (exit_code3 != 0)
 				{
 					printf("swift: %s failed with exit code %d.", cmd3, exit_code3);
