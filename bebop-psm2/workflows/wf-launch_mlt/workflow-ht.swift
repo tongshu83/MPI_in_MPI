@@ -32,25 +32,25 @@ main()
 	string args[][];
 
 	// mpiexec -n 12 ./heat_transfer_adios2 heat 4 3 40 50 6 5
-	args[0] = split("heat 3 1 40 50 6 5", " ");
+	args[0] = split("heat 10 7 40 50 6 5", " ");
 
 	// mpiexec -n 3 stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI ""
 	args[1] = split("heat.bp staged.bp FLEXPATH \"\" MPI \"\"", " ");
 
 	// Environment variables
 	string envs[][];
-	envs[0] = [ // "OMP_NUM_THREADS=4", 
+	envs[0] = [ "OMP_NUM_THREADS=4", 
 		"swift_chdir="+dir, 
 		"swift_output="+dir/"output_heat_transfer_adios2.txt", 
 		"swift_exectime="+dir/"time_heat_transfer_adios2.txt",
-		"swift_numproc=3",
-		"swift_ppw=2" ];
-	envs[1] = [ // "OMP_NUM_THREADS=2", 
+		"swift_numproc=70",
+		"swift_ppw=35" ];
+	envs[1] = [ "OMP_NUM_THREADS=2", 
 		"swift_chdir="+dir, 
 		"swift_output="+dir/"output_stage_write.txt", 
 		"swift_exectime="+dir/"time_stage_write.txt",
-		"swift_numproc=3",
-		"swift_ppw=2" ];
+		"swift_numproc=70",
+		"swift_ppw=35" ];
 
 	// Color settings
 	colors = "0, 1; 2, 3";
