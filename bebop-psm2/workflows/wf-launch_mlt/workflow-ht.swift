@@ -39,14 +39,12 @@ main()
 
 	// Environment variables
 	string envs[][];
-	envs[0] = [ "OMP_NUM_THREADS=4", 
-		"swift_chdir="+dir, 
+	envs[0] = [ "swift_chdir="+dir, 
 		"swift_output="+dir/"output_heat_transfer_adios2.txt", 
 		"swift_exectime="+dir/"time_heat_transfer_adios2.txt",
 		"swift_numproc=70",
 		"swift_ppw=35" ];
-	envs[1] = [ "OMP_NUM_THREADS=2", 
-		"swift_chdir="+dir, 
+	envs[1] = [ "swift_chdir="+dir, 
 		"swift_output="+dir/"output_stage_write.txt", 
 		"swift_exectime="+dir/"time_stage_write.txt",
 		"swift_numproc=70",
