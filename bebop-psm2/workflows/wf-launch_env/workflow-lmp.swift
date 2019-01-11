@@ -36,7 +36,7 @@ main()
 	string infile2 = "%s/restart.liquid" % turbine_output;
 	string infile3 = "%s/CuZr.fs" % turbine_output;
 
-	string cmd0[] = [ workflow_root/"lmp.sh", "100", "POSIX", dir/"in.quench.short"];
+	string cmd0[] = [ workflow_root/"lmp.sh", "100", "POSIX", dir/"in.quench.short" ];
 	setup_input(dir, infile1, infile2, infile3) =>
 		(output0, exit_code0) = system(cmd0);
 
@@ -53,8 +53,8 @@ main()
 		       "swift_chdir="+dir, 
 		       "swift_output="+dir/"output_lmp_mpi.txt", 
 		       "swift_exectime="+dir/"time_lmp_mpi.txt", 
-		       "swift_numproc=3", 
-		       "swift_ppw=2" ];
+		       "swift_numproc=70", 
+		       "swift_ppw=35" ];
 
 		printf("swift: launching with environment variables: %s", cmd1);
 		sleep(1) =>
@@ -85,8 +85,8 @@ main()
 				       "swift_chdir="+dir, 
 				       "swift_output="+dir/"output_voro_adios_omp_staging.txt", 
 				       "swift_exectime="+dir/"time_voro_adios_omp_staging.txt", 
-				       "swift_numproc=3",
-				       "swift_ppw=2" ];
+				       "swift_numproc=70",
+				       "swift_ppw=35" ];
 
 				printf("swift: launching with environment variables: %s", cmd3);
 				sleep(1) =>

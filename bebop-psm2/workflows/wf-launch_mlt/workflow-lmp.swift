@@ -67,14 +67,14 @@ main()
 			"swift_chdir="+dir, 
 			"swift_output="+dir/"output_lmp_mpi.txt", 
 			"swift_exectime="+dir/"time_lmp_mpi.txt", 
-			"swift_numproc=3", 
-			"swift_ppw=2" ];
+			"swift_numproc=70", 
+			"swift_ppw=35" ];
 		envs[1] = [ "OMP_NUM_THREADS=4", 
 			"swift_chdir="+dir, 
 			"swift_output="+dir/"output_voro_adios_omp_staging.txt", 
 			"swift_exectime="+dir/"time_voro_adios_omp_staging.txt", 
-			"swift_numproc=3",
-			"swift_ppw=2" ];
+			"swift_numproc=70",
+			"swift_ppw=35" ];
 
 		// Color settings
 		colors = "0, 2; 1, 3";
