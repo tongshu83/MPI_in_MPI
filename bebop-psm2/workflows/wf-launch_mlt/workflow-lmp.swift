@@ -5,7 +5,7 @@ import stats;
 import string;
 import sys;
 
-(void v) setup_run(string dir, string infile1, string infile2, string infile3) "turbine" "0.0"
+(void v) setup_input(string dir, string infile1, string infile2, string infile3) "turbine" "0.0"
 [
 """
 	file delete -force -- <<dir>>
@@ -17,11 +17,25 @@ import sys;
 """
 ];
 
+(void v) setup_run(string dir) "turbine" "0.0"
+[
+"""
+	cd <<dir>>
+"""
+];
+
 main()
 {
 	string workflow_root = getenv("WORKFLOW_ROOT");
-	string cmd0[] = [ workflow_root/"lmp.sh", "100", "FLEXPATH" ];
-	(output0, exit_code0) = system(cmd0);
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run" % turbine_output;
+	string infile1 = "%s/in.quench.short" % turbine_output;
+	string infile2 = "%s/restart.liquid" % turbine_output;
+	string infile3 = "%s/CuZr.fs" % turbine_output;
+
+	string cmd0[] = [ workflow_root/"lmp.sh", "100", "FLEXPATH", dir/"in.quench.short" ];
+	setup_input(dir, infile1, infile2, infile3) =>
+		(output0, exit_code0) = system(cmd0);
 
 	if (exit_code0 != 0)
 	{
@@ -30,14 +44,8 @@ main()
 	}
 	else
 	{
-		string turbine_output = getenv("TURBINE_OUTPUT");
-		string dir = "%s/run" % turbine_output;
-		string infile1 = "%s/in.quench.short" % turbine_output;
-		string infile2 = "%s/restart.liquid" % turbine_output;
-		string infile3 = "%s/CuZr.fs" % turbine_output;
-
-		// Process counts
-		int procs[] = [2, 2];
+		// Worker counts
+		int nworks[] = [2, 2];
 
 		// Commands
 		string cmds[];
@@ -55,19 +63,26 @@ main()
 
 		// Environment variables
 		string envs[][];
-		// envs[0] = [ "swift_chdir="+dir ];
-		// envs[1] = [ "swift_chdir="+dir ];
-		envs[0] = [ "OMP_NUM_THREADS=8", "swift_chdir="+dir, "swift_output="+dir/"output_lmp_mpi.txt", "swift_exectime="+dir/"time_lmp_mpi.txt" ];
-		envs[1] = [ "OMP_NUM_THREADS=4", "swift_chdir="+dir, "swift_output="+dir/"output_voro_adios_omp_staging.txt", "swift_exectime="+dir/"time_voro_adios_omp_staging.txt" ];
+		envs[0] = [ "OMP_NUM_THREADS=4", 
+			"swift_chdir="+dir, 
+			"swift_output="+dir/"output_lmp_mpi.txt", 
+			"swift_exectime="+dir/"time_lmp_mpi.txt", 
+			"swift_numproc=3", 
+			"swift_ppw=2" ];
+		envs[1] = [ "OMP_NUM_THREADS=4", 
+			"swift_chdir="+dir, 
+			"swift_output="+dir/"output_voro_adios_omp_staging.txt", 
+			"swift_exectime="+dir/"time_voro_adios_omp_staging.txt", 
+			"swift_numproc=3",
+			"swift_ppw=2" ];
 
 		// Color settings
-		// colors = "0, 1, 2, 3, 4, 5, 6, 7; 8, 9, 10, 11";
-		colors = "0, 1; 2, 3";
+		colors = "0, 2; 1, 3";
 
 		printf("swift: multiple launching: %s, %s", cmds[0], cmds[1]);
 		sleep(1) =>
-			setup_run(dir, infile1, infile2, infile3) =>
-			exit_code = @par=sum_integer(procs) launch_multi(procs, cmds, args, envs, colors);
+			setup_run(dir) =>
+			exit_code = @par=sum_integer(nworks) launch_multi(nworks, cmds, args, envs, colors);
 		printf("swift: received exit code: %d", exit_code);
 		if (exit_code != 0)
 		{
