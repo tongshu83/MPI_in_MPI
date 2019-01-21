@@ -44,7 +44,7 @@ main()
 	envs[1] = [ "OMP_NUM_THREADS=3", 
 		"swift_chdir="+dir, 
 		"swift_output="+dir/"output_script2.txt", 
-		"swift_exectime="+dir/"time_script2.txt",
+		"swift_exectime="+dir/"time_script2.txt", 
 		"swift_numproc=3", 
 		"swift_ppw=2" ];
 

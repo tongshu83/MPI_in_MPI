@@ -47,7 +47,7 @@ fi
 # Of these, 2 are reserved for the system
 export PROCS=4
 export PPN=1
-export WALLTIME=00:02:00
+export WALLTIME=00:03:00
 
 MACHINE="-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, theta, or slurm. The empty string means the local machine.
 

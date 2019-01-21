@@ -14,7 +14,7 @@ app printenv (string env) {
 	file delete -force -- <<dir>>
 	file mkdir <<dir>>
 	cd <<dir>>
-	file link -symbolic in.quench.short <<infile1>>
+	file copy -force -- <<infile1>> in.quench.short
 	file link -symbolic restart.liquid <<infile2>>
 	file link -symbolic CuZr.fs <<infile3>>
 """

@@ -16,7 +16,7 @@ WORKFLOW_TIC=${WORKFLOW_SWIFT%.swift}.tic
 export EXPID=$2
 
 # Turn off Swift/T debugging
-export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
+export TURBINE_LOG=1 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
 # Find the directory of ./workflow.sh
 export WORKFLOW_ROOT=$( cd $( dirname $0 ) ; /bin/pwd )
@@ -48,7 +48,7 @@ fi
 # Of these, 2 are reserved for the system
 export PROCS=4 #18
 export PPN=1
-export WALLTIME=01:00:00
+export WALLTIME=00:10:00
 export PROJECT=WORKFLOW
 export QUEUE=bdw
 
