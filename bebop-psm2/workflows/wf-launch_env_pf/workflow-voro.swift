@@ -15,7 +15,7 @@ import sys;
 """
 ];
 
-(float exectime) launch(string run_id, int params[])
+(float exectime) launch_wrapper(string run_id, int params[])
 {
 	int voro_proc = params[0];      // Voro: total num of processes
 	int voro_ppw = params[1];       // Voro: num of processes per worker
@@ -117,7 +117,7 @@ main()
 							+ (param1 - params_start[1]) %/ params_step[1]
 							* params_num[2]
 							+ (param2 - params_start[2]) %/ params_step[2];
-						exectime[i] = launch("%0.2i_%0.2i_%0.1i"
+						exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.1i"
 								% (param0, param1, param2),
 								[param0, param1, param2]);
 
