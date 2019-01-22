@@ -5,6 +5,11 @@ import stats;
 import string;
 import sys;
 
+// Problem Size of HeatTransfer 
+int ht_x = 160;
+int ht_y = 150;
+int ht_iter = 30;
+
 (void v) setup_run(string dir, string infile) "turbine" "0.0"
 [
 """
@@ -17,11 +22,12 @@ import sys;
 
 (float exectime) launch(string run_id, int params[]) 
 {
-	int ht_proc_x = params[0];
-	int ht_proc_y = params[1];
-	int ht_ppw = params[2];
-	int sw_proc = params[3];
-	int sw_ppw = params[4];
+	int ht_proc_x = params[0];	// HeatTransfer: total number of processes in X dimension
+	int ht_proc_y = params[1];	// HeatTransfer: total number of processes in Y dimension
+	int ht_ppw = params[2];		// HeatTransfer: number of processes per worker
+	int ht_step = params[3];	// HeatTransfer: the total number of steps to output
+	int sw_proc = params[4];	// StageWrite: total number of processes
+	int sw_ppw = params[5];		// StageWrite: number of processes per worker
 
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string dir = "%s/run/%s" % (turbine_output, run_id);
@@ -49,10 +55,11 @@ import sys;
 	// Command line arguments
 	string args[][];
 
+	int ht_las_x = ht_x %/ ht_proc_x;
+	int ht_las_y = ht_y %/ ht_proc_y;
+	int ht_ips = ht_iter %/ ht_step;
 	// mpiexec -n 12 ./heat_transfer_adios2 heat 4 3 40 50 6 5
-	int ht_x = 160;
-	int ht_y = 150;
-	args[0] = split("heat %i %i %i %i 6 5" % (ht_proc_x, ht_proc_y, ht_x %/ ht_proc_x, ht_y %/ ht_proc_y), " ");
+	args[0] = split("heat %i %i %i %i %i %i" % (ht_proc_x, ht_proc_y, ht_las_x, ht_las_y, ht_step, ht_ips), " ");
 
 	// mpiexec -n 3 stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI ""
 	string method = "FLEXPATH";
@@ -78,7 +85,7 @@ import sys;
 	if (exit_code != 0)
 	{
 		exectime = -1.0;
-		printf("swift: The multi-launched application with parameters (%d, %d, %d, %d, %d) did not succeed with exit code: %d.", ht_proc_x, ht_proc_y, ht_ppw, sw_proc, sw_ppw, exit_code);
+		printf("swift: The multi-launched application with parameters (%d, %d, %d, %d, %d, %d) did not succeed with exit code: %d.", ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw, exit_code);
 	}
 	else
 	{
@@ -89,20 +96,20 @@ import sys;
 		if (time_exit_code != 0)
 		{
 			exectime = -1.0;
-			printf("swift: Failed to get the execution time of the multi-launched application of parameters (%d, %d, %d, %d, %d) with exit code: %d.\n%s", ht_proc_x, ht_proc_y, ht_ppw, sw_proc, sw_ppw, time_exit_code, time_output);
+			printf("swift: Failed to get the execution time of the multi-launched application of parameters (%d, %d, %d, %d, %d, %d) with exit code: %d.\n%s", ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw, time_exit_code, time_output);
 		}
 		else
 		{
 			exectime = string2float(time_output);
 			if (exectime >= 0.0)
 			{
-				printf("exectime(%i, %i, %i, %i, %i): %f", ht_proc_x, ht_proc_y, ht_ppw, sw_proc, sw_ppw, exectime);
-				string output = "%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%f\t" % (ht_proc_x, ht_proc_y, ht_ppw, sw_proc, sw_ppw, exectime);
+				printf("exectime(%i, %i, %i, %i, %i, %i): %f", ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw, exectime);
+				string output = "%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%f\t" % (ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw, exectime);
 				file out <dir/"time.txt"> = write(output);
 			}
 			else
 			{
-				printf("swift: The execution time (%f seconds) of the multi-launched application with parameters (%d, %d, %d, %d, %d) is negative.", exectime, ht_proc_x, ht_proc_y, ht_ppw, sw_proc, sw_ppw);
+				printf("swift: The execution time (%f seconds) of the multi-launched application with parameters (%d, %d, %d, %d, %d, %d) is negative.", exectime, ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw);
 			}
 		}
 	}
@@ -115,19 +122,21 @@ main()
 	int ppw = ppn %/ wpn - 1;
 	int workers = string2int(getenv("PROCS")) - 2;
 
-	// 0) HeatTransfer: num of processes in X
-	// 1) HeatTransfer: num of processes in Y
-	// 2) HeatTransfer: num of processes per worker
-	// 3) StageWrite: total num of processes
-	// 4) StageWrite: num of processes per worker
-	int params_start[] = [6, 5, 15, 34, 17];
-	int params_stop[] = [6, 5, 30, 34, 34];
-	int params_step[] = [6, 5, 15, 34, 17];
-	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1, 
-	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1, 
-	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1, 
-	    (params_stop[3] - params_start[3]) %/ params_step[3] + 1, 
-	    (params_stop[4] - params_start[4]) %/ params_step[4] + 1 ];
+	// 0) HeatTransfer: total number of processes in X dimension
+	// 1) HeatTransfer: total number of processes in Y dimension
+	// 2) HeatTransfer: number of processes per worker
+	// 3) HeatTransfer: the total number of steps to output
+	// 4) StageWrite: total number of processes
+	// 5) StageWrite: number of processes per worker
+	int params_start[] = [6, 5, 15, 6, 34, 17];
+	int params_stop[] = [6, 5, 30, 6, 34, 34];
+	int params_step[] = [6, 5, 15, 6, 34, 17];
+	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
+	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
+	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
+	    (params_stop[3] - params_start[3]) %/ params_step[3] + 1,
+	    (params_stop[4] - params_start[4]) %/ params_step[4] + 1,
+	    (params_stop[5] - params_start[5]) %/ params_step[5] + 1 ];
 
 	float exectime[];
 	int codes[];
@@ -135,45 +144,50 @@ main()
 	{
 		if (param2 <= ppw)
 		{
-			foreach param4 in [params_start[4] : params_stop[4] : params_step[4]]
+			foreach param5 in [params_start[5] : params_stop[5] : params_step[5]]
 			{
-				if (param4 <= ppw)
+				if (param5 <= ppw)
 				{
 					foreach param0 in [params_start[0] : params_stop[0] : params_step[0]]
 					{
 						foreach param1 in [params_start[1] : params_stop[1] : params_step[1]]
 						{
-							foreach param3 in [params_start[3] : params_stop[3] : params_step[3]]
+							foreach param4 in [params_start[4] : params_stop[4] : params_step[4]]
 							{
 								int nwork;
-								if (param0 * param1 %% param2 == 0 && param3 %% param4 == 0) {
-									nwork = param0 * param1 %/ param2 + param3 %/ param4;
+								if (param0 * param1 %% param2 == 0 && param4 %% param5 == 0) {
+									nwork = param0 * param1 %/ param2 + param4 %/ param5;
 								} else {
-									if (param0 * param1 %% param2 == 0 || param3 %% param4 == 0) {
-										nwork = param0 * param1 %/ param2 + param3 %/ param4 + 1;
+									if (param0 * param1 %% param2 == 0 || param4 %% param5 == 0) {
+										nwork = param0 * param1 %/ param2 + param4 %/ param5 + 1;
 									} else {
-										nwork = param0 * param1 %/ param2 + param3 %/ param4 + 2;
+										nwork = param0 * param1 %/ param2 + param4 %/ param5 + 2;
 									}
 								}
 								if (nwork <= workers)
 								{
-									int i = (param0 - params_start[0]) %/ params_step[0]
-										* params_num[1] * params_num[2] * params_num[3] * params_num[4]
-										+ (param1 - params_start[1]) %/ params_step[1]
-										* params_num[2] * params_num[3] * params_num[4]
-										+ (param2 - params_start[2]) %/ params_step[2]
-										* params_num[3] * params_num[4]
-										+ (param3 - params_start[3]) %/ params_step[3]
-										* params_num[4]
-										+ (param4 - params_start[4]) %/ params_step[4];
-									exectime[i] = launch("%0.2i_%0.2i_%0.2i_%0.2i_%0.2i"
-											% (param0, param1, param2, param3, param4),
-											[param0, param1, param2, param3, param4]);
+									foreach param3 in [params_start[3] : params_stop[3] : params_step[3]]
+									{
+										int i = (param0 - params_start[0]) %/ params_step[0]
+											* params_num[1] * params_num[2] * params_num[3] * params_num[4] * params_num[5]
+											+ (param1 - params_start[1]) %/ params_step[1]
+											* params_num[2] * params_num[3] * params_num[4] * params_num[5]
+											+ (param2 - params_start[2]) %/ params_step[2]
+											* params_num[3] * params_num[4] * params_num[5]
+											+ (param3 - params_start[3]) %/ params_step[3]
+											* params_num[4] * params_num[5]
+											+ (param4 - params_start[4]) %/ params_step[4]
+											* params_num[5]
+											+ (param5 - params_start[5]) %/ params_step[5];
+										exectime[i] = launch("%0.2i_%0.2i_%0.2i_%0.2i_%0.2i_%0.2i"
+												% (param0, param1, param2, param3, param4, param5),
+												[param0, param1, param2, param3, param4, param5]);
 
-									if (exectime[i] >= 0.0) {
-										codes[i] = 0;
-									} else {
-										codes[i] = 1;
+										if (exectime[i] >= 0.0) {
+											codes[i] = 0;
+										} else {
+											codes[i] = 1;
+										}
 									}
 								}
 							}
