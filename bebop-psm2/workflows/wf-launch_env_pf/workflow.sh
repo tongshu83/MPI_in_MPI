@@ -18,6 +18,13 @@ export EXPID=$2
 # Turn off Swift/T debugging
 export TURBINE_LOG=1 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
+EXAMPLE_LAMMPS=$( readlink --canonicalize-existing ../../Example-LAMMPS/swift-all )
+
+# Wozniak:
+SWIFT=$HOME/sfw/bebop/login/swift-t.tong
+PATH=$SWIFT/stc/bin:$PATH
+PATH=$SWIFT/turbine/bin:$PATH
+
 # Find the directory of ./workflow.sh
 export WORKFLOW_ROOT=$( cd $( dirname $0 ) ; /bin/pwd )
 cd $WORKFLOW_ROOT
@@ -37,10 +44,10 @@ fi
 if [[ $1 = "workflow-lmp" ]]
 then
 	cd $TURBINE_OUTPUT
-	cp -f ../in.quench in.quench
-	cp -f ../in.quench.short in.quench.short
-	ln -s ../restart.liquid restart.liquid
-	ln -s ../CuZr.fs CuZr.fs
+	cp -f $EXAMPLE_LAMMPS/in.quench in.quench
+	cp -f $EXAMPLE_LAMMPS/in.quench.short in.quench.short
+	ln -s $EXAMPLE_LAMMPS/restart.liquid restart.liquid
+	ln -s $EXAMPLE_LAMMPS/CuZr.fs CuZr.fs
 	cd -
 fi
 

@@ -17,7 +17,7 @@ import sys;
 """
 ];
 
-(float exectime) launch(string run_id, int params[])
+(float exectime) launch_wrapper(string run_id, int params[])
 {
 	int lmp_proc = params[0];	// Lammps: total num of processes
 	int lmp_ppw = params[1];	// Lammps: num of processes per worker
@@ -135,14 +135,14 @@ main()
 					{
 						foreach param3 in [params_start[3] : params_stop[3] : params_step[3]]
 						{
-							int i = (param0 - params_start[0]) %/ params_step[0] 
-								* params_num[1] * params_num[2] * params_num[3] 
-								+ (param1 - params_start[1]) %/ params_step[1] 
-								* params_num[2] * params_num[3] 
-								+ (param2 - params_start[2]) %/ params_step[2] 
-								* params_num[3] 
+							int i = (param0 - params_start[0]) %/ params_step[0]
+								* params_num[1] * params_num[2] * params_num[3]
+								+ (param1 - params_start[1]) %/ params_step[1]
+								* params_num[2] * params_num[3]
+								+ (param2 - params_start[2]) %/ params_step[2]
+								* params_num[3]
 								+ (param3 - params_start[3]) %/ params_step[3];
-							exectime[i] = launch("%0.2i_%0.2i_%0.1i_%0.3i" % (param0, param1, param2, param3),
+							exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.1i_%0.3i" % (param0, param1, param2, param3),
 									[param0, param1, param2, param3]);
 
 							if (exectime[i] >= 0.0) {
