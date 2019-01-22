@@ -27,7 +27,12 @@ import sys;
 	string parDir = "%s/run" % turbine_output;
 	string dir = "%s/%s" % (parDir, run_id);
 
-	int nwork1 = params[0];
+	int nwork1;
+	if (voro_proc %% voro_ppw == 0) {
+		nwork1 = voro_proc %/ voro_ppw;
+	} else {
+		nwork1 = voro_proc %/ voro_ppw + 1;
+	}
 	string cmd1 = "../../../../../../Example-LAMMPS/swift-all/voro_adios_omp_staging";
 	string args1[] = split("dump.bp adios_atom_voro.bp BP", " ");     // mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp BP
 	string envs1[] = [ "OMP_NUM_THREADS="+int2string(voro_thrd),
@@ -86,9 +91,9 @@ main()
 	// 0) Voro: total num of processes
 	// 1) Voro: num of processes per worker
 	// 2) Voro: num of threads per process
-	int params_start[] = [2, 1, 2];
-	int params_stop[] = [2, 1, 2];
-	int params_step[] = [34, 17, 1];
+	int params_start[] = [17, 17, 2];
+	int params_stop[] = [34, 34, 2];
+	int params_step[] = [17, 17, 1];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1 ];

@@ -16,14 +16,14 @@ WORKFLOW_TIC=${WORKFLOW_SWIFT%.swift}.tic
 export EXPID=$2
 
 # Turn off Swift/T debugging
-export TURBINE_LOG=1 TURBINE_DEBUG=0 ADLB_DEBUG=0
+export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
-EXAMPLE_LAMMPS=$( readlink --canonicalize-existing ../../Example-LAMMPS/swift-all )
+# EXAMPLE_LAMMPS=$( readlink --canonicalize-existing ../../Example-LAMMPS/swift-all )
 
 # Wozniak:
-SWIFT=$HOME/sfw/bebop/login/swift-t.tong
-PATH=$SWIFT/stc/bin:$PATH
-PATH=$SWIFT/turbine/bin:$PATH
+# SWIFT=$HOME/sfw/bebop/login/swift-t.tong
+# PATH=$SWIFT/stc/bin:$PATH
+# PATH=$SWIFT/turbine/bin:$PATH
 
 # Find the directory of ./workflow.sh
 export WORKFLOW_ROOT=$( cd $( dirname $0 ) ; /bin/pwd )
@@ -37,17 +37,21 @@ cp -f $WORKFLOW_ROOT/get_maxtime.sh $TURBINE_OUTPUT/get_maxtime.sh
 if [[ $1 = "workflow-ht" ]]
 then
 	cd $TURBINE_OUTPUT
-	ln -s ../heat_transfer.xml heat_transfer.xml
+	cp -f ../heat_transfer.xml heat_transfer.xml
 	cd -
 fi
 
 if [[ $1 = "workflow-lmp" ]]
 then
 	cd $TURBINE_OUTPUT
-	cp -f $EXAMPLE_LAMMPS/in.quench in.quench
-	cp -f $EXAMPLE_LAMMPS/in.quench.short in.quench.short
-	ln -s $EXAMPLE_LAMMPS/restart.liquid restart.liquid
-	ln -s $EXAMPLE_LAMMPS/CuZr.fs CuZr.fs
+	cp -f ../in.quench in.quench
+	cp -f ../in.quench.short in.quench.short
+	ln -s ../restart.liquid restart.liquid
+	ln -s ../CuZr.fs CuZr.fs
+#	cp -f $EXAMPLE_LAMMPS/in.quench in.quench
+#	cp -f $EXAMPLE_LAMMPS/in.quench.short in.quench.short
+#	ln -s $EXAMPLE_LAMMPS/restart.liquid restart.liquid
+#	ln -s $EXAMPLE_LAMMPS/CuZr.fs CuZr.fs
 	cd -
 fi
 
@@ -64,7 +68,7 @@ MACHINE="-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, th
 ENVS="" # "-e <key>=<value>" Set an environment variable in the job environment.
 
 set -x
-stc -p -u $WORKFLOW_ROOT/$WORKFLOW_SWIFT
+stc -p -u -O0 $WORKFLOW_ROOT/$WORKFLOW_SWIFT
 # -p: Disable the C preprocessor
 # -u: Only compile if target is not up-to-date
 
