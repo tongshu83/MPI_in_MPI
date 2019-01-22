@@ -54,9 +54,10 @@ MACHINE="-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, th
 ENVS="" # "-e <key>=<value>" Set an environment variable in the job environment.
 
 set -x
-stc -p -u $WORKFLOW_ROOT/$WORKFLOW_SWIFT
+stc -p -u -O0 $WORKFLOW_ROOT/$WORKFLOW_SWIFT
 # -p: Disable the C preprocessor
 # -u: Only compile if target is not up-to-date
+# -O <Optimization level>: Set compiler optimization level: 0 - no optimizations; 1,2,3 - standard optimizations (DEFAULT) (this will change later)
 
 turbine -l $MACHINE -n $PROCS $ENVS $WORKFLOW_ROOT/$WORKFLOW_TIC
 # -l: Enable mpiexec -l ranked output formatting

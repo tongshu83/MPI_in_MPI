@@ -29,7 +29,7 @@ mkdir -pv $TURBINE_OUTPUT
 if [[ $1 = "workflow-ht" ]]
 then
 	cd $TURBINE_OUTPUT
-	ln -s ../heat_transfer.xml heat_transfer.xml
+	cp -f ../heat_transfer.xml heat_transfer.xml
 	cd -
 fi
 
@@ -54,7 +54,7 @@ MACHINE="-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, th
 ENVS="" # "-e <key>=<value>" Set an environment variable in the job environment.
 
 set -x
-stc -p -u $WORKFLOW_ROOT/$WORKFLOW_SWIFT
+stc -p -u -O0 $WORKFLOW_ROOT/$WORKFLOW_SWIFT
 # -p: Disable the C preprocessor
 # -u: Only compile if target is not up-to-date
 
