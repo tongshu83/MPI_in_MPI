@@ -6,11 +6,11 @@ import string;
 import sys;
 
 // Problem Size of HeatTransfer
-int ht_x = 160;
-int ht_y = 150;
-int ht_iter = 30;
+int ht_x = 1700;
+int ht_y = 1700;
+int ht_iter = 3000;
 
-(void v) setup_run(string dir, string infile) "turbine" "0.0"
+(void v) setup_input(string dir, string infile) "turbine" "0.0"
 [
 """
 	file delete -force -- <<dir>>
@@ -33,7 +33,7 @@ int ht_iter = 30;
 	string infile = "%s/heat_transfer.xml" % turbine_output;
 
 	string cmd0[] = [ workflow_root/"ht.sh", "MPI", dir/"heat_transfer.xml" ];
-	setup_run(dir, infile) =>     
+	setup_input(dir, infile) =>     
 		(output0, exit_code0) = system(cmd0);
 
 	if (exit_code0 != 0)
@@ -73,36 +73,35 @@ int ht_iter = 30;
 		if (exit_code1 != 0)
 		{
 			exectime = -1.0;
-			printf("swift: The launched application %s with parameters (%d, %d, %d, %d, %d, %d) did not succeed with exit code: %d.", cmd1, params[0], params[1], params[2], params[3], params[4], params[5], exit_code1);
+			printf("swift: The launched application %s with parameters (%d, %d, %d, %d) did not succeed with exit code: %d.", 
+					cmd1, params[0], params[1], params[2], params[3], exit_code1);
 		}
 		else
 		{
-			exectime = 0.0
-/*
 			string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_heat_transfer_adios2.txt" ];
-			sleep(3) =>
+			sleep(1) =>
 				(time_output, time_exit_code) = system(cmd);
 
 			if (time_exit_code != 0)
 			{
 				exectime = -1.0;
-				printf("swift: Failed to get the execution time of the launched application of parameters (%d, %d, %d, %d, %d, %d) with exit code: %d.\n%s",
-						params[0], params[1], params[2], params[3], params[4], params[5], time_exit_code, time_output);
+				printf("swift: Failed to get the execution time of the launched application of parameters (%d, %d, %d, %d) with exit code: %d.\n%s",
+						params[0], params[1], params[2], params[3], time_exit_code, time_output);
 			}
 			else
 			{
 				exectime = string2float(time_output);
 				if (exectime >= 0.0)
 				{
-					printf("exectime(%i, %i, %i, %i, %i, %i): %f", params[0], params[1], params[2], params[3], params[4], params[5], exectime);
-					string output = "%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%f\t" % (params[0], params[1], params[2], params[3], params[4], params[5], exectime);
+					printf("exectime(%i, %i, %i, %i): %f", params[0], params[1], params[2], params[3], exectime);
+					string output = "%0.2i\t%0.2i\t%0.2i\t%0.2i\t%f\t" % (params[0], params[1], params[2], params[3], exectime);
 					file out <dir/"time.txt"> = write(output);
 				}
 				else
 				{
-					printf("swift: The execution time (%f seconds) of the launched application with parameters (%d, %d, %d, %d, %d, %d) is negative.", exectime, params[0], params[1], params[2], params[3], params[4], params[5]);
+					printf("swift: The execution time (%f seconds) of the launched application with parameters (%d, %d, %d, %d) is negative.", 
+							exectime, params[0], params[1], params[2], params[3]);
 				}
-*/
 			}
 		}
 	}
@@ -119,9 +118,9 @@ main()
 	// 1) HeatTransfer: total number of processes in Y dimension
 	// 2) HeatTransfer: number of processes per worker
 	// 3) HeatTransfer: the total number of steps to output
-	int params_start[] = [3, 5, 15, 6];
-	int params_stop[] = [6, 5, 30, 6];
-	int params_step[] = [3, 5, 15, 1];
+	int params_start[] = [17, 17, 17, 5];
+	int params_stop[] = [34, 34, 34, 10];
+	int params_step[] = [17, 17, 17, 5];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
@@ -138,7 +137,7 @@ main()
 				foreach param1 in [params_start[1] : params_stop[1] : params_step[1]]
 				{
 					int nwork;
-					if (param0 %% param1 == 0) {
+					if (param0 * param1 %% param2 == 0) {
 						nwork = param0 * param1 %/ param2;
 					} else {
 						nwork = param0 * param1 %/ param2 + 1;
