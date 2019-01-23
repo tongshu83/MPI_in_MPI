@@ -12,7 +12,7 @@ import sys;
 """
 ];
 
-(float exectime) launch(string run_id, int params[])
+(float exectime) launch_wrapper(string run_id, int params[])
 {
 	int proc1 = params[0];
 	int ppw1 = params[1];
@@ -69,29 +69,42 @@ import sys;
 	if (exit_code != 0)
 	{
 		exectime = -1.0;
-		printf("swift: The multi-launched application with parameters (%d, %d, %d, %d, %d, %d) did not succeed with exit code: %d.", params[0], params[1], params[2], params[3], params[4], params[5], exit_code);
+		printf("swift: The multi-launched application with parameters (%d, %d, %d, %d, %d, %d) did not succeed with exit code: %d.", 
+				params[0], params[1], params[2], params[3], params[4], params[5], exit_code);
 	}
 	else
 	{
-		string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_script*.txt" ];
-		sleep(1) =>
-			(time_output, time_exit_code) = system(cmd);
+		exectime = get_exectime(run_id, params);
+	}
+}
 
-		if (time_exit_code != 0)
-		{
-			exectime = -1.0;
-			printf("swift: Failed to get the execution time of the multi-launched application of parameters (%d, %d, %d, %d, %d, %d) with exit code: %d.\n%s", params[0], params[1], params[2], params[3], params[4], params[5], time_exit_code, time_output);
-		}
-		else
-		{
-			exectime = string2float(time_output);
-			if (exectime >= 0.0) {
-				printf("exectime(%i, %i, %i, %i, %i, %i): %f", params[0], params[1], params[2], params[3], params[4], params[5], exectime);
-				string output = "%0.1i\t%0.1i\t%0.1i\t%0.1i\t%0.1i\t%0.1i\t%f\t" % (params[0], params[1], params[2], params[3], params[4], params[5], exectime);
-				file out <dir/"time.txt"> = write(output);
-			} else {
-				printf("swift: The execution time (%f seconds) of the multi-launched application with parameters (%d, %d, %d, %d, %d, %d) is negative.", exectime, params[0], params[1], params[2], params[3], params[4], params[5]);
-			}
+(float exectime) get_exectime(string run_id, int params[])
+{
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run/%s" % (turbine_output, run_id);
+
+	string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_script*.txt" ];
+	sleep(1) =>
+		(time_output, time_exit_code) = system(cmd);
+
+	if (time_exit_code != 0)
+	{
+		exectime = -1.0;
+		printf("swift: Failed to get the execution time of the multi-launched application of parameters (%d, %d, %d, %d, %d, %d) with exit code: %d.\n%s",
+				params[0], params[1], params[2], params[3], params[4], params[5], time_exit_code, time_output);
+	}
+	else
+	{
+		exectime = string2float(time_output);
+		if (exectime >= 0.0) {
+			printf("exectime(%i, %i, %i, %i, %i, %i): %f",
+					params[0], params[1], params[2], params[3], params[4], params[5], exectime);
+			string output = "%0.1i\t%0.1i\t%0.1i\t%0.1i\t%0.1i\t%0.1i\t%f\t"
+				% (params[0], params[1], params[2], params[3], params[4], params[5], exectime);
+			file out <dir/"time.txt"> = write(output);
+		} else {
+			printf("swift: The execution time (%f seconds) of the multi-launched application with parameters (%d, %d, %d, %d, %d, %d) is negative.",
+					exectime, params[0], params[1], params[2], params[3], params[4], params[5]);
 		}
 	}
 }
@@ -155,7 +168,7 @@ main()
 											+ (param4 - params_start[4]) %/ params_step[4]
 											* params_num[5]
 											+ (param5 - params_start[5]) %/ params_step[5];
-										exectime[i] = launch("%0.1i_%0.1i_%0.1i_%0.1i_%0.1i_%0.1i"
+										exectime[i] = launch_wrapper("%0.1i_%0.1i_%0.1i_%0.1i_%0.1i_%0.1i"
 												% (param0, param1, param2, param3, param4, param5),
 												[param0, param1, param2, param3, param4, param5]);
 

@@ -20,7 +20,7 @@ int ht_iter = 30;
 """
 ];
 
-(float exectime) launch(string run_id, int params[]) 
+(float exectime) launch_wrapper(string run_id, int params[]) 
 {
 	int ht_proc_x = params[0];	// HeatTransfer: total number of processes in X dimension
 	int ht_proc_y = params[1];	// HeatTransfer: total number of processes in Y dimension
@@ -59,7 +59,8 @@ int ht_iter = 30;
 	int ht_las_y = ht_y %/ ht_proc_y;
 	int ht_ips = ht_iter %/ ht_step;
 	// mpiexec -n 12 ./heat_transfer_adios2 heat 4 3 40 50 6 5
-	args[0] = split("heat %i %i %i %i %i %i" % (ht_proc_x, ht_proc_y, ht_las_x, ht_las_y, ht_step, ht_ips), " ");
+	args[0] = split("heat %i %i %i %i %i %i" 
+			% (ht_proc_x, ht_proc_y, ht_las_x, ht_las_y, ht_step, ht_ips), " ");
 
 	// mpiexec -n 3 stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI ""
 	string method = "FLEXPATH";
@@ -85,32 +86,45 @@ int ht_iter = 30;
 	if (exit_code != 0)
 	{
 		exectime = -1.0;
-		printf("swift: The multi-launched application with parameters (%d, %d, %d, %d, %d, %d) did not succeed with exit code: %d.", ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw, exit_code);
+		printf("swift: The multi-launched application with parameters (%d, %d, %d, %d, %d, %d) did not succeed with exit code: %d.", 
+				ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw, exit_code);
 	}
 	else
 	{
-		string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_*.txt" ];
-		sleep(1) =>
-			(time_output, time_exit_code) = system(cmd);
+		exectime = get_exectime(run_id, params);
+	}
+}
 
-		if (time_exit_code != 0)
+(float exectime) get_exectime(string run_id, int params[])
+{
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run/%s" % (turbine_output, run_id);
+
+	string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_*.txt" ];
+	sleep(1) =>
+		(time_output, time_exit_code) = system(cmd);
+
+	if (time_exit_code != 0)
+	{
+		exectime = -1.0;
+		printf("swift: Failed to get the execution time of the multi-launched application of parameters (%d, %d, %d, %d, %d, %d) with exit code: %d.\n%s",
+				params[0], params[1], params[2], params[3], params[4], params[5], time_exit_code, time_output);
+	}
+	else
+	{
+		exectime = string2float(time_output);
+		if (exectime >= 0.0)
 		{
-			exectime = -1.0;
-			printf("swift: Failed to get the execution time of the multi-launched application of parameters (%d, %d, %d, %d, %d, %d) with exit code: %d.\n%s", ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw, time_exit_code, time_output);
+			printf("exectime(%i, %i, %i, %i, %i, %i): %f",
+					params[0], params[1], params[2], params[3], params[4], params[5], exectime);
+			string output = "%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%f\t"
+				% (params[0], params[1], params[2], params[3], params[4], params[5], exectime);
+			file out <dir/"time.txt"> = write(output);
 		}
 		else
 		{
-			exectime = string2float(time_output);
-			if (exectime >= 0.0)
-			{
-				printf("exectime(%i, %i, %i, %i, %i, %i): %f", ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw, exectime);
-				string output = "%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%f\t" % (ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw, exectime);
-				file out <dir/"time.txt"> = write(output);
-			}
-			else
-			{
-				printf("swift: The execution time (%f seconds) of the multi-launched application with parameters (%d, %d, %d, %d, %d, %d) is negative.", exectime, ht_proc_x, ht_proc_y, ht_ppw, ht_step, sw_proc, sw_ppw);
-			}
+			printf("swift: The execution time (%f seconds) of the multi-launched application with parameters (%d, %d, %d, %d, %d, %d) is negative.",
+					exectime, params[0], params[1], params[2], params[3], params[4], params[5]);
 		}
 	}
 }
@@ -179,7 +193,7 @@ main()
 											+ (param4 - params_start[4]) %/ params_step[4]
 											* params_num[5]
 											+ (param5 - params_start[5]) %/ params_step[5];
-										exectime[i] = launch("%0.2i_%0.2i_%0.2i_%0.2i_%0.2i_%0.2i"
+										exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.2i_%0.2i_%0.2i_%0.2i"
 												% (param0, param1, param2, param3, param4, param5),
 												[param0, param1, param2, param3, param4, param5]);
 
