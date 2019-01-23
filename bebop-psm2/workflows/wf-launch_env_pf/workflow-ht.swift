@@ -163,7 +163,7 @@ main()
 								+ (param2 - params_start[2]) %/ params_step[2]
 								* params_num[3]
 								+ (param3 - params_start[3]) %/ params_step[3];
-							exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.2i_%0.3i"
+							exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.2i_%0.2i"
 									% (param0, param1, param2, param3),
 									[param0, param1, param2, param3]);
 
