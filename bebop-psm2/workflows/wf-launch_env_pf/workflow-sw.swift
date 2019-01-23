@@ -52,33 +52,43 @@ import sys;
 	if (exit_code1 != 0)
 	{
 		exectime = -1.0;
-		printf("swift: The launched application %s with parameters (%d, %d) did not succeed with exit code: %d.", cmd1, params[0], params[1], exit_code1);
+		printf("swift: The launched application %s with parameters (%d, %d) did not succeed with exit code: %d.", 
+				cmd1, params[0], params[1], exit_code1);
 	}
 	else
 	{
-		string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_stage_write.txt" ];
-		sleep(1) =>
-			(time_output, time_exit_code) = system(cmd);
+		exectime = get_exectime(run_id, params);
+	}
+}
 
-		if (time_exit_code != 0)
+(float exectime) get_exectime(string run_id, int params[])
+{
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run/%s" % (turbine_output, run_id);
+
+	string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_stage_write.txt" ];
+	sleep(1) =>
+		(time_output, time_exit_code) = system(cmd);
+
+	if (time_exit_code != 0)
+	{
+		exectime = -1.0;
+		printf("swift: Failed to get the execution time of the launched application of parameters (%d, %d) with exit code: %d.\n%s",
+				params[0], params[1], time_exit_code, time_output);
+	}
+	else
+	{
+		exectime = string2float(time_output);
+		if (exectime >= 0.0)
 		{
-			exectime = -1.0;
-			printf("swift: Failed to get the execution time of the launched application of parameters (%d, %d) with exit code: %d.\n%s",
-					params[0], params[1], time_exit_code, time_output);
+			printf("exectime(%i, %i): %f", params[0], params[1], exectime);
+			string output = "%0.2i\t%0.2i\t%f\t" % (params[0], params[1], exectime);
+			file out <dir/"time.txt"> = write(output);
 		}
 		else
 		{
-			exectime = string2float(time_output);
-			if (exectime >= 0.0)
-			{
-				printf("exectime(%i, %i): %f", params[0], params[1], exectime);
-				string output = "%0.2i\t%0.2i\t%f\t" % (params[0], params[1], exectime);
-				file out <dir/"time.txt"> = write(output);
-			}
-			else
-			{
-				printf("swift: The execution time (%f seconds) of the launched application with parameters (%d, %d) is negative.", exectime, params[0], params[1]);
-			}
+			printf("swift: The execution time (%f seconds) of the launched application with parameters (%d, %d) is negative.",
+					exectime, params[0], params[1]);
 		}
 	}
 }

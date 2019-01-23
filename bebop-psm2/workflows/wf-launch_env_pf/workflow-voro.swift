@@ -17,9 +17,9 @@ import sys;
 
 (float exectime) launch_wrapper(string run_id, int params[])
 {
-	int voro_proc = params[0];      // Voro: total num of processes
-	int voro_ppw = params[1];       // Voro: num of processes per worker
-	int voro_thrd = params[2];      // Voro: num of threads per process
+	int voro_proc = params[0];	// Voro: total num of processes
+	int voro_ppw = params[1];	// Voro: num of processes per worker
+	int voro_thrd = params[2];	// Voro: num of threads per process
 
 	string workflow_root = getenv("WORKFLOW_ROOT");
 	string srcDir = "%s/experiment/wf-lmp-bp" % workflow_root;
@@ -33,8 +33,12 @@ import sys;
 	} else {
 		nwork1 = voro_proc %/ voro_ppw + 1;
 	}
+
 	string cmd1 = "../../../../../../Example-LAMMPS/swift-all/voro_adios_omp_staging";
-	string args1[] = split("dump.bp adios_atom_voro.bp BP", " ");     // mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp BP
+
+	// mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp BP
+	string args1[] = split("dump.bp adios_atom_voro.bp BP", " ");
+
 	string envs1[] = [ "OMP_NUM_THREADS="+int2string(voro_thrd),
 	       "swift_chdir="+dir,
 	       "swift_output="+dir/"output_voro_adios_omp_staging.txt",
@@ -50,33 +54,44 @@ import sys;
 	if (exit_code1 != 0)
 	{
 		exectime = -1.0;
-		printf("swift: The launched application %s with parameters (%d, %d, %d) did not succeed with exit code: %d.", cmd1, params[0], params[1], params[2], exit_code1);
+		printf("swift: The launched application %s with parameters (%d, %d, %d) did not succeed with exit code: %d.", 
+				cmd1, params[0], params[1], params[2], exit_code1);
 	}
 	else
 	{
-		string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_voro_adios_omp_staging.txt" ];
-		sleep(1) =>
-			(time_output, time_exit_code) = system(cmd);
+		exectime = get_exectime(run_id, params);
+	}
+}
 
-		if (time_exit_code != 0)
+(float exectime) get_exectime(string run_id, int params[])
+{
+	string turbine_output = getenv("TURBINE_OUTPUT");
+	string dir = "%s/run/%s" % (turbine_output, run_id);
+
+	string cmd[] = [ turbine_output/"get_maxtime.sh", dir/"time_voro_adios_omp_staging.txt" ];
+	sleep(1) =>
+		(time_output, time_exit_code) = system(cmd);
+
+	if (time_exit_code != 0)
+	{
+		exectime = -1.0;
+		printf("swift: Failed to get the execution time of the launched application of parameters (%d, %d, %d) with exit code: %d.\n%s",
+				params[0], params[1], params[2], time_exit_code, time_output);
+	}
+	else
+	{
+		exectime = string2float(time_output);
+		if (exectime >= 0.0)
 		{
-			exectime = -1.0;
-			printf("swift: Failed to get the execution time of the launched application of parameters (%d, %d, %d) with exit code: %d.\n%s",
-					params[0], params[1], params[2], time_exit_code, time_output);
+			printf("exectime(%i, %i, %i): %f", params[0], params[1], params[2], exectime);
+			string output = "%0.2i\t%0.2i\t%0.1i\t%f\t"
+				% (params[0], params[1], params[2], exectime);
+			file out <dir/"time.txt"> = write(output);
 		}
 		else
 		{
-			exectime = string2float(time_output);
-			if (exectime >= 0.0)
-			{
-				printf("exectime(%i, %i, %i): %f", params[0], params[1], params[2], exectime);
-				string output = "%0.2i\t%0.2i\t%0.1i\t%f\t" % (params[0], params[1], params[2], exectime);
-				file out <dir/"time.txt"> = write(output);
-			}
-			else
-			{
-				printf("swift: The execution time (%f seconds) of the launched application with parameters (%d, %d, %d) is negative.", exectime, params[0], params[1], params[2]);
-			}
+			printf("swift: The execution time (%f seconds) of the launched application with parameters (%d, %d, %d) is negative.",
+					exectime, params[0], params[1], params[2]);
 		}
 	}
 }
