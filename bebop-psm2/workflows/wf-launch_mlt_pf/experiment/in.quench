@@ -20,11 +20,11 @@ dump_modify 1 format line "method=FLEXPATH;have_metadata_file=0"
 
 # dump 1 all custom 500 dump.txt id type x y z vx vy vz fx fy fy fz
 
-run 		4000
+run 		16000
 
 write_restart	restart.glass_273K
 
 unfix 		1
 fix 		2 all npt temp 273 273 0.1 aniso 0.0 0.0 50
-run		5000
+run		20000
 

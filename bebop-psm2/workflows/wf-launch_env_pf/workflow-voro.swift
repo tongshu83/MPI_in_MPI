@@ -84,7 +84,7 @@ import sys;
 		if (exectime >= 0.0)
 		{
 			printf("exectime(%i, %i, %i): %f", params[0], params[1], params[2], exectime);
-			string output = "%0.2i\t%0.2i\t%0.1i\t%f\t"
+			string output = "%0.3i\t%0.2i\t%0.1i\t%f\t"
 				% (params[0], params[1], params[2], exectime);
 			file out <dir/"time.txt"> = write(output);
 		}
@@ -106,9 +106,9 @@ main()
 	// 0) Voro: total num of processes
 	// 1) Voro: num of processes per worker
 	// 2) Voro: num of threads per process
-	int params_start[] = [17, 17, 2];
-	int params_stop[] = [34, 34, 2];
-	int params_step[] = [17, 17, 1];
+	int params_start[] = [16, 8, 1];
+	int params_stop[] = [128, 32, 4];
+	int params_step[] = [16, 8, 1];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1 ];
@@ -137,7 +137,7 @@ main()
 							+ (param1 - params_start[1]) %/ params_step[1]
 							* params_num[2]
 							+ (param2 - params_start[2]) %/ params_step[2];
-						exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.1i"
+						exectime[i] = launch_wrapper("%0.3i_%0.2i_%0.1i"
 								% (param0, param1, param2),
 								[param0, param1, param2]);
 

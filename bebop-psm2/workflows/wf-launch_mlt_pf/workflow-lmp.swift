@@ -125,7 +125,7 @@ import sys;
 		if (exectime >= 0.0) {
 			printf("exectime(%i, %i, %i, %i, %i, %i, %i): %f",
 					params[0], params[1], params[2], params[3], params[4], params[5], params[6], exectime);
-			string output = "%0.2i\t%0.2i\t%0.1i\t%0.3i\t%0.2i\t%0.2i\t%0.1i\t%f\t"
+			string output = "%0.3i\t%0.2i\t%0.1i\t%0.4i\t%0.3i\t%0.2i\t%0.1i\t%f\t"
 				% (params[0], params[1], params[2], params[3], params[4], params[5], params[6], exectime);
 			file out <dir/"time.txt"> = write(output);
 		}
@@ -151,12 +151,9 @@ main()
 	// 4) Voro: total num of processes
 	// 5) Voro: num of processes per worker
 	// 6) Voro: num of threads per process
-	int params_start[] = [22, 11, 2, 100, 22, 11, 2];
-	int params_stop[] = [22, 11, 2, 100, 22, 11, 2];
-	int params_step[] = [11, 11, 2, 100, 11, 11, 2];
-	// int params_start[] = [5, 11, 2, 100, 5, 11, 2];
-	// int params_stop[] = [35, 35, 4, 200, 35, 35, 4];
-	// 1int params_step[] = [10, 11, 2, 100, 10, 11, 2];
+	int params_start[] = [16, 8, 1, 100, 16, 8, 1];
+	int params_stop[] = [128, 32, 4, 1000, 128, 32, 4];
+	int params_step[] = [16, 8, 1, 900, 16, 8, 1];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
@@ -211,7 +208,7 @@ main()
 												+ (param5 - params_start[5]) %/ params_step[5] 
 												* params_num[6]
 												+ (param6 - params_start[6]) %/ params_step[6];
-											exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.1i_%0.3i_%0.2i_%0.2i_%0.1i" 
+											exectime[i] = launch_wrapper("%0.3i_%0.2i_%0.1i_%0.4i_%0.3i_%0.2i_%0.1i" 
 													% (param0, param1, param2, param3, param4, param5, param6), 
 													[param0, param1, param2, param3, param4, param5, param6]);
 
