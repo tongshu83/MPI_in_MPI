@@ -12,6 +12,7 @@ file_array=$(echo "$files" | tr "\t" "\n")
 
 P="Elapsed (wall clock) time (h:mm:ss or m:ss): "
 
+index=0
 max=-1
 for filename in ${file_array[@]}
 do
@@ -26,6 +27,9 @@ do
 			sec=$(bc -l <<<"$num + $sec")
 		done
 		# echo "$filename: $sec seconds"
+		index=$(($index + 1))
+		dir=$(dirname $filename)
+		echo -e "$sec\c" >> $dir/time$index.txt
 		if (( $(echo "$sec > $max" | bc -l) ))
 		then
 			max=$sec

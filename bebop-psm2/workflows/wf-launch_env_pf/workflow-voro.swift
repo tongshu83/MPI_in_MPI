@@ -117,7 +117,6 @@ main()
 	int codes[];
 	foreach param1 in [params_start[1] : params_stop[1] : params_step[1]]
 	{
-		printf("In the first level of loops");  // bug!!!
 		if (param1 <= ppw)
 		{
 			foreach param0 in [params_start[0] : params_stop[0] : params_step[0]]

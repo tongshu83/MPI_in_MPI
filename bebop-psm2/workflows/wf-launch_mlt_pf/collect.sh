@@ -13,13 +13,19 @@ then
 	mv $rootdir/$outfile.dat $rootdir/$outfile-bak.dat
 fi
 
-echo -e "#Proc\t#Thread\t#Proc\t#Thread\tIOstep\tExecTime" >> $rootdir/$outfile.dat
+#echo -e "#Proc\tPPW\t#Thread\tIOstep\t#Proc\tPPW\t#Thread\tExecTime" >> $rootdir/$outfile.dat
 for runid in $(ls $rootdir/run)
 do
 	path="$rootdir/run/$runid"
 	if [ -d "$path" ]
 	then
 		cat $path/time.txt >> $rootdir/$outfile.dat
+		echo -e "\t\c" >> $rootdir/$outfile.dat
+		head -c -1 -q $path/time1.txt >> $rootdir/$outfile.dat
+		# cat $path/time1.txt >> $rootdir/$outfile.dat
+		echo -e "\t\c" >> $rootdir/$outfile.dat
+		head -c -1 -q $path/time2.txt >> $rootdir/$outfile.dat
+		# cat $path/time2.txt >> $rootdir/$outfile.dat
 		echo "" >> $rootdir/$outfile.dat
 	fi
 done

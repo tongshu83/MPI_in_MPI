@@ -125,7 +125,7 @@ import sys;
 		if (exectime >= 0.0) {
 			printf("exectime(%i, %i, %i, %i, %i, %i, %i): %f",
 					params[0], params[1], params[2], params[3], params[4], params[5], params[6], exectime);
-			string output = "%0.3i\t%0.2i\t%0.1i\t%0.4i\t%0.3i\t%0.2i\t%0.1i\t%f\t"
+			string output = "%0.3i\t%0.2i\t%0.1i\t%0.4i\t%0.3i\t%0.2i\t%0.1i\t%f"
 				% (params[0], params[1], params[2], params[3], params[4], params[5], params[6], exectime);
 			file out <dir/"time.txt"> = write(output);
 		}
@@ -151,9 +151,9 @@ main()
 	// 4) Voro: total num of processes
 	// 5) Voro: num of processes per worker
 	// 6) Voro: num of threads per process
-	int params_start[] = [16, 8, 1, 100, 16, 8, 1];
-	int params_stop[] = [128, 32, 4, 1000, 128, 32, 4];
-	int params_step[] = [16, 8, 1, 900, 16, 8, 1];
+	int params_start[] = [64, 16, 2, 1000, 112, 32, 2];
+	int params_stop[] = [64, 16, 2, 1000, 128, 32, 4];
+	int params_step[] = [16, 16, 2, 900, 16, 16, 2];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
@@ -166,7 +166,6 @@ main()
 	int codes[];
 	foreach param1 in [params_start[1] : params_stop[1] : params_step[1]]
 	{
-		printf("In the first level of loops");  // bug!!!
 		if (param1 <= ppw)
 		{
 			foreach param5 in [params_start[5] : params_stop[5] : params_step[5]]
