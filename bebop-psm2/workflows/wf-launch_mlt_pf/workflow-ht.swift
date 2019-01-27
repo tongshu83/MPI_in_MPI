@@ -171,41 +171,47 @@ main()
 					{
 						foreach param1 in [params_start[1] : params_stop[1] : params_step[1]]
 						{
-							foreach param4 in [params_start[4] : params_stop[4] : params_step[4]]
+							if (param0 * param1 >= param2)
 							{
-								int nwork;
-								if (param0 * param1 %% param2 == 0 && param4 %% param5 == 0) {
-									nwork = param0 * param1 %/ param2 + param4 %/ param5;
-								} else {
-									if (param0 * param1 %% param2 == 0 || param4 %% param5 == 0) {
-										nwork = param0 * param1 %/ param2 + param4 %/ param5 + 1;
-									} else {
-										nwork = param0 * param1 %/ param2 + param4 %/ param5 + 2;
-									}
-								}
-								if (nwork <= workers)
+								foreach param4 in [params_start[4] : params_stop[4] : params_step[4]]
 								{
-									foreach param3 in [params_start[3] : params_stop[3] : params_step[3]]
+									if (param4 >= param5)
 									{
-										int i = (param0 - params_start[0]) %/ params_step[0]
-											* params_num[1] * params_num[2] * params_num[3] * params_num[4] * params_num[5]
-											+ (param1 - params_start[1]) %/ params_step[1]
-											* params_num[2] * params_num[3] * params_num[4] * params_num[5]
-											+ (param2 - params_start[2]) %/ params_step[2]
-											* params_num[3] * params_num[4] * params_num[5]
-											+ (param3 - params_start[3]) %/ params_step[3]
-											* params_num[4] * params_num[5]
-											+ (param4 - params_start[4]) %/ params_step[4]
-											* params_num[5]
-											+ (param5 - params_start[5]) %/ params_step[5];
-										exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.2i_%0.2i_%0.2i_%0.2i"
-												% (param0, param1, param2, param3, param4, param5),
-												[param0, param1, param2, param3, param4, param5]);
-
-										if (exectime[i] >= 0.0) {
-											codes[i] = 0;
+										int nwork;
+										if (param0 * param1 %% param2 == 0 && param4 %% param5 == 0) {
+											nwork = param0 * param1 %/ param2 + param4 %/ param5;
 										} else {
-											codes[i] = 1;
+											if (param0 * param1 %% param2 == 0 || param4 %% param5 == 0) {
+												nwork = param0 * param1 %/ param2 + param4 %/ param5 + 1;
+											} else {
+												nwork = param0 * param1 %/ param2 + param4 %/ param5 + 2;
+											}
+										}
+										if (nwork <= workers)
+										{
+											foreach param3 in [params_start[3] : params_stop[3] : params_step[3]]
+											{
+												int i = (param0 - params_start[0]) %/ params_step[0]
+													* params_num[1] * params_num[2] * params_num[3] * params_num[4] * params_num[5]
+													+ (param1 - params_start[1]) %/ params_step[1]
+													* params_num[2] * params_num[3] * params_num[4] * params_num[5]
+													+ (param2 - params_start[2]) %/ params_step[2]
+													* params_num[3] * params_num[4] * params_num[5]
+													+ (param3 - params_start[3]) %/ params_step[3]
+													* params_num[4] * params_num[5]
+													+ (param4 - params_start[4]) %/ params_step[4]
+													* params_num[5]
+													+ (param5 - params_start[5]) %/ params_step[5];
+												exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.2i_%0.2i_%0.2i_%0.2i"
+														% (param0, param1, param2, param3, param4, param5),
+														[param0, param1, param2, param3, param4, param5]);
+
+												if (exectime[i] >= 0.0) {
+													codes[i] = 0;
+												} else {
+													codes[i] = 1;
+												}
+											}
 										}
 									}
 								}
