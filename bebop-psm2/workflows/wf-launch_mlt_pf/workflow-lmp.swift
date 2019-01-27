@@ -11,7 +11,7 @@ import sys;
 	file delete -force -- <<dir>>
 	file mkdir <<dir>>
 	cd <<dir>>
-	file copy -force -- <<infile1>> in.quench
+	file copy -force -- <<infile1>> in.quench.short
 	file link -symbolic restart.liquid <<infile2>>
 	file link -symbolic CuZr.fs <<infile3>>
 """
@@ -30,11 +30,11 @@ import sys;
 	string workflow_root = getenv("WORKFLOW_ROOT");
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string dir = "%s/run/%s" % (turbine_output, run_id);
-	string infile1 = "%s/in.quench" % turbine_output;
+	string infile1 = "%s/in.quench.short" % turbine_output;
 	string infile2 = "%s/restart.liquid" % turbine_output;
 	string infile3 = "%s/CuZr.fs" % turbine_output;
 
-	string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", dir/"in.quench" ];
+	string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", dir/"in.quench.short" ];
 	setup_run(dir, infile1, infile2, infile3) =>
 		(output0, exit_code0) = system(cmd0);
 
@@ -66,8 +66,8 @@ import sys;
 		// Command line arguments
 		string args[][];
 
-		// mpiexec -n 8 ./lmp_mpi -i in.quench
-		args[0] = split("-i in.quench", " ");
+		// mpiexec -n 8 ./lmp_mpi -i in.quench.short
+		args[0] = split("-i in.quench.short", " ");
 
 		// mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
 		args[1] = split("dump.bp adios_atom_voro.bp FLEXPATH", " ");
@@ -142,7 +142,12 @@ main()
 	int ppn = 36;	// bebop
 	int wpn = string2int(getenv("PPN"));
 	int ppw = ppn %/ wpn - 1;
-	int workers = string2int(getenv("PROCS")) - 2;
+	int workers;
+	if (string2int(getenv("PROCS")) - 2 < 16) {
+		workers = string2int(getenv("PROCS")) - 2;
+	} else  {
+		workers = 16;
+	}
 
 	// 0) Lammps: total num of processes
 	// 1) Lammps: num of processes per worker
@@ -151,9 +156,9 @@ main()
 	// 4) Voro: total num of processes
 	// 5) Voro: num of processes per worker
 	// 6) Voro: num of threads per process
-	int params_start[] = [64, 16, 2, 1000, 112, 32, 2];
-	int params_stop[] = [64, 16, 2, 1000, 128, 32, 4];
-	int params_step[] = [16, 16, 2, 900, 16, 16, 2];
+	int params_start[] = [16, 8, 2, 100, 16, 8, 2];
+	int params_stop[] = [128, 32, 4, 100, 128, 32, 4];
+	int params_step[] = [16, 8, 2, 900, 16, 8, 2];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
@@ -174,47 +179,53 @@ main()
 				{
 					foreach param0 in [params_start[0] : params_stop[0] : params_step[0]]
 					{
-						foreach param4 in [params_start[4] : params_stop[4] : params_step[4]]
+						if (param0 >= param1)
 						{
-							int nwork;
-							if (param0 %% param1 == 0 && param4 %% param5 == 0) {
-								nwork = param0 %/ param1 + param4 %/ param5;
-							} else {
-								if (param0 %% param1 == 0 || param4 %% param5 == 0) {
-									nwork = param0 %/ param1 + param4 %/ param5 + 1;
-								} else {
-									nwork = param0 %/ param1 + param4 %/ param5 + 2;
-								}
-							}
-							if (nwork <= workers)
+							foreach param4 in [params_start[4] : params_stop[4] : params_step[4]]
 							{
-								foreach param2 in [params_start[2] : params_stop[2] : params_step[2]]
+								if (param4 >= param5)
 								{
-									foreach param3 in [params_start[3] : params_stop[3] : params_step[3]]
+									int nwork;
+									if (param0 %% param1 == 0 && param4 %% param5 == 0) {
+										nwork = param0 %/ param1 + param4 %/ param5;
+									} else {
+										if (param0 %% param1 == 0 || param4 %% param5 == 0) {
+											nwork = param0 %/ param1 + param4 %/ param5 + 1;
+										} else {
+											nwork = param0 %/ param1 + param4 %/ param5 + 2;
+										}
+									}
+									if (nwork <= workers)
 									{
-										foreach param6 in [params_start[6] : params_stop[6] : params_step[6]]
+										foreach param2 in [params_start[2] : params_stop[2] : params_step[2]]
 										{
-											int i = (param0 - params_start[0]) %/ params_step[0] 
-												* params_num[1] * params_num[2] * params_num[3] * params_num[4] * params_num[5] * params_num[6]
-												+ (param1 - params_start[1]) %/ params_step[1] 
-												* params_num[2] * params_num[3] * params_num[4] * params_num[5] * params_num[6]
-												+ (param2 - params_start[2]) %/ params_step[2] 
-												* params_num[3] * params_num[4] * params_num[5] * params_num[6]
-												+ (param3 - params_start[3]) %/ params_step[3] 
-												* params_num[4] * params_num[5] * params_num[6]
-												+ (param4 - params_start[4]) %/ params_step[4] 
-												* params_num[5] * params_num[6]
-												+ (param5 - params_start[5]) %/ params_step[5] 
-												* params_num[6]
-												+ (param6 - params_start[6]) %/ params_step[6];
-											exectime[i] = launch_wrapper("%0.3i_%0.2i_%0.1i_%0.4i_%0.3i_%0.2i_%0.1i" 
-													% (param0, param1, param2, param3, param4, param5, param6), 
-													[param0, param1, param2, param3, param4, param5, param6]);
+											foreach param3 in [params_start[3] : params_stop[3] : params_step[3]]
+											{
+												foreach param6 in [params_start[6] : params_stop[6] : params_step[6]]
+												{
+													int i = (param0 - params_start[0]) %/ params_step[0] 
+														* params_num[1] * params_num[2] * params_num[3] * params_num[4] * params_num[5] * params_num[6]
+														+ (param1 - params_start[1]) %/ params_step[1] 
+														* params_num[2] * params_num[3] * params_num[4] * params_num[5] * params_num[6]
+														+ (param2 - params_start[2]) %/ params_step[2] 
+														* params_num[3] * params_num[4] * params_num[5] * params_num[6]
+														+ (param3 - params_start[3]) %/ params_step[3] 
+														* params_num[4] * params_num[5] * params_num[6]
+														+ (param4 - params_start[4]) %/ params_step[4] 
+														* params_num[5] * params_num[6]
+														+ (param5 - params_start[5]) %/ params_step[5] 
+														* params_num[6]
+														+ (param6 - params_start[6]) %/ params_step[6];
+													exectime[i] = launch_wrapper("%0.3i_%0.2i_%0.1i_%0.4i_%0.3i_%0.2i_%0.1i" 
+															% (param0, param1, param2, param3, param4, param5, param6), 
+															[param0, param1, param2, param3, param4, param5, param6]);
 
-											if (exectime[i] >= 0.0) {
-												codes[i] = 0;
-											} else {
-												codes[i] = 1;
+													if (exectime[i] >= 0.0) {
+														codes[i] = 0;
+													} else {
+														codes[i] = 1;
+													}
+												}
 											}
 										}
 									}
