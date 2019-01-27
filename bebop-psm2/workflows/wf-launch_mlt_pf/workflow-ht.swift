@@ -5,10 +5,10 @@ import stats;
 import string;
 import sys;
 
-// Problem Size of HeatTransfer 
-int ht_x = 160;
-int ht_y = 150;
-int ht_iter = 30;
+// Problem Size of HeatTransfer
+int ht_x = 10000;
+int ht_y = 10000;
+int ht_iter = 10000;
 
 (void v) setup_run(string dir, string infile) "turbine" "0.0"
 [
@@ -134,7 +134,12 @@ main()
 	int ppn = 36;   // bebop
 	int wpn = string2int(getenv("PPN"));
 	int ppw = ppn %/ wpn - 1;
-	int workers = string2int(getenv("PROCS")) - 2;
+	int workers;
+	if (string2int(getenv("PROCS")) - 2 < 16) {
+		workers = string2int(getenv("PROCS")) - 2;
+	} else {
+		workers = 16;
+	}
 
 	// 0) HeatTransfer: total number of processes in X dimension
 	// 1) HeatTransfer: total number of processes in Y dimension
@@ -142,9 +147,9 @@ main()
 	// 3) HeatTransfer: the total number of steps to output
 	// 4) StageWrite: total number of processes
 	// 5) StageWrite: number of processes per worker
-	int params_start[] = [6, 5, 15, 6, 34, 17];
-	int params_stop[] = [6, 5, 30, 6, 34, 34];
-	int params_step[] = [6, 5, 15, 6, 34, 17];
+	int params_start[] = [4, 4, 16, 10, 16, 16];
+	int params_stop[] = [16, 16, 32, 100, 128, 32];
+	int params_step[] = [4, 4, 16, 90, 16, 16];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
