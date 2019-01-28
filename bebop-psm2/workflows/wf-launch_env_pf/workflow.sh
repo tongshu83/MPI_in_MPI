@@ -59,7 +59,7 @@ fi
 # Of these, 2 are reserved for the system
 export PROCS=130
 export PPN=1
-export WALLTIME=01:00:00 # 02:00:00
+export WALLTIME=02:00:00 # 02:00:00
 export PROJECT=PACC
 export QUEUE=bdw
 

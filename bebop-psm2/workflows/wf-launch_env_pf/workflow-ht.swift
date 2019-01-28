@@ -6,9 +6,9 @@ import string;
 import sys;
 
 // Problem Size of HeatTransfer
-int ht_x = 10000;
-int ht_y = 10000;
-int ht_iter = 10000;
+int ht_x = 4096;
+int ht_y = 4096;
+int ht_iter = 1000;
 
 (void v) setup_input(string dir, string infile) "turbine" "0.0"
 [
@@ -122,15 +122,20 @@ main()
 	int ppn = 36;   // bebop
 	int wpn = string2int(getenv("PPN"));
 	int ppw = ppn %/ wpn - 1;
-	int workers = string2int(getenv("PROCS")) - 2;
+	int workers;
+	if (string2int(getenv("PROCS")) - 2 < 16) {
+		workers = string2int(getenv("PROCS")) - 2;
+	} else {
+		workers = 16;
+	}
 
 	// 0) HeatTransfer: total number of processes in X dimension
 	// 1) HeatTransfer: total number of processes in Y dimension
 	// 2) HeatTransfer: number of processes per worker
 	// 3) HeatTransfer: the total number of steps to output
 	int params_start[] = [4, 4, 8, 10];
-	int params_stop[] = [16, 16, 32, 1000];
-	int params_step[] = [4, 4, 8, 990];
+	int params_stop[] = [16, 16, 32, 100];
+	int params_step[] = [4, 4, 8, 90];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
@@ -146,31 +151,34 @@ main()
 			{
 				foreach param1 in [params_start[1] : params_stop[1] : params_step[1]]
 				{
-					int nwork;
-					if (param0 * param1 %% param2 == 0) {
-						nwork = param0 * param1 %/ param2;
-					} else {
-						nwork = param0 * param1 %/ param2 + 1;
-					}
-					if (nwork <= workers)
+					if (param0 * param1 >= param2)
 					{
-						foreach param3 in [params_start[3] : params_stop[3] : params_step[3]]
+						int nwork;
+						if (param0 * param1 %% param2 == 0) {
+							nwork = param0 * param1 %/ param2;
+						} else {
+							nwork = param0 * param1 %/ param2 + 1;
+						}
+						if (nwork <= workers)
 						{
-							int i = (param0 - params_start[0]) %/ params_step[0]
-								* params_num[1] * params_num[2] * params_num[3]
-								+ (param1 - params_start[1]) %/ params_step[1]
-								* params_num[2] * params_num[3]
-								+ (param2 - params_start[2]) %/ params_step[2]
-								* params_num[3]
-								+ (param3 - params_start[3]) %/ params_step[3];
-							exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.2i_%0.4i"
-									% (param0, param1, param2, param3),
-									[param0, param1, param2, param3]);
+							foreach param3 in [params_start[3] : params_stop[3] : params_step[3]]
+							{
+								int i = (param0 - params_start[0]) %/ params_step[0]
+									* params_num[1] * params_num[2] * params_num[3]
+									+ (param1 - params_start[1]) %/ params_step[1]
+									* params_num[2] * params_num[3]
+									+ (param2 - params_start[2]) %/ params_step[2]
+									* params_num[3]
+									+ (param3 - params_start[3]) %/ params_step[3];
+								exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.2i_%0.4i"
+										% (param0, param1, param2, param3),
+										[param0, param1, param2, param3]);
 
-							if (exectime[i] >= 0.0) {
-								codes[i] = 0;
-							} else {
-								codes[i] = 1;
+								if (exectime[i] >= 0.0) {
+									codes[i] = 0;
+								} else {
+									codes[i] = 1;
+								}
 							}
 						}
 					}

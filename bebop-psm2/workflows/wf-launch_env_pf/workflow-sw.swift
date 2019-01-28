@@ -98,13 +98,18 @@ main()
 	int ppn = 36;   // bebop
 	int wpn = string2int(getenv("PPN"));
 	int ppw = ppn %/ wpn - 1;
-	int workers = string2int(getenv("PROCS")) - 2;
+	int workers;
+	if (string2int(getenv("PROCS")) - 2 < 16) {
+		workers = string2int(getenv("PROCS")) - 2;
+	} else {
+		workers = 16;
+	}
 
 	// 0) StageWrite: total number of processes
 	// 1) StageWrite: number of processes per worker
-	int params_start[] = [17, 17];
-	int params_stop[] = [34, 34];
-	int params_step[] = [17, 17];
+	int params_start[] = [16, 8];
+	int params_stop[] = [256, 32];
+	int params_step[] = [16, 8];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1 ];
 
@@ -116,25 +121,28 @@ main()
 		{
 			foreach param0 in [params_start[0] : params_stop[0] : params_step[0]]
 			{
-				int nwork;
-				if (param0 %% param1 == 0) {
-					nwork = param0 %/ param1;
-				} else {
-					nwork = param0 %/ param1 + 1;
-				}
-				if (nwork <= workers)
+				if (param0 >= param1)
 				{
-					int i = (param0 - params_start[0]) %/ params_step[0]
-						* params_num[1]
-						+ (param1 - params_start[1]) %/ params_step[1];
-					exectime[i] = launch_wrapper("%0.2i_%0.2i"
-							% (param0, param1),
-							[param0, param1]);
-
-					if (exectime[i] >= 0.0) {
-						codes[i] = 0;
+					int nwork;
+					if (param0 %% param1 == 0) {
+						nwork = param0 %/ param1;
 					} else {
-						codes[i] = 1;
+						nwork = param0 %/ param1 + 1;
+					}
+					if (nwork <= workers)
+					{
+						int i = (param0 - params_start[0]) %/ params_step[0]
+							* params_num[1]
+							+ (param1 - params_start[1]) %/ params_step[1];
+						exectime[i] = launch_wrapper("%0.2i_%0.2i"
+								% (param0, param1),
+								[param0, param1]);
+
+						if (exectime[i] >= 0.0) {
+							codes[i] = 0;
+						} else {
+							codes[i] = 1;
+						}
 					}
 				}
 			}

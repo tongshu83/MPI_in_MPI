@@ -101,7 +101,12 @@ main()
 	int ppn = 36;   // bebop
 	int wpn = string2int(getenv("PPN"));
 	int ppw = ppn %/ wpn - 1;
-	int workers = string2int(getenv("PROCS")) - 2;
+	int workers;
+	if (string2int(getenv("PROCS")) - 2 < 16) {
+		workers = string2int(getenv("PROCS")) - 2;
+	} else {
+		workers = 16;
+	}
 
 	// 0) Voro: total num of processes
 	// 1) Voro: num of processes per worker
@@ -121,29 +126,32 @@ main()
 		{
 			foreach param0 in [params_start[0] : params_stop[0] : params_step[0]]
 			{
-				int nwork;
-				if (param0 %% param1 == 0) {
-					nwork = param0 %/ param1;
-				} else {
-					nwork = param0 %/ param1 + 1;
-				}
-				if (nwork <= workers)
+				if (param0 >= param1)
 				{
-					foreach param2 in [params_start[2] : params_stop[2] : params_step[2]]
+					int nwork;
+					if (param0 %% param1 == 0) {
+						nwork = param0 %/ param1;
+					} else {
+						nwork = param0 %/ param1 + 1;
+					}
+					if (nwork <= workers)
 					{
-						int i = (param0 - params_start[0]) %/ params_step[0]
-							* params_num[1] * params_num[2]
-							+ (param1 - params_start[1]) %/ params_step[1]
-							* params_num[2]
-							+ (param2 - params_start[2]) %/ params_step[2];
-						exectime[i] = launch_wrapper("%0.3i_%0.2i_%0.1i"
-								% (param0, param1, param2),
-								[param0, param1, param2]);
+						foreach param2 in [params_start[2] : params_stop[2] : params_step[2]]
+						{
+							int i = (param0 - params_start[0]) %/ params_step[0]
+								* params_num[1] * params_num[2]
+								+ (param1 - params_start[1]) %/ params_step[1]
+								* params_num[2]
+								+ (param2 - params_start[2]) %/ params_step[2];
+							exectime[i] = launch_wrapper("%0.3i_%0.2i_%0.1i"
+									% (param0, param1, param2),
+									[param0, param1, param2]);
 
-						if (exectime[i] >= 0.0) {
-							codes[i] = 0;
-						} else {
-							codes[i] = 1;
+							if (exectime[i] >= 0.0) {
+								codes[i] = 0;
+							} else {
+								codes[i] = 1;
+							}
 						}
 					}
 				}

@@ -117,7 +117,7 @@ int ht_iter = 1000;
 		{
 			printf("exectime(%i, %i, %i, %i, %i, %i): %f",
 					params[0], params[1], params[2], params[3], params[4], params[5], exectime);
-			string output = "%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%f"
+			string output = "%0.2i\t%0.2i\t%0.2i\t%0.3i\t%0.3i\t%0.2i\t%f"
 				% (params[0], params[1], params[2], params[3], params[4], params[5], exectime);
 			file out <dir/"time.txt"> = write(output);
 		}
@@ -147,8 +147,8 @@ main()
 	// 3) HeatTransfer: the total number of steps to output
 	// 4) StageWrite: total number of processes
 	// 5) StageWrite: number of processes per worker
-	int params_start[] = [4, 4, 16, 10, 16, 16];
-	int params_stop[] = [16, 16, 32, 10, 128, 32];
+	int params_start[] = [4, 4, 16, 100, 16, 16];
+	int params_stop[] = [16, 16, 32, 100, 128, 32];
 	int params_step[] = [4, 4, 16, 10, 16, 16];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
@@ -202,7 +202,7 @@ main()
 													+ (param4 - params_start[4]) %/ params_step[4]
 													* params_num[5]
 													+ (param5 - params_start[5]) %/ params_step[5];
-												exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.2i_%0.2i_%0.2i_%0.2i"
+												exectime[i] = launch_wrapper("%0.2i_%0.2i_%0.2i_%0.3i_%0.3i_%0.2i"
 														% (param0, param1, param2, param3, param4, param5),
 														[param0, param1, param2, param3, param4, param5]);
 
