@@ -6,9 +6,9 @@ import string;
 import sys;
 
 // Problem Size of HeatTransfer
-int ht_x = 10000;
-int ht_y = 10000;
-int ht_iter = 10000;
+int ht_x = 4096;
+int ht_y = 4096;
+int ht_iter = 1000;
 
 (void v) setup_run(string dir, string infile) "turbine" "0.0"
 [
@@ -117,7 +117,7 @@ int ht_iter = 10000;
 		{
 			printf("exectime(%i, %i, %i, %i, %i, %i): %f",
 					params[0], params[1], params[2], params[3], params[4], params[5], exectime);
-			string output = "%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%f\t"
+			string output = "%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%0.2i\t%f"
 				% (params[0], params[1], params[2], params[3], params[4], params[5], exectime);
 			file out <dir/"time.txt"> = write(output);
 		}
@@ -148,8 +148,8 @@ main()
 	// 4) StageWrite: total number of processes
 	// 5) StageWrite: number of processes per worker
 	int params_start[] = [4, 4, 16, 10, 16, 16];
-	int params_stop[] = [16, 16, 32, 100, 128, 32];
-	int params_step[] = [4, 4, 16, 90, 16, 16];
+	int params_stop[] = [16, 16, 32, 10, 128, 32];
+	int params_step[] = [4, 4, 16, 10, 16, 16];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
