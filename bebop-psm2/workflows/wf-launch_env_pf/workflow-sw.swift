@@ -82,7 +82,7 @@ import sys;
 		if (exectime >= 0.0)
 		{
 			printf("exectime(%i, %i): %f", params[0], params[1], exectime);
-			string output = "%0.2i\t%0.2i\t%f\t" % (params[0], params[1], exectime);
+			string output = "%0.2i\t%0.2i\t%f" % (params[0], params[1], exectime);
 			file out <dir/"time.txt"> = write(output);
 		}
 		else

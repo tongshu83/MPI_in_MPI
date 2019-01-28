@@ -57,10 +57,10 @@ fi
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=18
+export PROCS=130
 export PPN=1
 export WALLTIME=01:00:00 # 02:00:00
-export PROJECT=WORKFLOW
+export PROJECT=PACC
 export QUEUE=bdw
 
 MACHINE="-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, theta, or slurm. The empty string means the local machine.
