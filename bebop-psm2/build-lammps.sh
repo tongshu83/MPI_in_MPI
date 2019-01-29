@@ -34,7 +34,7 @@ make -j8 CXX=mpicxx CFLAGS=-fPIC
 
 # Compile adios_integration
 cd ../../adios_integration
-sed -i 's/^      timeout_sec = 60.0;$/      timeout_sec = 2.0;/' voro_adios_omp_staging.h
+sed -i 's/^      timeout_sec = 60.0;$/      timeout_sec = 5.0;/' voro_adios_omp_staging.h
 echo
 echo "Build adios_integration ..."
 make -j8

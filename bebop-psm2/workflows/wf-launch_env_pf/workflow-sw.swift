@@ -82,7 +82,7 @@ import sys;
 		if (exectime >= 0.0)
 		{
 			printf("exectime(%i, %i): %f", params[0], params[1], exectime);
-			string output = "%0.2i\t%0.2i\t%f" % (params[0], params[1], exectime);
+			string output = "%0.3i\t%0.2i\t%f" % (params[0], params[1], exectime);
 			file out <dir/"time.txt"> = write(output);
 		}
 		else
@@ -108,7 +108,7 @@ main()
 	// 0) StageWrite: total number of processes
 	// 1) StageWrite: number of processes per worker
 	int params_start[] = [16, 8];
-	int params_stop[] = [256, 32];
+	int params_stop[] = [128, 32];
 	int params_step[] = [16, 8];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1 ];
@@ -134,7 +134,7 @@ main()
 						int i = (param0 - params_start[0]) %/ params_step[0]
 							* params_num[1]
 							+ (param1 - params_start[1]) %/ params_step[1];
-						exectime[i] = launch_wrapper("%0.2i_%0.2i"
+						exectime[i] = launch_wrapper("%0.3i_%0.2i"
 								% (param0, param1),
 								[param0, param1]);
 
