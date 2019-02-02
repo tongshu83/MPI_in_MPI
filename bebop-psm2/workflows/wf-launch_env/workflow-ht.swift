@@ -37,6 +37,7 @@ main()
 		string envs1[] = [ "swift_chdir="+dir, 
 		       "swift_output="+dir/"output_heat_transfer_adios2.txt", 
 		       "swift_exectime="+dir/"time_heat_transfer_adios2.txt", 
+		       "swift_timeout=%i" % 60,
 		       "swift_numproc=70", 
 		       "swift_ppw=35" ];
 
@@ -55,7 +56,8 @@ main()
 			string args2[] = split("heat.bp staged.bp MPI \"\" MPI \"\"", " ");     // mpiexec -n 70 stage_write/stage_write heat.bp staged.bp MPI "" MPI ""
 			string envs2[] = [ "swift_chdir="+dir, 
 			       "swift_output="+dir/"output_stage_write.txt", 
-			       "swift_exectime="+dir/"time_stage_write.txt", 
+			       "swift_exectime="+dir/"time_stage_write.txt",
+			       "swift_timeout=%i" % 60, 
 			       "swift_numproc=70",
 			       "swift_ppw=35" ];
 
