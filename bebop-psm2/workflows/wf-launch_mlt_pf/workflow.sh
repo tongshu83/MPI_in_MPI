@@ -30,7 +30,7 @@ cp -f $WORKFLOW_ROOT/get_maxtime.sh $TURBINE_OUTPUT/get_maxtime.sh
 if [[ $1 = "workflow-ht" ]]
 then
 	cd $TURBINE_OUTPUT
-	ln -s ../heat_transfer.xml heat_transfer.xml
+	cp -f ../heat_transfer.xml heat_transfer.xml
 	cd -
 fi
 
@@ -39,16 +39,16 @@ then
 	cd $TURBINE_OUTPUT
 	cp -f ../in.quench in.quench
 	cp -f ../in.quench.short in.quench.short
-	ln -s ../restart.liquid restart.liquid
-	ln -s ../CuZr.fs CuZr.fs
+	cp -f ../restart.liquid restart.liquid
+	cp -f ../CuZr.fs CuZr.fs
 	cd -
 fi
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=130
+export PROCS=18
 export PPN=1
-export WALLTIME=03:00:00
+export WALLTIME=08:00:00
 export PROJECT=PACC
 export QUEUE=bdw
 

@@ -46,8 +46,8 @@ then
 	cd $TURBINE_OUTPUT
 	cp -f ../in.quench in.quench
 	cp -f ../in.quench.short in.quench.short
-	ln -s ../restart.liquid restart.liquid
-	ln -s ../CuZr.fs CuZr.fs
+	cp -f ../restart.liquid restart.liquid
+	cp -f ../CuZr.fs CuZr.fs
 #	cp -f $EXAMPLE_LAMMPS/in.quench in.quench
 #	cp -f $EXAMPLE_LAMMPS/in.quench.short in.quench.short
 #	ln -s $EXAMPLE_LAMMPS/restart.liquid restart.liquid
@@ -57,9 +57,9 @@ fi
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=130
+export PROCS=18
 export PPN=1
-export WALLTIME=02:00:00 # 02:00:00
+export WALLTIME=01:00:00 # 02:00:00
 export PROJECT=PACC
 export QUEUE=bdw
 

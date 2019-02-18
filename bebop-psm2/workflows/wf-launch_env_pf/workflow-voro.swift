@@ -15,51 +15,69 @@ import sys;
 """
 ];
 
-(float exectime) launch_wrapper(string run_id, int params[])
+(float exectime) launch_wrapper(string run_id, int params[], int count = 0)
 {
-	int voro_proc = params[0];	// Voro: total num of processes
-	int voro_ppw = params[1];	// Voro: num of processes per worker
-	int voro_thrd = params[2];	// Voro: num of threads per process
-
-	string workflow_root = getenv("WORKFLOW_ROOT");
-	string srcDir = "%s/experiment/wf-lmp-bp" % workflow_root;
-	string turbine_output = getenv("TURBINE_OUTPUT");
-	string parDir = "%s/run" % turbine_output;
-	string dir = "%s/%s" % (parDir, run_id);
-
-	int nwork1;
-	if (voro_proc %% voro_ppw == 0) {
-		nwork1 = voro_proc %/ voro_ppw;
-	} else {
-		nwork1 = voro_proc %/ voro_ppw + 1;
-	}
-
-	string cmd1 = "../../../../../../Example-LAMMPS/swift-all/voro_adios_omp_staging";
-
-	// mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp BP
-	string args1[] = split("dump.bp adios_atom_voro.bp BP", " ");
-
-	string envs1[] = [ "OMP_NUM_THREADS="+int2string(voro_thrd),
-	       "swift_chdir="+dir,
-	       "swift_output="+dir/"output_voro_adios_omp_staging.txt",
-	       "swift_exectime="+dir/"time_voro_adios_omp_staging.txt",
-	       "swift_numproc=%i" % voro_proc,
-	       "swift_ppw=%i" % voro_ppw ];
-
-	printf("swift: launching with environment variables: %s (%s, %s, %s)", cmd1, envs1[0], envs1[4], envs1[5]);
-	setup_run(parDir, srcDir, dir) =>
-		sleep(1) =>
-		exit_code1 = @par=nwork1 launch_envs(cmd1, args1, envs1);
-
-	if (exit_code1 != 0)
+	int time_limit = 3;
+	if (count < time_limit)
 	{
-		exectime = -1.0;
-		printf("swift: The launched application %s with parameters (%d, %d, %d) did not succeed with exit code: %d.", 
-				cmd1, params[0], params[1], params[2], exit_code1);
+		int voro_proc = params[0];	// Voro: total num of processes
+		int voro_ppw = params[1];	// Voro: num of processes per worker
+		int voro_thrd = params[2];	// Voro: num of threads per process
+
+		string workflow_root = getenv("WORKFLOW_ROOT");
+		string srcDir = "%s/experiment/wf-lmp-bp" % workflow_root;
+		string turbine_output = getenv("TURBINE_OUTPUT");
+		string parDir = "%s/run" % turbine_output;
+		string dir = "%s/%s" % (parDir, run_id);
+
+		int nwork1;
+		if (voro_proc %% voro_ppw == 0) {
+			nwork1 = voro_proc %/ voro_ppw;
+		} else {
+			nwork1 = voro_proc %/ voro_ppw + 1;
+		}
+
+		string cmd1 = "../../../../../../Example-LAMMPS/swift-all/voro_adios_omp_staging";
+
+		// mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp BP
+		string args1[] = split("dump.bp adios_atom_voro.bp BP", " ");
+
+		string envs1[] = [ "OMP_NUM_THREADS="+int2string(voro_thrd),
+		       "swift_chdir="+dir,
+		       "swift_output="+dir/"output_voro_adios_omp_staging.txt",
+		       "swift_exectime="+dir/"time_voro_adios_omp_staging.txt",
+		       "swift_numproc=%i" % voro_proc,
+		       "swift_ppw=%i" % voro_ppw ];
+
+		printf("swift: launching with environment variables: %s (%s, %s, %s)", cmd1, envs1[0], envs1[4], envs1[5]);
+		setup_run(parDir, srcDir, dir) =>
+			sleep(1) =>
+			exit_code1 = @par=nwork1 launch_envs(cmd1, args1, envs1);
+
+		if (exit_code1 == 124)
+		{
+			sleep(1) =>
+				exectime = launch_wrapper(run_id, params, count + 1);
+		}
+		else
+		{
+			if (exit_code1 != 0)
+			{
+				exectime = -1.0;
+				printf("swift: The launched application %s with parameters (%d, %d, %d) did not succeed with exit code: %d.", 
+						cmd1, params[0], params[1], params[2], exit_code1);
+			}
+			else
+			{
+				exectime = get_exectime(run_id, params);
+			}
+		}
 	}
 	else
 	{
-		exectime = get_exectime(run_id, params);
+		exectime = -1.0;
+		printf("swift: The launched application with parameters (%d, %d, %d) did not succeed %d times.",
+				params[0], params[1], params[2], time_limit);
 	}
 }
 

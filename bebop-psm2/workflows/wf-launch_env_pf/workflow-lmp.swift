@@ -11,68 +11,89 @@ import sys;
 	file delete -force -- <<dir>>
 	file mkdir <<dir>>
 	cd <<dir>>
-	file copy -force -- <<infile1>> in.quench
-	file link -symbolic restart.liquid <<infile2>>
-	file link -symbolic CuZr.fs <<infile3>>
+	file copy -force -- <<infile1>> in.quench.short
+	file copy -force -- <<infile2>> restart.liquid
+	file copy -force -- <<infile3>> CuZr.fs
 """
 ];
 
-(float exectime) launch_wrapper(string run_id, int params[])
+(float exectime) launch_wrapper(string run_id, int params[], int count = 0)
 {
-	int lmp_proc = params[0];	// Lammps: total num of processes
-	int lmp_ppw = params[1];	// Lammps: num of processes per worker
-	int lmp_thrd = params[2];	// Lammps: num of threads per process
-	int lmp_frqIO = params[3];	// Lammps: IO interval in steps
-
-	string workflow_root = getenv("WORKFLOW_ROOT");
-	string turbine_output = getenv("TURBINE_OUTPUT");
-	string dir = "%s/run/%s" % (turbine_output, run_id);
-	string infile1 = "%s/in.quench" % turbine_output;
-	string infile2 = "%s/restart.liquid" % turbine_output;
-	string infile3 = "%s/CuZr.fs" % turbine_output;
-
-	string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "POSIX", dir/"in.quench" ];
-	setup_run(dir, infile1, infile2, infile3) =>
-		(output0, exit_code0) = system(cmd0);
-
-	if (exit_code0 != 0)
+	int time_limit = 3;
+	if (count < time_limit)
 	{
-		exectime = -1.0;
-		printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2]+" "+cmd0[3], exit_code0);
-	}
-	else
-	{
-		int nwork1;
-		if (lmp_proc %% lmp_ppw == 0) {
-			nwork1 = lmp_proc %/ lmp_ppw;
-		} else {
-			nwork1 = lmp_proc %/ lmp_ppw + 1;
-		}
+		int lmp_proc = params[0];	// Lammps: total num of processes
+		int lmp_ppw = params[1];	// Lammps: num of processes per worker
+		int lmp_thrd = params[2];	// Lammps: num of threads per process
+		int lmp_frqIO = params[3];	// Lammps: IO interval in steps
 
-		string cmd1 = "../../../../../../Example-LAMMPS/swift-all/lmp_mpi"; 
+		string workflow_root = getenv("WORKFLOW_ROOT");
+		string turbine_output = getenv("TURBINE_OUTPUT");
+		string dir = "%s/run/%s" % (turbine_output, run_id);
+		string infile1 = "%s/in.quench.short" % turbine_output;
+		string infile2 = "%s/restart.liquid" % turbine_output;
+		string infile3 = "%s/CuZr.fs" % turbine_output;
 
-		string args1[] = split("-i in.quench", " ");	// mpiexec -n 8 ./lmp_mpi -i in.quench
+		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "POSIX", dir/"in.quench.short" ];
+		setup_run(dir, infile1, infile2, infile3) =>
+			(output0, exit_code0) = system(cmd0);
 
-		string envs1[] = [ "OMP_NUM_THREADS="+int2string(lmp_thrd), 
-		       "swift_chdir="+dir, 
-		       "swift_output="+dir/"output_lmp_mpi.txt", 
-		       "swift_exectime="+dir/"time_lmp_mpi.txt",
-		       "swift_numproc=%i" % lmp_proc,
-		       "swift_ppw=%i" % lmp_ppw ];
-
-		printf("swift: launching with environment variables: %s", cmd1);
-		sleep(1) =>
-			exit_code1 = @par=nwork1 launch_envs(cmd1, args1, envs1);
-
-		if (exit_code1 != 0)
+		if (exit_code0 != 0)
 		{
 			exectime = -1.0;
-			printf("swift: The launched application %s with parameters (%d, %d, %d, %d) did not succeed with exit code: %d.", cmd1, params[0], params[1], params[2], params[3], exit_code1);
+			printf("swift: %s failed with exit code %d.", cmd0[0]+" "+cmd0[1]+" "+cmd0[2]+" "+cmd0[3], exit_code0);
 		}
 		else
 		{
-			exectime = get_exectime(run_id, params);
+			int nwork1;
+			if (lmp_proc %% lmp_ppw == 0) {
+				nwork1 = lmp_proc %/ lmp_ppw;
+			} else {
+				nwork1 = lmp_proc %/ lmp_ppw + 1;
+			}
+			int timeout = 600 * float2int(2 ** count);
+
+			string cmd1 = "../../../../../../Example-LAMMPS/swift-all/lmp_mpi"; 
+
+			string args1[] = split("-i in.quench.short", " ");	// mpiexec -n 8 ./lmp_mpi -i in.quench.short
+
+			string envs1[] = [ "OMP_NUM_THREADS="+int2string(lmp_thrd), 
+			       "swift_chdir="+dir, 
+			       "swift_output="+dir/"output_lmp_mpi.txt", 
+			       "swift_exectime="+dir/"time_lmp_mpi.txt",
+			       "swift_timeout=%i" % timeout,
+			       "swift_numproc=%i" % lmp_proc,
+			       "swift_ppw=%i" % lmp_ppw ];
+
+			printf("swift: launching with environment variables: %s", cmd1);
+			sleep(1) =>
+				exit_code1 = @par=nwork1 launch_envs(cmd1, args1, envs1);
+
+			if (exit_code1 == 124)
+			{
+				sleep(1) =>
+					exectime = launch_wrapper(run_id, params, count + 1);
+			}
+			else
+			{
+				if (exit_code1 != 0)
+				{
+					exectime = -1.0;
+					printf("swift: The launched application %s with parameters (%d, %d, %d, %d) did not succeed with exit code: %d.", 
+							cmd1, params[0], params[1], params[2], params[3], exit_code1);
+				}
+				else
+				{
+					exectime = get_exectime(run_id, params);
+				}
+			}
 		}
+	}
+	else
+	{
+		exectime = -1.0;
+		printf("swift: The launched application with parameters (%d, %d, %d, %d) did not succeed %d times.",
+				params[0], params[1], params[2], params[3], time_limit);
 	}
 }
 
@@ -125,8 +146,8 @@ main()
 	// 1) Lammps: num of processes per worker
 	// 2) Lammps: num of threads per process
 	// 3) Lammps: IO interval in steps
-	int params_start[] = [16, 8, 1, 40];
-	int params_stop[] = [128, 32, 4, 400];
+	int params_start[] = [32, 16, 2, 100];
+	int params_stop[] = [32, 16, 2, 100];
 	int params_step[] = [16, 8, 1, 360];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,

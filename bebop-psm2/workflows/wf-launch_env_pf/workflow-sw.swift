@@ -15,49 +15,69 @@ import sys;
 """
 ];
 
-(float exectime) launch_wrapper(string run_id, int params[])
+(float exectime) launch_wrapper(string run_id, int params[], int count = 1)
 {
-	int sw_proc = params[0];	// StageWrite: total number of processes
-	int sw_ppw = params[1];		// StageWrite: number of processes per worker
-
-	string workflow_root = getenv("WORKFLOW_ROOT");
-	string srcDir = "%s/experiment/wf-ht-bp" % workflow_root;
-	string turbine_output = getenv("TURBINE_OUTPUT");
-	string parDir = "%s/run" % turbine_output;
-	string dir = "%s/%s" % (parDir, run_id);
-
-	int nwork1;
-	if (sw_proc %% sw_ppw == 0) {
-		nwork1 = sw_proc %/ sw_ppw;
-	} else {
-		nwork1 = sw_proc %/ sw_ppw + 1;
-	}
-
-	string cmd1 = "../../../../../../Example-Heat_Transfer/stage_write/stage_write";
-
-	// mpiexec -n 70 stage_write/stage_write heat.bp staged.bp MPI "" MPI ""
-	string args1[] = split("heat.bp staged.bp MPI \"\" MPI \"\"", " ");
-
-	string envs1[] = [ "swift_chdir="+dir, 
-	       "swift_output="+dir/"output_stage_write.txt", 
-	       "swift_exectime="+dir/"time_stage_write.txt", 
-	       "swift_numproc=%i" % sw_proc, 
-	       "swift_ppw=%i" % sw_ppw ];
-
-	printf("swift: launching with environment variables: %s", cmd1);
-	setup_run(parDir, srcDir, dir) =>
-		sleep(1) =>
-		exit_code1 = @par=nwork1 launch_envs(cmd1, args1, envs1);
-
-	if (exit_code1 != 0)
+	int time_limit = 3;
+	if (count <= time_limit)
 	{
-		exectime = -1.0;
-		printf("swift: The launched application %s with parameters (%d, %d) did not succeed with exit code: %d.", 
-				cmd1, params[0], params[1], exit_code1);
+		int sw_proc = params[0];	// StageWrite: total number of processes
+		int sw_ppw = params[1];		// StageWrite: number of processes per worker
+
+		string workflow_root = getenv("WORKFLOW_ROOT");
+		string srcDir = "%s/experiment/wf-ht-bp" % workflow_root;
+		string turbine_output = getenv("TURBINE_OUTPUT");
+		string parDir = "%s/run" % turbine_output;
+		string dir = "%s/%s" % (parDir, run_id);
+
+		int nwork1;
+		if (sw_proc %% sw_ppw == 0) {
+			nwork1 = sw_proc %/ sw_ppw;
+		} else {
+			nwork1 = sw_proc %/ sw_ppw + 1;
+		}
+
+		string cmd1 = "../../../../../../Example-Heat_Transfer/stage_write/stage_write";
+
+		// mpiexec -n 70 stage_write/stage_write heat.bp staged.bp MPI "" MPI ""
+		string args1[] = split("heat.bp staged.bp MPI \"\" MPI \"\"", " ");
+
+		string envs1[] = [ "swift_chdir="+dir, 
+		       "swift_output="+dir/"output_stage_write.txt", 
+		       "swift_exectime="+dir/"time_stage_write.txt",
+		       "swift_timeout=%i" % (600 * count), 
+		       "swift_numproc=%i" % sw_proc, 
+		       "swift_ppw=%i" % sw_ppw ];
+
+		printf("swift: launching with environment variables: %s", cmd1);
+		setup_run(parDir, srcDir, dir) =>
+			sleep(1) =>
+			exit_code1 = @par=nwork1 launch_envs(cmd1, args1, envs1);
+
+		if (exit_code1 == 124)
+		{
+			sleep(1) =>
+				exectime = launch_wrapper(run_id, params, count + 1);
+		}
+		else
+		{
+			if (exit_code1 != 0)
+			{
+				exectime = -1.0;
+				printf("swift: The launched application %s with parameters (%d, %d) did not succeed with exit code: %d.", 
+						cmd1, params[0], params[1], exit_code1);
+			}
+			else
+			{
+				exectime = get_exectime(run_id, params);
+			}
+		}
 	}
 	else
 	{
-		exectime = get_exectime(run_id, params);
+		exectime = -1.0;
+		printf("swift: The launched application with parameters (%d, %d) did not succeed %d times.",
+				params[0], params[1], time_limit);
+
 	}
 }
 
@@ -115,6 +135,44 @@ main()
 
 	float exectime[];
 	int codes[];
+	for (int param1 = params_start[1], int flag10 = 0; param1 <= params_stop[1]; param1 = param1 + params_step[1], flag10 = sum(flag11))
+	{
+		int flag11[];
+		if (param1 <= ppw)
+		{
+			for (int param0 = params_start[0], int flag00 = 0; param0 <= params_stop[0]; param0 = param0 + params_step[0], flag00 = sum(flag01))
+			{
+				int flag01[];
+				if (param0 >= param1)
+				{
+					int nwork;
+					if (param0 %% param1 == 0) {
+						nwork = param0 %/ param1;
+					} else {
+						nwork = param0 %/ param1 + 1;
+					}
+					if (nwork <= workers)
+					{
+						int i = (param0 - params_start[0]) %/ params_step[0]
+							* params_num[1]
+							+ (param1 - params_start[1]) %/ params_step[1];
+						exectime[i] = launch_wrapper("%0.3i_%0.2i"
+								% (param0, param1),
+								[param0, param1]);
+
+						if (exectime[i] >= 0.0) {
+							codes[i] = 0;
+						} else {
+							codes[i] = 1;
+						}
+						flag01[0] = codes[i];
+						flag11[param0] = codes[i];
+					}
+				}
+			}
+		}
+	}
+/*
 	foreach param1 in [params_start[1] : params_stop[1] : params_step[1]]
 	{
 		if (param1 <= ppw)
@@ -148,6 +206,7 @@ main()
 			}
 		}
 	}
+*/
 	if (sum_integer(codes) == 0)
 	{
 		printf("swift: all the launched applications succeed.");
