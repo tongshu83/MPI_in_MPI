@@ -28,10 +28,10 @@ export ROOT=$PWD/install
 source env_korvo.sh
 source env_adios.sh
 source env_ant.sh
-source env_R.sh
+#source env_R.sh
 # source env_eqr.sh
 source env_conda2.sh
 source env_swiftT.sh
-source env_blas.sh
-source env_bonmin.sh
+#source env_blas.sh
+#source env_bonmin.sh
 

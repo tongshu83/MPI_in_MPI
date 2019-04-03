@@ -29,7 +29,7 @@ do
 		# echo "$filename: $sec seconds"
 		index=$(($index + 1))
 		dir=$(dirname $filename)
-		echo -e "$sec\c" >> $dir/time$index.txt
+		echo -e "$sec\c" > $dir/time$index.txt
 		if (( $(echo "$sec > $max" | bc -l) ))
 		then
 			max=$sec

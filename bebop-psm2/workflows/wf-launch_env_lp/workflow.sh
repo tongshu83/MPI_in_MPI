@@ -48,13 +48,15 @@ fi
 export PROCS=4
 export PPN=1
 export WALLTIME=00:15:00
+export PROJECT=WORKFLOW
+export QUEUE=bdw
 
 MACHINE="-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, theta, or slurm. The empty string means the local machine.
 
 ENVS="" # "-e <key>=<value>" Set an environment variable in the job environment.
 
 set -x
-stc -p -u -O0 $WORKFLOW_ROOT/$WORKFLOW_SWIFT
+stc -p -O0 $WORKFLOW_ROOT/$WORKFLOW_SWIFT
 # -p: Disable the C preprocessor
 # -u: Only compile if target is not up-to-date
 

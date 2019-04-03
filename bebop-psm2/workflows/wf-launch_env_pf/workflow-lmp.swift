@@ -11,7 +11,7 @@ import sys;
 	file delete -force -- <<dir>>
 	file mkdir <<dir>>
 	cd <<dir>>
-	file copy -force -- <<infile1>> in.quench.short
+	file copy -force -- <<infile1>> in.quench
 	file copy -force -- <<infile2>> restart.liquid
 	file copy -force -- <<infile3>> CuZr.fs
 """
@@ -30,11 +30,11 @@ import sys;
 		string workflow_root = getenv("WORKFLOW_ROOT");
 		string turbine_output = getenv("TURBINE_OUTPUT");
 		string dir = "%s/run/%s" % (turbine_output, run_id);
-		string infile1 = "%s/in.quench.short" % turbine_output;
+		string infile1 = "%s/in.quench" % turbine_output;
 		string infile2 = "%s/restart.liquid" % turbine_output;
 		string infile3 = "%s/CuZr.fs" % turbine_output;
 
-		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "POSIX", dir/"in.quench.short" ];
+		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "POSIX", dir/"in.quench" ];
 		setup_run(dir, infile1, infile2, infile3) =>
 			(output0, exit_code0) = system(cmd0);
 
@@ -55,7 +55,7 @@ import sys;
 
 			string cmd1 = "../../../../../../Example-LAMMPS/swift-all/lmp_mpi"; 
 
-			string args1[] = split("-i in.quench.short", " ");	// mpiexec -n 8 ./lmp_mpi -i in.quench.short
+			string args1[] = split("-i in.quench", " ");	// mpiexec -n 8 ./lmp_mpi -i in.quench
 
 			string envs1[] = [ "OMP_NUM_THREADS="+int2string(lmp_thrd), 
 			       "swift_chdir="+dir, 
@@ -146,9 +146,9 @@ main()
 	// 1) Lammps: num of processes per worker
 	// 2) Lammps: num of threads per process
 	// 3) Lammps: IO interval in steps
-	int params_start[] = [32, 16, 2, 100];
-	int params_stop[] = [32, 16, 2, 100];
-	int params_step[] = [16, 8, 1, 360];
+	int params_start[] = [32, 16, 2, 50];
+	int params_stop[] = [32, 16, 2, 400];
+	int params_step[] = [16, 8, 1, 50];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,

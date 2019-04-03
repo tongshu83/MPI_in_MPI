@@ -1,7 +1,8 @@
 #!/bin/bash
 
 METHOD=$1
-FILE=$2
+BUFFER=$2
+FILE=$3
 
 export PWD=$( cd $( dirname $0 ) ; /bin/pwd )
 
@@ -36,4 +37,6 @@ then
 	sed -i 's@^  <method group="heat" method="MPI"/>$@<!-- <method group="heat" method="MPI"/> -->@' $FILE
 	sed -i 's@^  <method group="heat" method="MPI_AGGREGATE">num_aggregators=4;num_ost=2;have_metadata_file=1;verbose=3</method>$@<!-- <method group="heat" method="MPI_AGGREGATE">num_aggregators=4;num_ost=2;have_metadata_file=1;verbose=3</method> -->@' $FILE
 fi
+
+sed -i 's@^  <buffer max-size-MB=".*"/>$@  <buffer max-size-MB="'"$BUFFER"'"/>@' $FILE
 
