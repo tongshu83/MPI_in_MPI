@@ -49,7 +49,7 @@ fi
 export PROCS=6
 export PPN=1
 export WALLTIME=01:00:00
-export PROJECT=PACC
+export PROJECT=WORKFLOW
 export QUEUE=bdw
 
 MACHINE="-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, theta, or slurm. The empty string means the local machine.

@@ -71,9 +71,9 @@ fi
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=66
+export PROCS=34
 export PPN=1
-export WALLTIME=72:00:00
+export WALLTIME=12:00:00
 export PROJECT=PACC
 export QUEUE=bdw
 

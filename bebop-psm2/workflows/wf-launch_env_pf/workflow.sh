@@ -58,8 +58,8 @@ fi
 # Of these, 2 are reserved for the system
 export PROCS=4
 export PPN=1
-export WALLTIME=01:00:00 # 02:00:00
-export PROJECT=PACC
+export WALLTIME=01:00:00
+export PROJECT=WORKFLOW
 export QUEUE=bdw
 
 MACHINE="-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, theta, or slurm. The empty string means the local machine.
