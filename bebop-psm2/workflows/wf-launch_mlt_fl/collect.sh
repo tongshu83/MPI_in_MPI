@@ -19,7 +19,16 @@ do
 	path="$rootdir/run/$runid"
 	if [ -d "$path" ]
 	then
-		cat $path/time.txt >> $rootdir/$outfile.dat
+		if [ -f "$path/time.txt" ]
+		then
+			cat $path/time.txt >> $rootdir/$outfile.dat
+		else
+			if [[ -f "$path/time1.txt" && -f "$path/time2.txt" ]]
+			then
+				echo -e "$runid\t\c" >> $rootdir/$outfile.dat
+				$PWD/get_maxtime2.sh $path/time_*.txt >> $rootdir/$outfile.dat
+			fi
+		fi
 		echo -e "\t\c" >> $rootdir/$outfile.dat
 		# head -c -1 -q $path/time1.txt >> $rootdir/$outfile.dat
 		head -q $path/time1.txt >> $rootdir/$outfile.dat
