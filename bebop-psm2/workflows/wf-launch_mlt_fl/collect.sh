@@ -26,7 +26,7 @@ do
 			if [[ -f "$path/time1.txt" && -f "$path/time2.txt" ]]
 			then
 				echo -e "$runid\t\c" >> $rootdir/$outfile.dat
-				$PWD/get_maxtime2.sh $path/time_*.txt >> $rootdir/$outfile.dat
+				$PWD/get_maxtime.sh $path/time_*.txt >> $rootdir/$outfile.dat
 			fi
 		fi
 		echo -e "\t\c" >> $rootdir/$outfile.dat
