@@ -81,7 +81,6 @@ int ht_iter = 1024;
 			// mpiexec -n 12 ./heat_transfer_adios2 heat 4 3 40 50 6 5
 			args[0] = split("heat %i %i %i %i %i %i" 
 					% (ht_proc_x, ht_proc_y, ht_las_x, ht_las_y, ht_step, ht_ips), " ");
-			printf("heat %i %i %i %i %i %i", ht_proc_x, ht_proc_y, ht_las_x, ht_las_y, ht_step, ht_ips);
 
 			// mpiexec -n 3 stage_write/stage_write heat.bp staged.bp FLEXPATH "" MPI ""
 			string method = "FLEXPATH";
@@ -208,7 +207,7 @@ main()
 	// 4) HeatTransfer: the maximum size of I/O buffer
 	// 5) StageWrite: total number of processes
 	// 6) StageWrite: number of processes per worker
-	int sample_num = 1000;
+	int sample_num = 468;
 	conf_samples = file_lines(input("conf_hs_smpls.csv"));
 
 	float exectime[];
