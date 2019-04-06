@@ -21,13 +21,19 @@ do
 	then
 		if [ -f "$path/time.txt" ]
 		then
-			cat $path/time.txt >> $rootdir/$outfile.dat
-		else
-			if [[ -f "$path/time1.txt" && -f "$path/time2.txt" ]]
+			filesize=$(stat -c%s "$path/time.txt")
+			if [ $filesize -gt 0 ]
+			then
+				cat $path/time.txt >> $rootdir/$outfile.dat
+			elif [ -f "$path/time1.txt" ] && [ -f "$path/time2.txt" ]
 			then
 				echo -e "$runid\t\c" >> $rootdir/$outfile.dat
 				$PWD/get_maxtime.sh $path/time_*.txt >> $rootdir/$outfile.dat
 			fi
+		elif [[ -f "$path/time1.txt" && -f "$path/time2.txt" ]]
+		then
+			echo -e "$runid\t\c" >> $rootdir/$outfile.dat
+			$PWD/get_maxtime.sh $path/time_*.txt >> $rootdir/$outfile.dat
 		fi
 		echo -e "\t\c" >> $rootdir/$outfile.dat
 		# head -c -1 -q $path/time1.txt >> $rootdir/$outfile.dat
