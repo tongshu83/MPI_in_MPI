@@ -123,7 +123,7 @@ import sys;
 {
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string dir = "%s/run/%s" % (turbine_output, run_id);
-	string output = "%0.3i\t%0.2i\t%0.1i\t%0.4i\t%s"
+	string output = "%0.4i\t%0.2i\t%0.1i\t%0.4i\t%s"
 		% (params[0], params[1], params[2], params[3], "inf");
 	file out <dir/"time.txt"> = write(output);
 	v = propagate();
@@ -152,7 +152,7 @@ import sys;
 			if (exectime >= 0.0)
 			{
 				printf("exectime(%i, %i, %i, %i): %f", params[0], params[1], params[2], params[3], exectime);
-				string output = "%0.3i\t%0.2i\t%0.1i\t%0.4i\t%f" 
+				string output = "%0.4i\t%0.2i\t%0.1i\t%0.4i\t%f" 
 					% (params[0], params[1], params[2], params[3], exectime);
 				file out <dir/"time.txt"> = write(output);
 			}
@@ -177,17 +177,17 @@ main()
 	int wpn = string2int(getenv("PPN"));
 	int ppw = ppn %/ wpn - 1;
 	int workers;
-	if (string2int(getenv("PROCS")) - 2 < 15) {
+	if (string2int(getenv("PROCS")) - 2 < 31) {
 		workers = string2int(getenv("PROCS")) - 2;
 	} else {
-		workers = 15;
+		workers = 31;
 	}
 
 	// 0) Lammps: total num of processes
 	// 1) Lammps: num of processes per worker
 	// 2) Lammps: num of threads per process
 	// 3) Lammps: IO interval in steps
-	int sample_num = 1;
+	int sample_num = 139;
 	conf_samples = file_lines(input("conf_lmp_smpls.csv"));
 
 	float exectime[];
@@ -210,7 +210,7 @@ main()
 			}
 			if (nwork <= workers)
 			{
-				exectime[i] = launch_wrapper("%0.3i_%0.2i_%0.1i_%0.4i" 
+				exectime[i] = launch_wrapper("%0.4i_%0.2i_%0.1i_%0.4i" 
 						% (params[0], params[1], params[2], params[3]),
 						params);
 
