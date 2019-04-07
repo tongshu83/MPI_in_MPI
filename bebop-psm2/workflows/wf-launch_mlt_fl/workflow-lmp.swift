@@ -70,7 +70,11 @@ import sys;
 				if (lmp_proc <= 32) {
 					timeout = 600 * float2int(2 ** count);
 				} else {
-					timeout = 300 * float2int(2 ** count);
+					if (lmp_proc <= 256) {
+						timeout = 300 * float2int(2 ** count);
+					} else {
+						timeout = 150 * float2int(2 ** count);
+					}
 				}
 			}
 
@@ -143,7 +147,7 @@ import sys;
 {
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string dir = "%s/run/%s" % (turbine_output, run_id);
-	string output = "%0.3i\t%0.2i\t%0.1i\t%0.4i\t%0.3i\t%0.2i\t%0.1i\t%s"
+	string output = "%0.4i\t%0.2i\t%0.1i\t%0.3i\t%0.4i\t%0.2i\t%0.1i\t%s"
 		% (params[0], params[1], params[2], params[3], params[4], params[5], params[6], "inf");
 	file out <dir/"time.txt"> = write(output);
 	v = propagate();
@@ -172,7 +176,7 @@ import sys;
 			if (exectime >= 0.0) {
 				printf("exectime(%i, %i, %i, %i, %i, %i, %i): %f",
 						params[0], params[1], params[2], params[3], params[4], params[5], params[6], exectime);
-				string output = "%0.3i\t%0.2i\t%0.1i\t%0.4i\t%0.3i\t%0.2i\t%0.1i\t%f"
+				string output = "%0.4i\t%0.2i\t%0.1i\t%0.3i\t%0.4i\t%0.2i\t%0.1i\t%f"
 					% (params[0], params[1], params[2], params[3], params[4], params[5], params[6], exectime);
 				file out <dir/"time.txt"> = write(output);
 			}
@@ -197,10 +201,10 @@ main()
 	int wpn = string2int(getenv("PPN"));
 	int ppw = ppn %/ wpn - 1;
 	int workers;
-	if (string2int(getenv("PROCS")) - 2 < 16) {
+	if (string2int(getenv("PROCS")) - 2 < 32) {
 		workers = string2int(getenv("PROCS")) - 2;
 	} else  {
-		workers = 16;
+		workers = 32;
 	}
 
 	// 0) Lammps: total num of processes
@@ -210,7 +214,7 @@ main()
 	// 4) Voro: total num of processes
 	// 5) Voro: num of processes per worker
 	// 6) Voro: num of threads per process
-	int sample_num = 1000;
+	int sample_num = 500;
 	conf_samples = file_lines(input("conf_lv_smpls.csv"));
 
 	float exectime[];
@@ -237,7 +241,7 @@ main()
 			}
 			if (nwork <= workers)
 			{
-				exectime[i] = launch_wrapper("%0.3i_%0.2i_%0.1i_%0.4i_%0.3i_%0.2i_%0.1i" 
+				exectime[i] = launch_wrapper("%0.4i_%0.2i_%0.1i_%0.3i_%0.4i_%0.2i_%0.1i" 
 						% (params[0], params[1], params[2], params[3], params[4], params[5], params[6]), 
 						params);
 
