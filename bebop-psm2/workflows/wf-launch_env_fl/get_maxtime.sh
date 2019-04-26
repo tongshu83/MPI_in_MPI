@@ -36,6 +36,6 @@ do
 	fi
 done
 # echo "Max time = $max seconds"
-echo $max
+echo -e "$max\c"
 exit 0
 

@@ -1,0 +1,22 @@
+
+PYTHON EXCEPTION:
+
+worker loop exited with error
+worker throwing error: 
+CAUGHT ERROR:
+worker loop error
+    while executing
+"error "worker loop error""
+    (procedure "standard_worker" line 41)
+    invoked from within
+"standard_worker $rules $startup_cmd $mode"
+    (procedure "custom_worker" line 5)
+    invoked from within
+"custom_worker $rules $startup_cmd $mode"
+    (procedure "enter_mode_unchecked" line 13)
+    invoked from within
+"enter_mode_unchecked $rules $startup_cmd"
+    (procedure "enter_mode" line 5)
+    invoked from within
+"enter_mode $rules $startup_cmd "
+ADLB: ADLB_Abort(1) calling MPI_Abort(1)
