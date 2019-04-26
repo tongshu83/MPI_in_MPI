@@ -195,6 +195,13 @@ import sys;
 	}
 }
 
+app (file csv) run_ml()
+{
+  "python" "tongs-ml-code.py" csv ;
+}
+
+
+
 main()
 {
 	int ppn = 36;	// bebop
@@ -215,7 +222,13 @@ main()
 	// 5) Voro: num of processes per worker
 	// 6) Voro: num of threads per process
 	int sample_num = 500;
-	conf_samples = file_lines(input("conf_lv_smpls.csv"));
+        // file csv = input("conf_lv_smpls.csv");
+        // file csv = run_ml(); // app function mode
+        file csv = mktemp();
+
+        python("import tongs_ml", "tongs_ml.generate_csv(%s)" % filename(csv));
+        
+	conf_samples = file_lines(csv);
 
 	float exectime[];
 	int codes[];
