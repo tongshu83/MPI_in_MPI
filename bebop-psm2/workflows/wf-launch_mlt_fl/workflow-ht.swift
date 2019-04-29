@@ -207,8 +207,8 @@ main()
 	// 4) HeatTransfer: the maximum size of I/O buffer
 	// 5) StageWrite: total number of processes
 	// 6) StageWrite: number of processes per worker
-	int sample_num = 300;
-	conf_samples = file_lines(input("conf_hs_smpls.csv"));
+	int sample_num = 98;
+	conf_samples = file_lines(input("conf_hs_smpls3.csv"));
 
 	float exectime[];
 	int codes[];
