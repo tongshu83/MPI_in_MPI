@@ -16,5 +16,8 @@ export PYTHONPATH=$T_PROJECT_ROOT/python:$EQP
 export TURBINE_RESIDENT_WORK_WORKERS=1
 # Number of workers of this type
 
-swift-t -n $PROCS -p -I $EQP -r $EQP $T_PROJECT_ROOT/swift/workflow.swift $*
+stc -p -I $EQP -r $EQP $T_PROJECT_ROOT/swift/workflow.swift
+turbine -n $PROCS $T_PROJECT_ROOT/swift/workflow.tic $*
+
+#swift-t -n $PROCS -p -I $EQP -r $EQP $T_PROJECT_ROOT/swift/workflow.swift $*
 

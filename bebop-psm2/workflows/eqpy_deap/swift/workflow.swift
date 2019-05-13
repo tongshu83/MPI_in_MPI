@@ -44,7 +44,6 @@ location GA = locationFromRank(turbine_workers() - 1);
 			b=c)
 	{
 		message = EQPy_get(GA);
-		// printf("swift: message: %s", message);
 		boolean c;
 		if (message == "FINAL")
 		{
@@ -54,8 +53,15 @@ location GA = locationFromRank(turbine_workers() - 1);
 			finals = EQPy_get(GA);
 			printf("Swift: finals: %s", finals);
 		}
+		else if (message == "EQPY_ABORT")
+		{
+			printf("Swift: EQ/Py aborted!") =>
+			v = make_void() =>
+			c = false;
+		}
 		else
 		{
+			printf("Swift: message: %s", message);
 			string params[] = split(message, ";");
 			string results[];
 			foreach p,i in params
@@ -63,11 +69,10 @@ location GA = locationFromRank(turbine_workers() - 1);
 				results[i] = task(p);
 			}
 			result = join(results, ";");
-			// printf("swift: result: %s", result);
+			printf("Swift: result: %s", result);
 			EQPy_put(GA, result) => c = true;
 		}
 	}
-
 }
 
 settings_filename = argv("settings");
