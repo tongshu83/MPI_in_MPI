@@ -36,14 +36,14 @@ git clone https://github.com/DEAP/deap.git
 # python deap/setup.py install
 python deap/examples/ga/onemax.py
 
-rm -rf emews
-mkdir emews
-cd emews
-git clone git@github.com:emews/mela.git
-git clone git@github.com:emews/EQ-Py.git
-EQ-Py/src/install mela/deap/ext/EQ-Py
-cd mela/deap
-swift/run --settings=swift/settings.json > run.log
+#rm -rf emews
+#mkdir emews
+#cd emews
+#git clone git@github.com:emews/mela.git
+#git clone git@github.com:emews/EQ-Py.git
+#EQ-Py/src/install mela/deap/ext/EQ-Py
+#cd mela/deap
+#swift/run --settings=swift/settings.json > run.log
 
 
 echo
