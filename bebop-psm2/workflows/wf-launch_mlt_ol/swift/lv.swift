@@ -1,36 +1,13 @@
-import assert;
 import files;
 import io;
-import location;
 import launch;
-import python;
 import stats;
 import string;
 import sys;
 
-import EQPy;
+import common;
 
-(void v) setup_run(string dir, string infile1, string infile2, string infile3) "turbine" "0.0"
-[
-"""
-	file delete -force -- <<dir>>
-	file mkdir <<dir>>
-	cd <<dir>>
-	file copy -force -- <<infile1>> in.quench
-	file copy -force -- <<infile2>> restart.liquid
-	file copy -force -- <<infile3>> CuZr.fs
-"""
-];
-
-(int int_params[]) strarr2intarr(string str_params[])
-{
-	foreach str_param, i in str_params
-	{
-		int_params[i] = string2int(str_params[i]);
-	}
-} 
-
-(boolean vld) chk_params(int params[])
+(boolean vld) lv_chk_params(int params[])
 {
 	int ppn = 36;	// bebop
 	int wpn = string2int(getenv("PPN"));
@@ -74,7 +51,7 @@ import EQPy;
 	}
 }
 
-(float exectime) launch_wrapper(string run_id, int params[], int count = 0)
+(float exectime) lv_launch_wrapper(string run_id, int params[], int count = 0)
 {
 	int time_limit = 2;
 	if (count < time_limit)
@@ -90,11 +67,11 @@ import EQPy;
 		string workflow_root = getenv("WORKFLOW_ROOT");
 		string turbine_output = getenv("TURBINE_OUTPUT");
 		string dir = "%s/run/%s" % (turbine_output, run_id);
-		string infile1 = "%s/in.quench" % turbine_output;
+		string infile1 = "%s/in.quench.short" % turbine_output;
 		string infile2 = "%s/restart.liquid" % turbine_output;
 		string infile3 = "%s/CuZr.fs" % turbine_output;
 
-		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", dir/"in.quench" ];
+		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", dir/"in.quench.short" ];
 		setup_run(dir, infile1, infile2, infile3) =>
 			(output0, exit_code0) = system(cmd0);
 
@@ -104,7 +81,7 @@ import EQPy;
 					cmd0[0]+" "+cmd0[1]+" "+cmd0[2]+" "+cmd0[3], exit_code0, 
 					params[0], params[1], params[2], params[3], params[4], params[5], params[6]);
 			sleep(1) =>
-				exectime = launch_wrapper(run_id, params, count + 1);
+				exectime = lv_launch_wrapper(run_id, params, count + 1);
 		}
 		else
 		{
@@ -143,8 +120,8 @@ import EQPy;
 			// Command line arguments
 			string args[][];
 
-			// mpiexec -n 8 ./lmp_mpi -i in.quench
-			args[0] = split("-i in.quench", " ");
+			// mpiexec -n 8 ./lmp_mpi -i in.quench.short
+			args[0] = split("-i in.quench.short", " ");
 
 			// mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
 			args[1] = split("dump.bp adios_atom_voro.bp FLEXPATH", " ");
@@ -173,20 +150,20 @@ import EQPy;
 			if (exit_code == 124)
 			{
 				sleep(1) =>
-					exectime = launch_wrapper(run_id, params, count + 1);
+					exectime = lv_launch_wrapper(run_id, params, count + 1);
 			}
 			else
 			{
 				if (exit_code != 0)
 				{
 					exectime = -1.0;
-					failure(run_id, params);
+					lv_failure(run_id, params);
 					printf("swift: The multi-launched application with parameters (%d, %d, %d, %d, %d, %d, %d) did not succeed with exit code: %d.", 
 							params[0], params[1], params[2], params[3], params[4], params[5], params[6], exit_code);
 				}
 				else
 				{
-					exectime = get_exectime(run_id, params);
+					exectime = lv_get_exectime(run_id, params);
 				}
 			}
 		}
@@ -194,13 +171,13 @@ import EQPy;
 	else
 	{
 		exectime = -1.0;
-		failure(run_id, params);
+		lv_failure(run_id, params);
 		printf("swift: The launched application with parameters (%d, %d, %d, %d, %d, %d, %d) did not succeed %d times.",
 				params[0], params[1], params[2], params[3], params[4], params[5], params[6], time_limit);
 	}
 }
 
-(void v) failure(string run_id, int params[])
+(void v) lv_failure(string run_id, int params[])
 {
 	string turbine_output = getenv("TURBINE_OUTPUT");
 	string dir = "%s/run/%s" % (turbine_output, run_id);
@@ -210,7 +187,7 @@ import EQPy;
 	v = propagate();
 }
 
-(float exectime) get_exectime(string run_id, int params[], int count = 0)
+(float exectime) lv_get_exectime(string run_id, int params[], int count = 0)
 {
 	int time_limit = 3;
 	if (count < time_limit)
@@ -225,7 +202,7 @@ import EQPy;
 		if (time_exit_code != 0)
 		{
 			sleep(1) =>
-				exectime = get_exectime(run_id, params, count + 1);
+				exectime = lv_get_exectime(run_id, params, count + 1);
 		}
 		else
 		{
@@ -250,75 +227,5 @@ import EQPy;
 		printf("swift: Failed to get the execution time of the multi-launched application of parameters (%d, %d, %d, %d, %d, %d, %d) %d times.\n%s",
 				params[0], params[1], params[2], params[3], params[4], params[5], params[6], time_limit);
 	}
-}
-
-location ML = locationFromRank(turbine_workers() - 1);
-
-(void v) handshake(string settings_filename)
-{
-	message = EQPy_get(ML) =>
-		v = EQPy_put(ML, settings_filename);
-	assert(message == "Settings", "Error in handshake.");
-}
-
-(void v) loop()
-{
-	for (boolean b = true;
-			b;
-			b=c)
-	{
-		message = EQPy_get(ML);
-		boolean c;
-		if (message == "FINAL")
-		{
-			printf("Swift: FINAL") =>
-				v = make_void() =>
-				c = false;
-			finals = EQPy_get(ML);
-			printf("Swift: finals: %s", finals);
-		}
-		else if (message == "EQPY_ABORT")
-		{
-			printf("Swift: EQ/Py aborted!") =>
-			v = make_void() =>
-			c = false;
-		}
-		else
-		{
-			printf("Swift: message: %s", message);
-			string confs[] = split(message, ";");
-			float exectime[];
-			string results[];
-			foreach conf, i in confs
-			{
-				int params[] = strarr2intarr(split(conf, ","));
-				if (chk_params(params)) {
-					exectime[i] = launch_wrapper("%0.4i_%0.2i_%0.1i_%0.3i_%0.4i_%0.2i_%0.1i" 
-						% (params[0], params[1], params[2], params[3], params[4], params[5], params[6]), 
-						params);
-					if (exectime[i] >= 0.0) {
-						results[i] = float2string(exectime[i]);
-					} else {
-						results[i] = "inf";
-					}
-				} else {
-					results[i] = "inf"; 
-				}
-			}
-			result = join(results, ";");
-			printf("Swift: result: %s", result);
-			EQPy_put(ML, result) => c = true;
-		}
-	}
-}
-
-main()
-{
-	settings_filename = argv("settings");
-
-	EQPy_init_package(ML, "baseline") =>
-	handshake(settings_filename) =>
-	loop() =>
-	EQPy_stop();
 }
 

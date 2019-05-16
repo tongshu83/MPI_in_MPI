@@ -21,7 +21,7 @@ def obj_func_lv(x, *params):
             nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 1
         else:
             nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 2
-        if (nodes <= data.node_num):
+        if (nodes <= data.num_node):
             if (len(params) == 4):
                 mdl1_chk = params[0]
                 mdl2_chk = params[1]
@@ -51,12 +51,12 @@ def obj_func_lv(x, *params):
     return y
 
 def pred_top_lv(mdls):
-    bounds = [(2.0 - 0.1, (data.core_num - 1.0) * (data.node_num - 1.0) + 0.1), \
-              (1.0 - 0.1, data.core_num - 1 + 0.1), \
+    bounds = [(2.0 - 0.1, (data.num_core - 1.0) * (data.num_node - 1.0) + 0.1), \
+              (1.0 - 0.1, data.num_core - 1 + 0.1), \
               (1.0 - 0.1, 4.0 + 0.1), \
               (1.0 - 0.1, 8.0 + 0.1), \
-              (2.0 - 0.1, (data.core_num - 1.0) * (data.node_num - 1.0) + 0.1), \
-              (1.0 - 0.1, data.core_num - 1 + 0.1), \
+              (2.0 - 0.1, (data.num_core - 1.0) * (data.num_node - 1.0) + 0.1), \
+              (1.0 - 0.1, data.num_core - 1 + 0.1), \
               (1.0 - 0.1, 4.0 + 0.1)]
     result = differential_evolution(obj_func_lv, bounds, args=mdls)
     x = np.rint(result.x)
@@ -86,7 +86,7 @@ def obj_func_hs(x, *params):
             nodes = ht_nproc // ht_ppw + sw_nproc // sw_ppw + 1
         else:
             nodes = ht_nproc // ht_ppw + sw_nproc // sw_ppw + 2
-        if (nodes <= data.node_num):
+        if (nodes <= data.num_node):
             if (len(params) == 4):
                 mdl1_chk = params[0]
                 mdl2_chk = params[1]
@@ -118,11 +118,11 @@ def obj_func_hs(x, *params):
 def pred_top_hs(mdls):
     bounds = [(2.0 - 0.1, 32.0 + 0.1), \
               (2.0 - 0.1, 32.0 + 0.1), \
-              (1.0 - 0.1, data.core_num - 1 + 0.1), \
+              (1.0 - 0.1, data.num_core - 1 + 0.1), \
               (1.0 - 0.1, 8.0 + 0.1), \
               (1.0 - 0.1, 40.0 + 0.1), \
-              (2.0 - 0.1, (data.core_num - 1.0) * (data.node_num - 1.0) + 0.1), \
-              (1.0 - 0.1, data.core_num - 1 + 0.1)]
+              (2.0 - 0.1, (data.num_core - 1.0) * (data.num_node - 1.0) + 0.1), \
+              (1.0 - 0.1, data.num_core - 1 + 0.1)]
     result = differential_evolution(obj_func_hs, bounds, args=mdls)
     x = np.rint(result.x)
     if (len(mdls) == 4):
@@ -133,7 +133,7 @@ def pred_top_hs(mdls):
     smpl_arr = np.hstack((x, [y]))
     return smpl_arr
 
-def pred_top_smpl(mdls, conf_colns, perf_coln, topn=10):
+def get_pred_top_smpl(mdls, conf_colns, perf_coln, topn=10):
     slctR = 0.5
     cnddtn = int(float(topn) / slctR)
     app_name = data.get_name(conf_colns)

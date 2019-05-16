@@ -4,23 +4,23 @@ set -eu
 # WORKFLOW SH
 # Main user entry point
 
-if [[ ${#} != 2 ]]
+if [[ ${#} != 3 ]]
 then
-	echo "Usage: ./workflow.sh workflow_name experiment_id"
+	echo "Usage: ./workflow.sh workflow_name algorithm experiment_id"
 	exit 1
 fi
 
 WORKFLOW_SWIFT=$1.swift
 WORKFLOW_TIC=${WORKFLOW_SWIFT%.swift}.tic
 
-export EXPID=$2
+export EXPID=$3
 
 # Turn off Swift/T debugging
 export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
 # Find the directory of ./workflow.sh
 export WORKFLOW_ROOT=$( cd $( dirname $0 ) ; /bin/pwd )
-export T_PROJECT_ROOT=$( cd $$WORKFLOW_ROOT/.. ; /bin/pwd )
+export T_PROJECT_ROOT=$( cd $WORKFLOW_ROOT/.. ; /bin/pwd )
 cd $WORKFLOW_ROOT
 
 # Set the output directory
@@ -28,14 +28,14 @@ export TURBINE_OUTPUT=$WORKFLOW_ROOT/experiment/$EXPID
 mkdir -pv $TURBINE_OUTPUT
 cp -f $WORKFLOW_ROOT/get_maxtime.sh $TURBINE_OUTPUT/get_maxtime.sh
 
-if [[ $1 = "workflow-ht" ]] || [[ $1 = "workflow-ht-in" ]]
+if [[ $1 = "workflow-hs" ]]
 then
 	cd $TURBINE_OUTPUT
 	cp -f ../heat_transfer.xml heat_transfer.xml
 	cd -
 fi
 
-if [[ $1 = "workflow-lmp" ]] || [[ $1 = "workflow-lmp-in" ]]
+if [[ $1 = "workflow-lv" ]]
 then
 	cd $TURBINE_OUTPUT
 	cp -f ../lmp_voro_time.csv lmp_voro_time.csv
@@ -48,9 +48,9 @@ fi
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=${PROCS:-34}
+export PROCS=${PROCS:-4}
 export PPN=1
-export WALLTIME=10:00:00
+export WALLTIME=00:10:00
 export PROJECT=PACC
 export QUEUE=bdw
 
@@ -62,7 +62,7 @@ export PYTHONPATH=$T_PROJECT_ROOT/python:$EQP
 export TURBINE_RESIDENT_WORK_WORKERS=1
 # Number of workers of this type
 
-algorithm=baseline
+algorithm=$2
 settings_file=$WORKFLOW_ROOT/settings.json
 
 # Construct the command line given to Swift/T

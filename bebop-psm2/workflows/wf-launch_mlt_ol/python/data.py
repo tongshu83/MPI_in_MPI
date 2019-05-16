@@ -3,8 +3,8 @@ import random
 import numpy as np
 import pandas as pd
 
-core_num = 36
-node_num = 32
+num_core = 36
+num_node = 32
 
 lmp_conf_colns = ['lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step']
 voro_conf_colns = ['voro_nproc', 'voro_ppw', 'voro_nthread', 'lmp_io_step']
@@ -86,16 +86,16 @@ def csv2df(csv_file_name, conf_colns):
     df = df.sort_values(conf_colns).reset_index(drop=True)
     return df
 
-def gen_lv_smpl(lv_smpl_num, lv_smpl_filename):
+def gen_lv_smpl(num_smpl, smpl_filename=''):
     random.seed(2019)
     lv_smpls = set([])
-    while (len(lv_smpls) < lv_smpl_num):
-        lmp_nproc = random.randint(2, (core_num - 1) * (node_num - 1))
-        lmp_ppw = random.randint(1, core_num - 1)
+    while (len(lv_smpls) < num_smpl):
+        lmp_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        lmp_ppw = random.randint(1, num_core - 1)
         lmp_nthread = random.randint(1, 4)
         lmp_io_step = random.randint(1, 8) * 50
-        voro_nproc = random.randint(2, (core_num - 1) * (node_num - 1))
-        voro_ppw = random.randint(1, core_num - 1)
+        voro_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        voro_ppw = random.randint(1, num_core - 1)
         voro_nthread = random.randint(1, 4)
         
         if (lmp_nproc >= lmp_ppw and voro_nproc >= voro_ppw):
@@ -105,27 +105,28 @@ def gen_lv_smpl(lv_smpl_num, lv_smpl_filename):
                 nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 1
             else:
                 nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 2
-            if (nodes <= node_num):
+            if (nodes <= num_node):
                 lv_smpls.add((lmp_nproc, lmp_ppw, lmp_nthread, lmp_io_step, voro_nproc, voro_ppw, voro_nthread))
 
     lv_smpls_df = pd.DataFrame(data = list(lv_smpls), \
                                columns=('lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step', \
                                         'voro_nproc', 'voro_ppw', 'voro_nthread'))
-    df2csv(lv_smpls_df, lv_smpl_filename)
+    if (smpl_filename != ''):
+        df2csv(lv_smpls_df, smpl_filename)
     return lv_smpls_df
 
-def gen_lv_smpl_in(lv_smpl_num, lv_smpl_filename):
+def gen_lv_smpl_in(num_smpl, smpl_filename=''):
     random.seed(2020)
     lv_smpls = set([])
-    while (len(lv_smpls) < lv_smpl_num):
+    while (len(lv_smpls) < num_smpl):
         lmp_l2s = 16000 / (2 ** random.randint(0, 5))
         lmp_solid = 20000 / (2 ** random.randint(0, 5))
-        lmp_nproc = random.randint(2, (core_num - 1) * (node_num - 1))
-        lmp_ppw = random.randint(1, core_num - 1)
+        lmp_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        lmp_ppw = random.randint(1, num_core - 1)
         lmp_nthread = random.randint(1, 4)
         lmp_io_step = random.randint(1, 8) * 50
-        voro_nproc = random.randint(2, (core_num - 1) * (node_num - 1))
-        voro_ppw = random.randint(1, core_num - 1)
+        voro_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        voro_ppw = random.randint(1, num_core - 1)
         voro_nthread = random.randint(1, 4)
         
         if (lmp_nproc >= lmp_ppw and voro_nproc >= voro_ppw):
@@ -135,21 +136,22 @@ def gen_lv_smpl_in(lv_smpl_num, lv_smpl_filename):
                 nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 1
             else:
                 nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 2
-            if (nodes <= node_num):
+            if (nodes <= num_node):
                 lv_smpls.add((lmp_l2s, lmp_solid, lmp_nproc, lmp_ppw, lmp_nthread, lmp_io_step, voro_nproc, voro_ppw, voro_nthread))
 
-    lv_smpls_df = pd.DataFrame(data = list(lv_smpls), \
+    smpls_df = pd.DataFrame(data = list(lv_smpls), \
                                columns=('lmp_l2s', 'lmp_solid', 'lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step', \
                                         'voro_nproc', 'voro_ppw', 'voro_nthread'))
-    df2csv(lv_smpls_df, lv_smpl_filename)
-    return lv_smpls_df
+    if (smpl_filename != ''):
+        df2csv(smpls_df, smpl_filename)
+    return smpls_df
 
-def gen_lmp_smpl(smpl_num, smpl_filename):
+def gen_lmp_smpl(smpl_num, smpl_filename=''):
     random.seed(2021)
     smpls = set([])
     while (len(smpls) < smpl_num):
-        lmp_nproc = random.randint(2, (core_num - 1) * (node_num - 1))
-        lmp_ppw = random.randint(1, core_num - 1)
+        lmp_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        lmp_ppw = random.randint(1, num_core - 1)
         lmp_nthread = random.randint(1, 4)
         lmp_io_step = random.randint(1, 8) * 50
         if (lmp_nproc >= lmp_ppw):
@@ -157,18 +159,19 @@ def gen_lmp_smpl(smpl_num, smpl_filename):
                 nodes = lmp_nproc // lmp_ppw
             else:
                 nodes = lmp_nproc // lmp_ppw + 1
-            if (nodes <= node_num - 1):
+            if (nodes <= num_node - 1):
                 smpls.add((lmp_nproc, lmp_ppw, lmp_nthread, lmp_io_step))
     smpls_df = pd.DataFrame(data = list(smpls), columns=('lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step'))
-    df2csv(smpls_df, smpl_filename)
+    if (smpl_filename != ''):
+        df2csv(smpls_df, smpl_filename)
     return smpls_df
 
 def gen_voro_smpl(smpl_num, smpl_filename):
     random.seed(2022)
     smpls = set([])
     while (len(smpls) < smpl_num):
-        voro_nproc = random.randint(2, (core_num - 1) * (node_num - 1))
-        voro_ppw = random.randint(1, core_num - 1)
+        voro_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        voro_ppw = random.randint(1, num_core - 1)
         voro_nthread = random.randint(1, 4)
         lmp_io_step = random.randint(1, 8) * 50
         if (voro_nproc >= voro_ppw):
@@ -176,11 +179,12 @@ def gen_voro_smpl(smpl_num, smpl_filename):
                 nodes = voro_nproc // voro_ppw
             else:
                 nodes = voro_nproc // voro_ppw + 1
-            if (nodes <= node_num - 1):
+            if (nodes <= num_node - 1):
                 smpls.add((voro_nproc, voro_ppw, voro_nthread, lmp_io_step))
     smpls_df = pd.DataFrame(data = list(smpls), columns=('voro_nproc', 'voro_ppw', 'voro_nthread', 'lmp_io_step'))
-    df2csv(smpls_df, smpl_filename)
-    return lv_smpls_df     
+    if (smpl_filename != ''):
+        df2csv(smpls_df, smpl_filename)
+    return smpls_df     
 
 def lmp_load(fns, conf_colns, perfn='run_time'):
     if (perfn == ''):
@@ -226,17 +230,17 @@ def lv_in_load(fns, conf_colns, perfn='run_time'):
             val.append([float(s) for s in l.split()[:len(colns)]])
     return pd.DataFrame(val, columns=colns)
 
-def gen_hs_smpl(hs_smpl_num, hs_smpl_filename, ht_smpl_filename, sw_smpl_filename):
+def gen_hs_smpl(num_smpl, smpl_filename=''):
     random.seed(2019)
     hs_smpls = set([])
-    while (len(hs_smpls) < hs_smpl_num):
+    while (len(hs_smpls) < num_smpl):
         ht_x_nproc = random.randint(2, 32)
         ht_y_nproc = random.randint(2, 32)
-        ht_ppw = random.randint(1, core_num - 1)
+        ht_ppw = random.randint(1, num_core - 1)
         ht_io_step = random.randint(1, 8) * 4
         ht_io_buf = random.randint(1, 40)
-        sw_nproc = random.randint(2, (core_num - 1) * (node_num - 1))
-        sw_ppw = random.randint(1, core_num - 1)
+        sw_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        sw_ppw = random.randint(1, num_core - 1)
         
         ht_nproc = ht_x_nproc * ht_y_nproc
         if (ht_nproc >= ht_ppw and sw_nproc >= sw_ppw):
@@ -246,29 +250,30 @@ def gen_hs_smpl(hs_smpl_num, hs_smpl_filename, ht_smpl_filename, sw_smpl_filenam
                 nodes = ht_nproc // ht_ppw + sw_nproc // sw_ppw + 1
             else:
                 nodes = ht_nproc // ht_ppw + sw_nproc // sw_ppw + 2
-            if (nodes <= node_num):
+            if (nodes <= num_node):
                 hs_smpls.add((ht_x_nproc, ht_y_nproc, ht_ppw, ht_io_step, ht_io_buf, sw_nproc, sw_ppw))
 
     hs_smpls_df = pd.DataFrame(data = list(hs_smpls), \
                                columns=('ht_x_nproc', 'ht_y_nproc', 'ht_ppw', 'ht_io_step', 'ht_io_buf', \
                                         'sw_nproc', 'sw_ppw'))
-    df2csv(hs_smpls_df, hs_smpl_filename)
+    if (smpl_filename != ''):
+        df2csv(hs_smpls_df, smpl_filename)
     return hs_smpls_df
 
-def gen_hs_smpl_in(hs_smpl_num, hs_smpl_filename):
+def gen_hs_smpl_in(num_smpl, smpl_filename=''):
     random.seed(2020)
     hs_smpls = set([])
-    while (len(hs_smpls) < hs_smpl_num):
+    while (len(hs_smpls) < num_smpl):
         ht_x = 2048 / (2 ** random.randint(0, 5))
         ht_y = 2048 / (2 ** random.randint(0, 5))
         ht_iter = 1024 / (2 ** random.randint(0, 5))
         ht_x_nproc = random.randint(2, 32)
         ht_y_nproc = random.randint(2, 32)
-        ht_ppw = random.randint(1, core_num - 1)
+        ht_ppw = random.randint(1, num_core - 1)
         ht_io_step = random.randint(1, 8) * 4
         ht_io_buf = random.randint(1, 40)
-        sw_nproc = random.randint(2, (core_num - 1) * (node_num - 1))
-        sw_ppw = random.randint(1, core_num - 1)
+        sw_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        sw_ppw = random.randint(1, num_core - 1)
         
         ht_nproc = ht_x_nproc * ht_y_nproc
         if (ht_nproc >= ht_ppw and sw_nproc >= sw_ppw):
@@ -278,24 +283,25 @@ def gen_hs_smpl_in(hs_smpl_num, hs_smpl_filename):
                 nodes = ht_nproc // ht_ppw + sw_nproc // sw_ppw + 1
             else:
                 nodes = ht_nproc // ht_ppw + sw_nproc // sw_ppw + 2
-            if (nodes <= node_num):
+            if (nodes <= num_node):
                 hs_smpls.add((ht_x, ht_y, ht_iter, ht_x_nproc, ht_y_nproc, ht_ppw, ht_io_step, ht_io_buf, \
                               sw_nproc, sw_ppw))
 
-    hs_smpls_df = pd.DataFrame(data = list(hs_smpls), \
+    smpls_df = pd.DataFrame(data = list(hs_smpls), \
                                columns=('ht_x', 'ht_y', 'ht_iter', \
                                         'ht_x_nproc', 'ht_y_nproc', 'ht_ppw', 'ht_io_step', 'ht_io_buf', \
                                         'sw_nproc', 'sw_ppw'))
-    df2csv(hs_smpls_df, hs_smpl_filename)
-    return hs_smpls_df
+    if (smpl_filename != ''):
+        df2csv(smpls_df, smpl_filename)
+    return smpls_df
 
-def gen_ht_smpl(smpl_num, smpl_filename):
+def gen_ht_smpl(smpl_num, smpl_filename=''):
     random.seed(2021)
     smpls = set([])
     while (len(smpls) < smpl_num):
         ht_x_nproc = random.randint(2, 32)
         ht_y_nproc = random.randint(2, 32)
-        ht_ppw = random.randint(1, core_num - 1)
+        ht_ppw = random.randint(1, num_core - 1)
         ht_io_step = random.randint(1, 8) * 4
         ht_io_buf = random.randint(1, 40)
         
@@ -305,19 +311,20 @@ def gen_ht_smpl(smpl_num, smpl_filename):
                 nodes = ht_nproc // ht_ppw
             else:
                 nodes = ht_nproc // ht_ppw + 1
-            if (nodes <= node_num - 1):
+            if (nodes <= num_node - 1):
                 smpls.add((ht_x_nproc, ht_y_nproc, ht_ppw, ht_io_step, ht_io_buf))
     smpls_df = pd.DataFrame(data = list(smpls), \
                             columns=('ht_x_nproc', 'ht_y_nproc', 'ht_ppw', 'ht_io_step', 'ht_io_buf'))
-    df2csv(smpls_df, smpl_filename)
+    if (smpl_filename != ''):
+        df2csv(smpls_df, smpl_filename)
     return smpls_df
 
-def gen_sw_smpl(smpl_num, smpl_filename):
+def gen_sw_smpl(smpl_num, smpl_filename=''):
     random.seed(2022)
     smpls = set([])
     while (len(smpls) < smpl_num):
-        sw_nproc = random.randint(2, (core_num - 1) * (node_num - 1))
-        sw_ppw = random.randint(1, core_num - 1)
+        sw_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        sw_ppw = random.randint(1, num_core - 1)
         ht_io_step = random.randint(1, 8) * 4
         
         if (sw_nproc >= sw_ppw):
@@ -325,10 +332,11 @@ def gen_sw_smpl(smpl_num, smpl_filename):
                 nodes = sw_nproc // sw_ppw
             else:
                 nodes = sw_nproc // sw_ppw + 1
-            if (nodes <= node_num - 1):
+            if (nodes <= num_node - 1):
                 smpls.add((sw_nproc, sw_ppw, ht_io_step))
     smpls_df = pd.DataFrame(data = list(smpls), columns=('sw_nproc', 'sw_ppw', 'ht_io_step'))
-    df2csv(smpls_df, smpl_filename)
+    if (smpl_filename != ''):
+        df2csv(smpls_df, smpl_filename)
     return smpls_df
 
 def ht_load(fns, conf_colns, perfn='run_time'):
@@ -387,7 +395,7 @@ def get_runnable_df(df, conf_colns, perf_coln='run_time'):
 
 def get_mach_time(nproc, ppn, runtime):
     nnode = np.negative(np.floor_divide(np.negative(nproc), ppn))
-    mach_time = np.multiply(nnode, runtime) * core_num / 3600
+    mach_time = np.multiply(nnode, runtime) * num_core / 3600
     return mach_time
 
 def get_exec_mach_df(exec_df):

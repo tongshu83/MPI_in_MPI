@@ -1,12 +1,12 @@
 {
-	"HPC_app":       "lv",
+	"app_name":      "lv",
 	"perf_coln":     "run_time",
-	"core_num":      36,
-	"node_num":      32,
+	"num_core":      36,
+	"num_node":      2,
 	"rand_seed":     2019,
-	"num_smpl":      50,
+	"num_smpl":      10,
 	"pool_size":     2000,
-	"num_iter":      5,
+	"num_iter":      2,
 	"prec_rand":     0.3,
 	"prec_init":     0.0,
 	"csv_file_name": "lmp_voro_time.csv"

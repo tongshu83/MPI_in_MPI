@@ -110,30 +110,32 @@ def whl_pred_top_eval(train_df, test_df, conf_colns, perf_coln, topn=1, eval_fla
             pred_y_chk[i] = 0.0
     pred_df_chk = pd.DataFrame(np.c_[test_X_chk, pred_y_chk], columns=conf_colns + ['runnable'])
         
-    test_df_vld = tool.get_vld_df(test_df)
-    test_X_vld = test_df_vld[conf_colns].values
-    pred_y_vld = mdl.predict(test_X_vld)
-    pred_df_vld = pd.DataFrame(np.c_[test_X_vld, pred_y_vld], columns=conf_colns + [perf_coln])
-    
     pred_df = pred_df_chk[(pred_df_chk.runnable == 1.0)]
     test_X = pred_df[conf_colns].values
     pred_y = mdl.predict(test_X)
     pred_df = pd.DataFrame(np.c_[test_X, pred_y], columns=conf_colns + [perf_coln])
     pred_df_invld = pred_df_chk[(pred_df_chk.runnable == 0.0)]
-    pred_y = pred_df_invld['runnable'].values + np.ones(pred_df_invld.shape[0]) * float('inf')
+    pred_y = np.ones(pred_df_invld.shape[0]) * float('inf')
     pred_df_invld = pd.DataFrame(np.c_[pred_df_invld[conf_colns].values, pred_y], columns=conf_colns + [perf_coln])
     pred_df = pred_df.append(pred_df_invld)
     
     top_smpl = tool.gen_top_df(pred_df, perf_coln, topn)
     if (eval_flag != 0):
-        recall, precision = tool.eval_fail(pred_df_chk, test_df)
+        # recall, precision = tool.eval_fail(pred_df_chk, test_df)
+
+        test_df_vld = tool.get_vld_df(test_df)
+        test_X_vld = test_df_vld[conf_colns].values
+        pred_y_vld = mdl.predict(test_X_vld)
+        pred_df_vld = pd.DataFrame(np.c_[test_X_vld, pred_y_vld], columns=conf_colns + [perf_coln])
         err_prcntl_df = tool.eval_err(pred_df_vld, test_df_vld, perf_coln)
-        tool.eval_top_match(pred_df_vld, test_df_vld, conf_colns, perf_coln)
+
+        # tool.eval_top_match(pred_df_vld, test_df_vld, conf_colns, perf_coln)
         top_rs_df = tool.eval_top_match(pred_df, test_df, conf_colns, perf_coln)
-        perf_df = pd.DataFrame(np.c_[test_df.sort_values(conf_colns)[perf_coln].values, \
-                                     pred_df.sort_values(conf_colns)[perf_coln].values], \
-                               columns=['real_'+perf_coln, 'pred_'+perf_coln])
+        
         if (fn != ''):
+            perf_df = pd.DataFrame(np.c_[test_df.sort_values(conf_colns)[perf_coln].values, \
+                                         pred_df.sort_values(conf_colns)[perf_coln].values], \
+                                   columns=['real_'+perf_coln, 'pred_'+perf_coln])
             df2csv(perf_df, fn)
         return top_smpl, err_prcntl_df, top_rs_df
     else:
