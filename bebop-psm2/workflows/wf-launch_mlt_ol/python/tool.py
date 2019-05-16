@@ -21,12 +21,6 @@ def df_filter(df, colns, vals):
     rem_colns = [i for i in df.columns.tolist() if i not in colns]
     return df[rem_colns]
 
-def get_vld_df(df):
-    return df[(df.runnable == 1.0)]
-
-def get_invld_df(df):
-    return df[(df.runnable == 0.0)]
-
 # The index of df should be 0, 1, 2, 3, ... in advance by df = df.reset_index(drop=True)
 def get_top_idx(df, coln, topn):
     topn = int(topn)

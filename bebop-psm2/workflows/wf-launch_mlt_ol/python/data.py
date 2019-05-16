@@ -115,7 +115,7 @@ def gen_lv_smpl(num_smpl, smpl_filename=''):
         df2csv(lv_smpls_df, smpl_filename)
     return lv_smpls_df
 
-def gen_lv_smpl_in(num_smpl, smpl_filename=''):
+def gen_lv_in_smpl(num_smpl, smpl_filename=''):
     random.seed(2020)
     lv_smpls = set([])
     while (len(lv_smpls) < num_smpl):
@@ -260,7 +260,7 @@ def gen_hs_smpl(num_smpl, smpl_filename=''):
         df2csv(hs_smpls_df, smpl_filename)
     return hs_smpls_df
 
-def gen_hs_smpl_in(num_smpl, smpl_filename=''):
+def gen_hs_in_smpl(num_smpl, smpl_filename=''):
     random.seed(2020)
     hs_smpls = set([])
     while (len(hs_smpls) < num_smpl):
@@ -398,6 +398,10 @@ def get_mach_time(nproc, ppn, runtime):
     mach_time = np.multiply(nnode, runtime) * num_core / 3600
     return mach_time
 
+def invld_mach_time(nproc, ppn, timeout):
+    nnode = np.negative(np.floor_divide(np.negative(nproc), ppn))
+    return nnode * timeout * num_core / 3600
+
 def get_exec_mach_df(exec_df):
     if ('run_time' not in exec_df.columns.tolist()):
         print "Error: there is no information on exection time!"
@@ -442,4 +446,94 @@ def get_exec_mach_df(exec_df):
     
     exec_mach_df = pd.DataFrame(np.c_[exec_df.values, mach_time], columns=exec_df.columns.tolist() + ['mach_time'])
     return exec_mach_df
+
+def get_vld_df(df):
+    return df[(df.runnable == 1.0)]
+
+def get_invld_df(df):
+    return df[(df.runnable == 0.0)]
+
+def app_mach_time(df, timeout=0.0):
+    if (df.shape[0] == 0):
+        return 0.0
+    
+    df_name = get_name(df)
+    if (df_name != 'lmp' and df_name != 'voro' and df_name != 'ht' and df_name != 'sw'):
+        print "Error: in app_mach_time(), df is not lammps, voro, heat-transfer, or stage-write!"
+        return -1.0
+    
+    vld_df = get_vld_df(df)
+    if (df_name == 'lmp'):
+        vld_nproc = vld_df['lmp_nproc'].values
+        vld_ppn = vld_df['lmp_ppw'].values
+    elif (df_name == 'voro'):
+        vld_nproc = vld_df['voro_nproc'].values
+        vld_ppn = vld_df['voro_ppw'].values
+    elif (df_name == 'ht'):
+        vld_nproc = vld_df['ht_x_nproc'].values * vld_df['ht_y_nproc'].values
+        vld_ppn = vld_df['ht_ppw'].values
+    else:
+        vld_nproc = vld_df['sw_nproc'].values
+        vld_ppn = vld_df['sw_ppw'].values
+    vld_runtime = vld_df['run_time'].values
+    vld_time = get_mach_time(vld_nproc, vld_ppn, vld_runtime).sum()
+    
+    invld_df = get_invld_df(df)
+    if (df_name == 'lmp'):
+        invld_nproc = invld_df['lmp_nproc'].values
+        invld_ppn = invld_df['lmp_ppw'].values
+    elif (df_name == 'voro'):
+        invld_nproc = invld_df['voro_nproc'].values
+        invld_ppn = invld_df['voro_ppw'].values
+    elif (df_name == 'ht'):
+        invld_nproc = invld_df['ht_x_nproc'].values * invld_df['ht_y_nproc'].values
+        invld_ppn = invld_df['ht_ppw'].values
+    else:
+        invld_nproc = invld_df['sw_nproc'].values
+        invld_ppn = invld_df['sw_ppw'].values
+    if (timeout <= 0.0):
+        timeout = max(vld_runtime) * 1.1
+    invld_time = invld_mach_time(invld_nproc, invld_ppn, timeout).sum()
+    return vld_time + invld_time
+
+def sa_mach_time(df, timeout=0.0):
+    if (df.shape[0] == 0):
+        return 0.0
+    
+    df_name = get_name(df)
+    if (df_name != 'lv' and df_name != 'lv_in' and df_name != 'hs' and df_name != 'hs_in'):
+        print "Error: in sa_mach_time(), df is not lv, lv_in, hs, or hs_in!"
+        return -1.0
+    
+    vld_df = get_vld_df(df)
+    if (df_name == 'lv' or df_name == 'lv_in'):
+        vld_sim_nproc = vld_df['lmp_nproc'].values
+        vld_sim_ppn = vld_df['lmp_ppw'].values
+        vld_anal_nproc = vld_df['voro_nproc'].values
+        vld_anal_ppn = vld_df['voro_ppw'].values
+    else:
+        vld_sim_nproc = vld_df['ht_x_nproc'].values * vld_df['ht_y_nproc'].values
+        vld_sim_ppn = vld_df['ht_ppw'].values
+        vld_anal_nproc = vld_df['sw_nproc'].values
+        vld_anal_ppn = vld_df['sw_ppw'].values
+    vld_runtime = vld_df['run_time'].values
+    vld_time = get_mach_time(vld_sim_nproc, vld_sim_ppn, vld_runtime).sum() \
+               + get_mach_time(vld_anal_nproc, vld_anal_ppn, vld_runtime).sum()
+    
+    invld_df = get_invld_df(df)
+    if (df_name == 'lv' or df_name == 'lv_in'):
+        invld_sim_nproc = invld_df['lmp_nproc'].values
+        invld_sim_ppn = invld_df['lmp_ppw'].values
+        invld_anal_nproc = invld_df['voro_nproc'].values
+        invld_anal_ppn = invld_df['voro_ppw'].values
+    else:
+        invld_sim_nproc = invld_df['ht_x_nproc'].values * invld_df['ht_y_nproc'].values
+        invld_sim_ppn = invld_df['ht_ppw'].values
+        invld_anal_nproc = invld_df['sw_nproc'].values
+        invld_anal_ppn = invld_df['sw_ppw'].values
+    if (timeout <= 0.0):
+        timeout = max(vld_runtime) * 1.1
+    invld_time = invld_mach_time(invld_sim_nproc, invld_sim_ppn, timeout).sum() \
+                 + invld_mach_time(invld_anal_nproc, invld_anal_ppn, timeout).sum()
+    return vld_time + invld_time
 

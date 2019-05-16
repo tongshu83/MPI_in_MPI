@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 
+import data
 import tool
 
 def train_mdl(train_df, conf_colns, perf_coln):
@@ -12,7 +13,7 @@ def train_mdl(train_df, conf_colns, perf_coln):
 
 def train_mdl_chk(train_df, conf_colns, perf_coln):
     mdl_chk = train_mdl(train_df, conf_colns, 'runnable')
-    train_df_vld = tool.get_vld_df(train_df)
+    train_df_vld = data.get_vld_df(train_df)
     mdl = train_mdl(train_df_vld, conf_colns, perf_coln)
     return mdl_chk, mdl
 
@@ -44,7 +45,7 @@ def sprt_pred_chk(mdl1_chk, mdl2_chk, test_df, conf1_colns, conf2_colns, conf_co
     return pred_df_chk
     
 def sprt_pred_val(pred_df_chk, mdl1, mdl2, test_df, conf1_colns, conf2_colns, conf_colns, perf_coln):
-    test_df_vld = tool.get_vld_df(test_df)
+    test_df_vld = data.get_vld_df(test_df)
     test_X1_vld = test_df_vld[conf1_colns].values
     test_X2_vld = test_df_vld[conf2_colns].values
     pred_y1_vld = mdl1.predict(test_X1_vld)
@@ -71,7 +72,7 @@ def sprt_pred_top_eval(train_df1, train_df2, test_df, conf1_colns, conf2_colns, 
     mdl2_chk, mdl2 = train_mdl_chk(train_df2, conf2_colns, perf_coln)
     
     pred_df_chk = sprt_pred_chk(mdl1_chk, mdl2_chk, test_df, conf1_colns, conf2_colns, conf_colns)
-    test_df_vld = tool.get_vld_df(test_df)
+    test_df_vld = data.get_vld_df(test_df)
     
     if (perf_coln != 'obj'):
         pred_df, pred_df_vld = sprt_pred_val(pred_df_chk, mdl1, mdl2, test_df, \
@@ -123,7 +124,7 @@ def whl_pred_top_eval(train_df, test_df, conf_colns, perf_coln, topn=1, eval_fla
     if (eval_flag != 0):
         # recall, precision = tool.eval_fail(pred_df_chk, test_df)
 
-        test_df_vld = tool.get_vld_df(test_df)
+        test_df_vld = data.get_vld_df(test_df)
         test_X_vld = test_df_vld[conf_colns].values
         pred_y_vld = mdl.predict(test_X_vld)
         pred_df_vld = pd.DataFrame(np.c_[test_X_vld, pred_y_vld], columns=conf_colns + [perf_coln])
@@ -155,7 +156,7 @@ def whl_in_pred_top_eval(train_df, test_df, inparams, conf_in_colns, conf_colns,
             pred_y_chk[i] = 0.0
     pred_df_chk = pd.DataFrame(np.c_[test_df[conf_colns].values, pred_y_chk], columns=conf_colns + ['runnable'])
     
-    test_df_vld = tool.get_vld_df(test_df)
+    test_df_vld = data.get_vld_df(test_df)
     test_num_vld = test_df_vld.shape[0]
     in_X_vld = np.asarray([np.asarray(inparams) for i in range(test_num_vld)])
     test_X_vld = np.concatenate((in_X_vld, test_df_vld[conf_colns].values), axis=1)
