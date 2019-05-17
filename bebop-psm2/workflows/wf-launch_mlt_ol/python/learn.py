@@ -63,7 +63,7 @@ def sprt_pred_val(pred_df_chk, mdl1, mdl2, test_df, conf1_colns, conf2_colns, co
     pred_df_invld = pred_df_chk[(pred_df_chk.runnable == 0.0)]
     pred_y = pred_df_invld['runnable'].values + np.ones(pred_df_invld.shape[0]) * float('inf')
     pred_df_invld = pd.DataFrame(np.c_[pred_df_invld[conf_colns].values, pred_y], columns=conf_colns + [perf_coln])
-    pred_df = pred_df.append(pred_df_invld)
+    pred_df = pred_df.append(pred_df_invld).reset_index(drop=True)
     return pred_df, pred_df_vld
     
 def sprt_pred_top_eval(train_df1, train_df2, test_df, conf1_colns, conf2_colns, conf_colns, perf_coln, \
@@ -118,7 +118,7 @@ def whl_pred_top_eval(train_df, test_df, conf_colns, perf_coln, topn=1, eval_fla
     pred_df_invld = pred_df_chk[(pred_df_chk.runnable == 0.0)]
     pred_y = np.ones(pred_df_invld.shape[0]) * float('inf')
     pred_df_invld = pd.DataFrame(np.c_[pred_df_invld[conf_colns].values, pred_y], columns=conf_colns + [perf_coln])
-    pred_df = pred_df.append(pred_df_invld)
+    pred_df = pred_df.append(pred_df_invld).reset_index(drop=True)
     
     top_smpl = tool.gen_top_df(pred_df, perf_coln, topn)
     if (eval_flag != 0):
@@ -142,8 +142,9 @@ def whl_pred_top_eval(train_df, test_df, conf_colns, perf_coln, topn=1, eval_fla
     else:
         return top_smpl
     
-def whl_in_pred_top_eval(train_df, test_df, inparams, conf_in_colns, conf_colns, perf_coln, topn=1, eval_flag=1):
-    mdl_chk, mdl = train_mdl_chk(train_df, conf_in_colns, perf_coln)
+def whl_in_pred_top_eval(train_df, test_df, inparams, in_conf_colns, conf_colns, perf_coln, \
+                         topn=1, eval_flag=1):
+    mdl_chk, mdl = train_mdl_chk(train_df, in_conf_colns, perf_coln)
     
     test_num_chk = test_df.shape[0]
     in_X_chk = np.asarray([np.asarray(inparams) for i in range(test_num_chk)])
@@ -156,13 +157,6 @@ def whl_in_pred_top_eval(train_df, test_df, inparams, conf_in_colns, conf_colns,
             pred_y_chk[i] = 0.0
     pred_df_chk = pd.DataFrame(np.c_[test_df[conf_colns].values, pred_y_chk], columns=conf_colns + ['runnable'])
     
-    test_df_vld = data.get_vld_df(test_df)
-    test_num_vld = test_df_vld.shape[0]
-    in_X_vld = np.asarray([np.asarray(inparams) for i in range(test_num_vld)])
-    test_X_vld = np.concatenate((in_X_vld, test_df_vld[conf_colns].values), axis=1)
-    pred_y_vld = mdl.predict(test_X_vld)
-    pred_df_vld = pd.DataFrame(np.c_[test_df_vld[conf_colns].values, pred_y_vld], columns=conf_colns + [perf_coln])
-    
     pred_df = pred_df_chk[(pred_df_chk.runnable == 1.0)]
     test_num = pred_df.shape[0]
     in_X = np.asarray([np.asarray(inparams) for i in range(test_num)])
@@ -172,13 +166,21 @@ def whl_in_pred_top_eval(train_df, test_df, inparams, conf_in_colns, conf_colns,
     pred_df_invld = pred_df_chk[(pred_df_chk.runnable == 0.0)]
     pred_y = pred_df_invld['runnable'].values + np.ones(pred_df_invld.shape[0]) * float('inf')
     pred_df_invld = pd.DataFrame(np.c_[pred_df_invld[conf_colns].values, pred_y], columns=conf_colns + [perf_coln])
-    pred_df = pred_df.append(pred_df_invld)
+    pred_df = pred_df.append(pred_df_invld).reset_index(drop=True)
     
     top_smpl = tool.gen_top_df(pred_df, perf_coln, topn)
     if (eval_flag != 0):
-        recall, precision = tool.eval_fail(pred_df_chk, test_df)
+        # recall, precision = tool.eval_fail(pred_df_chk, test_df)
+
+        test_df_vld = data.get_vld_df(test_df)
+        test_num_vld = test_df_vld.shape[0]
+        in_X_vld = np.asarray([np.asarray(inparams) for i in range(test_num_vld)])
+        test_X_vld = np.concatenate((in_X_vld, test_df_vld[conf_colns].values), axis=1)
+        pred_y_vld = mdl.predict(test_X_vld)
+        pred_df_vld = pd.DataFrame(np.c_[test_df_vld[conf_colns].values, pred_y_vld], columns=conf_colns + [perf_coln])
         err_prcntl_df = tool.eval_err(pred_df_vld, test_df_vld, perf_coln)
-        tool.eval_top_match(pred_df_vld, test_df_vld, conf_colns, perf_coln)
+
+        # tool.eval_top_match(pred_df_vld, test_df_vld, conf_colns, perf_coln)
         top_rs_df = tool.eval_top_match(pred_df, test_df, conf_colns, perf_coln)
         return top_smpl, err_prcntl_df, top_rs_df
     else:

@@ -67,11 +67,12 @@ import common;
 		string workflow_root = getenv("WORKFLOW_ROOT");
 		string turbine_output = getenv("TURBINE_OUTPUT");
 		string dir = "%s/run/%s" % (turbine_output, run_id);
-		string infile1 = "%s/in.quench.short" % turbine_output;
+		string infile1 = "%s/in.quench" % turbine_output;
 		string infile2 = "%s/restart.liquid" % turbine_output;
 		string infile3 = "%s/CuZr.fs" % turbine_output;
 
-		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", dir/"in.quench.short" ];
+		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", "32", "32", dir/"in.quench" ];
+		// string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", dir/"in.quench" ];
 		setup_run(dir, infile1, infile2, infile3) =>
 			(output0, exit_code0) = system(cmd0);
 
@@ -120,8 +121,8 @@ import common;
 			// Command line arguments
 			string args[][];
 
-			// mpiexec -n 8 ./lmp_mpi -i in.quench.short
-			args[0] = split("-i in.quench.short", " ");
+			// mpiexec -n 8 ./lmp_mpi -i in.quench
+			args[0] = split("-i in.quench", " ");
 
 			// mpiexec -n 4 ./voro_adios_omp_staging dump.bp adios_atom_voro.bp FLEXPATH
 			args[1] = split("dump.bp adios_atom_voro.bp FLEXPATH", " ");

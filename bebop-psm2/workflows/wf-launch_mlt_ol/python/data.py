@@ -6,12 +6,14 @@ import pandas as pd
 num_core = 36
 num_node = 32
 
+lmp_in_params = [16000, 20000]
 lmp_conf_colns = ['lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step']
-voro_conf_colns = ['voro_nproc', 'voro_ppw', 'voro_nthread', 'lmp_io_step']
-lv_conf_colns = ['lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step', 'voro_nproc', 'voro_ppw', 'voro_nthread']
+vr_conf_colns = ['vr_nproc', 'vr_ppw', 'vr_nthread', 'lmp_io_step']
+lv_conf_colns = ['lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step', 'vr_nproc', 'vr_ppw', 'vr_nthread']
 lv_in_conf_colns = ['lmp_l2s', 'lmp_sld', 'lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step', \
-                    'voro_nproc', 'voro_ppw', 'voro_nthread']
+                    'vr_nproc', 'vr_ppw', 'vr_nthread']
 
+ht_in_params = [2048, 2048, 1024]
 ht_conf_colns = ['ht_x_nproc', 'ht_y_nproc', 'ht_ppw', 'ht_io_step', 'ht_io_buf']
 sw_conf_colns = ['sw_nproc', 'sw_ppw', 'ht_io_step']
 hs_conf_colns = ['ht_x_nproc', 'ht_y_nproc', 'ht_ppw', 'ht_io_step', 'ht_io_buf', 'sw_nproc', 'sw_ppw']
@@ -26,8 +28,8 @@ def get_name(colns):
         return 'lv'
     elif (all([x in colns for x in lmp_conf_colns])):
         return 'lmp'
-    elif (all([x in colns for x in voro_conf_colns])):
-        return 'voro'
+    elif (all([x in colns for x in vr_conf_colns])):
+        return 'vr'
     elif (all([x in colns for x in hs_in_conf_colns])):
         return 'hs_in'
     elif (all([x in colns for x in hs_conf_colns])):
@@ -73,8 +75,8 @@ def csv2df(csv_file_name, conf_colns):
         df = lv_in_load(glob.glob(csv_file_name), conf_colns)
     elif (app_name == 'lmp'):
         df = lmp_load(glob.glob(csv_file_name), conf_colns)
-    elif (app_name == 'voro'):
-        df = voro_load(glob.glob(csv_file_name), conf_colns)
+    elif (app_name == 'vr'):
+        df = vr_load(glob.glob(csv_file_name), conf_colns)
     elif (app_name == 'hs'):
         df = hs_load(glob.glob(csv_file_name), conf_colns)
     elif (app_name == 'hs_in'):
@@ -94,23 +96,21 @@ def gen_lv_smpl(num_smpl, smpl_filename=''):
         lmp_ppw = random.randint(1, num_core - 1)
         lmp_nthread = random.randint(1, 4)
         lmp_io_step = random.randint(1, 8) * 50
-        voro_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
-        voro_ppw = random.randint(1, num_core - 1)
-        voro_nthread = random.randint(1, 4)
+        vr_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        vr_ppw = random.randint(1, num_core - 1)
+        vr_nthread = random.randint(1, 4)
         
-        if (lmp_nproc >= lmp_ppw and voro_nproc >= voro_ppw):
-            if (lmp_nproc % lmp_ppw == 0 and voro_nproc % voro_ppw == 0):
-                nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw
-            elif (lmp_nproc % lmp_ppw == 0 or voro_nproc % voro_ppw == 0):
-                nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 1
+        if (lmp_nproc >= lmp_ppw and vr_nproc >= vr_ppw):
+            if (lmp_nproc % lmp_ppw == 0 and vr_nproc % vr_ppw == 0):
+                nodes = lmp_nproc // lmp_ppw + vr_nproc // vr_ppw
+            elif (lmp_nproc % lmp_ppw == 0 or vr_nproc % vr_ppw == 0):
+                nodes = lmp_nproc // lmp_ppw + vr_nproc // vr_ppw + 1
             else:
-                nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 2
+                nodes = lmp_nproc // lmp_ppw + vr_nproc // vr_ppw + 2
             if (nodes <= num_node):
-                lv_smpls.add((lmp_nproc, lmp_ppw, lmp_nthread, lmp_io_step, voro_nproc, voro_ppw, voro_nthread))
+                lv_smpls.add((lmp_nproc, lmp_ppw, lmp_nthread, lmp_io_step, vr_nproc, vr_ppw, vr_nthread))
 
-    lv_smpls_df = pd.DataFrame(data = list(lv_smpls), \
-                               columns=('lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step', \
-                                        'voro_nproc', 'voro_ppw', 'voro_nthread'))
+    lv_smpls_df = pd.DataFrame(data = list(lv_smpls), columns=lv_conf_colns)
     if (smpl_filename != ''):
         df2csv(lv_smpls_df, smpl_filename)
     return lv_smpls_df
@@ -119,29 +119,27 @@ def gen_lv_in_smpl(num_smpl, smpl_filename=''):
     random.seed(2020)
     lv_smpls = set([])
     while (len(lv_smpls) < num_smpl):
-        lmp_l2s = 16000 / (2 ** random.randint(0, 5))
-        lmp_solid = 20000 / (2 ** random.randint(0, 5))
+        lmp_l2s = lmp_in_params[0] / (2 ** random.randint(0, 5))
+        lmp_sld = lmp_in_params[1] / (2 ** random.randint(0, 5))
         lmp_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
         lmp_ppw = random.randint(1, num_core - 1)
         lmp_nthread = random.randint(1, 4)
         lmp_io_step = random.randint(1, 8) * 50
-        voro_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
-        voro_ppw = random.randint(1, num_core - 1)
-        voro_nthread = random.randint(1, 4)
+        vr_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        vr_ppw = random.randint(1, num_core - 1)
+        vr_nthread = random.randint(1, 4)
         
-        if (lmp_nproc >= lmp_ppw and voro_nproc >= voro_ppw):
-            if (lmp_nproc % lmp_ppw == 0 and voro_nproc % voro_ppw == 0):
-                nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw
-            elif (lmp_nproc % lmp_ppw == 0 or voro_nproc % voro_ppw == 0):
-                nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 1
+        if (lmp_nproc >= lmp_ppw and vr_nproc >= vr_ppw):
+            if (lmp_nproc % lmp_ppw == 0 and vr_nproc % vr_ppw == 0):
+                nodes = lmp_nproc // lmp_ppw + vr_nproc // vr_ppw
+            elif (lmp_nproc % lmp_ppw == 0 or vr_nproc % vr_ppw == 0):
+                nodes = lmp_nproc // lmp_ppw + vr_nproc // vr_ppw + 1
             else:
-                nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 2
+                nodes = lmp_nproc // lmp_ppw + vr_nproc // vr_ppw + 2
             if (nodes <= num_node):
-                lv_smpls.add((lmp_l2s, lmp_solid, lmp_nproc, lmp_ppw, lmp_nthread, lmp_io_step, voro_nproc, voro_ppw, voro_nthread))
+                lv_smpls.add((lmp_l2s, lmp_sld, lmp_nproc, lmp_ppw, lmp_nthread, lmp_io_step, vr_nproc, vr_ppw, vr_nthread))
 
-    smpls_df = pd.DataFrame(data = list(lv_smpls), \
-                               columns=('lmp_l2s', 'lmp_solid', 'lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step', \
-                                        'voro_nproc', 'voro_ppw', 'voro_nthread'))
+    smpls_df = pd.DataFrame(data = list(lv_smpls), columns=lv_in_conf_colns)
     if (smpl_filename != ''):
         df2csv(smpls_df, smpl_filename)
     return smpls_df
@@ -161,27 +159,27 @@ def gen_lmp_smpl(smpl_num, smpl_filename=''):
                 nodes = lmp_nproc // lmp_ppw + 1
             if (nodes <= num_node - 1):
                 smpls.add((lmp_nproc, lmp_ppw, lmp_nthread, lmp_io_step))
-    smpls_df = pd.DataFrame(data = list(smpls), columns=('lmp_nproc', 'lmp_ppw', 'lmp_nthread', 'lmp_io_step'))
+    smpls_df = pd.DataFrame(data = list(smpls), columns=lmp_conf_colns)
     if (smpl_filename != ''):
         df2csv(smpls_df, smpl_filename)
     return smpls_df
 
-def gen_voro_smpl(smpl_num, smpl_filename):
+def gen_vr_smpl(smpl_num, smpl_filename):
     random.seed(2022)
     smpls = set([])
     while (len(smpls) < smpl_num):
-        voro_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
-        voro_ppw = random.randint(1, num_core - 1)
-        voro_nthread = random.randint(1, 4)
+        vr_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
+        vr_ppw = random.randint(1, num_core - 1)
+        vr_nthread = random.randint(1, 4)
         lmp_io_step = random.randint(1, 8) * 50
-        if (voro_nproc >= voro_ppw):
-            if (voro_nproc % voro_ppw == 0):
-                nodes = voro_nproc // voro_ppw
+        if (vr_nproc >= vr_ppw):
+            if (vr_nproc % vr_ppw == 0):
+                nodes = vr_nproc // vr_ppw
             else:
-                nodes = voro_nproc // voro_ppw + 1
+                nodes = vr_nproc // vr_ppw + 1
             if (nodes <= num_node - 1):
-                smpls.add((voro_nproc, voro_ppw, voro_nthread, lmp_io_step))
-    smpls_df = pd.DataFrame(data = list(smpls), columns=('voro_nproc', 'voro_ppw', 'voro_nthread', 'lmp_io_step'))
+                smpls.add((vr_nproc, vr_ppw, vr_nthread, lmp_io_step))
+    smpls_df = pd.DataFrame(data = list(smpls), columns=vr_conf_colns)
     if (smpl_filename != ''):
         df2csv(smpls_df, smpl_filename)
     return smpls_df     
@@ -197,7 +195,7 @@ def lmp_load(fns, conf_colns, perfn='run_time'):
             val.append([float(s) for s in l.split()])
     return pd.DataFrame(val, columns=colns)
 
-def voro_load(fns, conf_colns, perfn='run_time'):
+def vr_load(fns, conf_colns, perfn='run_time'):
     if (perfn == ''):
         colns = conf_colns
     else:
@@ -253,9 +251,7 @@ def gen_hs_smpl(num_smpl, smpl_filename=''):
             if (nodes <= num_node):
                 hs_smpls.add((ht_x_nproc, ht_y_nproc, ht_ppw, ht_io_step, ht_io_buf, sw_nproc, sw_ppw))
 
-    hs_smpls_df = pd.DataFrame(data = list(hs_smpls), \
-                               columns=('ht_x_nproc', 'ht_y_nproc', 'ht_ppw', 'ht_io_step', 'ht_io_buf', \
-                                        'sw_nproc', 'sw_ppw'))
+    hs_smpls_df = pd.DataFrame(data = list(hs_smpls), columns=hs_conf_colns)
     if (smpl_filename != ''):
         df2csv(hs_smpls_df, smpl_filename)
     return hs_smpls_df
@@ -264,9 +260,9 @@ def gen_hs_in_smpl(num_smpl, smpl_filename=''):
     random.seed(2020)
     hs_smpls = set([])
     while (len(hs_smpls) < num_smpl):
-        ht_x = 2048 / (2 ** random.randint(0, 5))
-        ht_y = 2048 / (2 ** random.randint(0, 5))
-        ht_iter = 1024 / (2 ** random.randint(0, 5))
+        ht_x = ht_in_params[0] / (2 ** random.randint(0, 5))
+        ht_y = ht_in_params[1] / (2 ** random.randint(0, 5))
+        ht_iter = ht_in_params[2] / (2 ** random.randint(0, 5))
         ht_x_nproc = random.randint(2, 32)
         ht_y_nproc = random.randint(2, 32)
         ht_ppw = random.randint(1, num_core - 1)
@@ -287,10 +283,7 @@ def gen_hs_in_smpl(num_smpl, smpl_filename=''):
                 hs_smpls.add((ht_x, ht_y, ht_iter, ht_x_nproc, ht_y_nproc, ht_ppw, ht_io_step, ht_io_buf, \
                               sw_nproc, sw_ppw))
 
-    smpls_df = pd.DataFrame(data = list(hs_smpls), \
-                               columns=('ht_x', 'ht_y', 'ht_iter', \
-                                        'ht_x_nproc', 'ht_y_nproc', 'ht_ppw', 'ht_io_step', 'ht_io_buf', \
-                                        'sw_nproc', 'sw_ppw'))
+    smpls_df = pd.DataFrame(data = list(hs_smpls), columns=hs_in_conf_colns)
     if (smpl_filename != ''):
         df2csv(smpls_df, smpl_filename)
     return smpls_df
@@ -313,8 +306,7 @@ def gen_ht_smpl(smpl_num, smpl_filename=''):
                 nodes = ht_nproc // ht_ppw + 1
             if (nodes <= num_node - 1):
                 smpls.add((ht_x_nproc, ht_y_nproc, ht_ppw, ht_io_step, ht_io_buf))
-    smpls_df = pd.DataFrame(data = list(smpls), \
-                            columns=('ht_x_nproc', 'ht_y_nproc', 'ht_ppw', 'ht_io_step', 'ht_io_buf'))
+    smpls_df = pd.DataFrame(data = list(smpls), columns=ht_conf_colns)
     if (smpl_filename != ''):
         df2csv(smpls_df, smpl_filename)
     return smpls_df
@@ -334,7 +326,7 @@ def gen_sw_smpl(smpl_num, smpl_filename=''):
                 nodes = sw_nproc // sw_ppw + 1
             if (nodes <= num_node - 1):
                 smpls.add((sw_nproc, sw_ppw, ht_io_step))
-    smpls_df = pd.DataFrame(data = list(smpls), columns=('sw_nproc', 'sw_ppw', 'ht_io_step'))
+    smpls_df = pd.DataFrame(data = list(smpls), columns=sw_conf_colns)
     if (smpl_filename != ''):
         df2csv(smpls_df, smpl_filename)
     return smpls_df
@@ -411,19 +403,19 @@ def get_exec_mach_df(exec_df):
         return exec_df
 
     df_name = get_name(exec_df.columns.tolist())
-    if (df_name != 'lmp' and df_name != 'voro' and df_name != 'lv' and df_name != 'lv_in' \
+    if (df_name != 'lmp' and df_name != 'vr' and df_name != 'lv' and df_name != 'lv_in' \
         and df_name != 'ht' and df_name != 'sw' and df_name != 'hs' and df_name != 'hs_in'):
         print "Error: unknown dataframe!"
         return exec_df
     
     runtime = exec_df['run_time'].values
-    if (df_name == 'lmp' or df_name == 'voro' or df_name == 'ht' or df_name == 'sw'):
+    if (df_name == 'lmp' or df_name == 'vr' or df_name == 'ht' or df_name == 'sw'):
         if (df_name == 'lmp'):
             nproc = exec_df['lmp_nproc'].values
             ppn = exec_df['lmp_ppw'].values
-        elif (df_name == 'voro'):
-            nproc = exec_df['voro_nproc'].values
-            ppn = exec_df['voro_ppw'].values
+        elif (df_name == 'vr'):
+            nproc = exec_df['vr_nproc'].values
+            ppn = exec_df['vr_ppw'].values
         elif (df_name == 'ht'):
             nproc = exec_df['ht_x_nproc'].values * exec_df['ht_y_nproc'].values
             ppn = exec_df['ht_ppw'].values
@@ -435,8 +427,8 @@ def get_exec_mach_df(exec_df):
         if (df_name == 'lv' or df_name == 'lv_in'):
             sim_nproc = exec_df['lmp_nproc'].values
             sim_ppn = exec_df['lmp_ppw'].values
-            anal_nproc = exec_df['voro_nproc'].values
-            anal_ppn = exec_df['voro_ppw'].values
+            anal_nproc = exec_df['vr_nproc'].values
+            anal_ppn = exec_df['vr_ppw'].values
         else:
             sim_nproc = exec_df['ht_x_nproc'].values * exec_df['ht_y_nproc'].values
             sim_ppn = exec_df['ht_ppw'].values
@@ -458,17 +450,17 @@ def app_mach_time(df, timeout=0.0):
         return 0.0
     
     df_name = get_name(df)
-    if (df_name != 'lmp' and df_name != 'voro' and df_name != 'ht' and df_name != 'sw'):
-        print "Error: in app_mach_time(), df is not lammps, voro, heat-transfer, or stage-write!"
+    if (df_name != 'lmp' and df_name != 'vr' and df_name != 'ht' and df_name != 'sw'):
+        print "Error: in app_mach_time(), df is not lammps, vr, heat-transfer, or stage-write!"
         return -1.0
     
     vld_df = get_vld_df(df)
     if (df_name == 'lmp'):
         vld_nproc = vld_df['lmp_nproc'].values
         vld_ppn = vld_df['lmp_ppw'].values
-    elif (df_name == 'voro'):
-        vld_nproc = vld_df['voro_nproc'].values
-        vld_ppn = vld_df['voro_ppw'].values
+    elif (df_name == 'vr'):
+        vld_nproc = vld_df['vr_nproc'].values
+        vld_ppn = vld_df['vr_ppw'].values
     elif (df_name == 'ht'):
         vld_nproc = vld_df['ht_x_nproc'].values * vld_df['ht_y_nproc'].values
         vld_ppn = vld_df['ht_ppw'].values
@@ -482,9 +474,9 @@ def app_mach_time(df, timeout=0.0):
     if (df_name == 'lmp'):
         invld_nproc = invld_df['lmp_nproc'].values
         invld_ppn = invld_df['lmp_ppw'].values
-    elif (df_name == 'voro'):
-        invld_nproc = invld_df['voro_nproc'].values
-        invld_ppn = invld_df['voro_ppw'].values
+    elif (df_name == 'vr'):
+        invld_nproc = invld_df['vr_nproc'].values
+        invld_ppn = invld_df['vr_ppw'].values
     elif (df_name == 'ht'):
         invld_nproc = invld_df['ht_x_nproc'].values * invld_df['ht_y_nproc'].values
         invld_ppn = invld_df['ht_ppw'].values
@@ -509,8 +501,8 @@ def sa_mach_time(df, timeout=0.0):
     if (df_name == 'lv' or df_name == 'lv_in'):
         vld_sim_nproc = vld_df['lmp_nproc'].values
         vld_sim_ppn = vld_df['lmp_ppw'].values
-        vld_anal_nproc = vld_df['voro_nproc'].values
-        vld_anal_ppn = vld_df['voro_ppw'].values
+        vld_anal_nproc = vld_df['vr_nproc'].values
+        vld_anal_ppn = vld_df['vr_ppw'].values
     else:
         vld_sim_nproc = vld_df['ht_x_nproc'].values * vld_df['ht_y_nproc'].values
         vld_sim_ppn = vld_df['ht_ppw'].values
@@ -524,8 +516,8 @@ def sa_mach_time(df, timeout=0.0):
     if (df_name == 'lv' or df_name == 'lv_in'):
         invld_sim_nproc = invld_df['lmp_nproc'].values
         invld_sim_ppn = invld_df['lmp_ppw'].values
-        invld_anal_nproc = invld_df['voro_nproc'].values
-        invld_anal_ppn = invld_df['voro_ppw'].values
+        invld_anal_nproc = invld_df['vr_nproc'].values
+        invld_anal_ppn = invld_df['vr_ppw'].values
     else:
         invld_sim_nproc = invld_df['ht_x_nproc'].values * invld_df['ht_y_nproc'].values
         invld_sim_ppn = invld_df['ht_ppw'].values

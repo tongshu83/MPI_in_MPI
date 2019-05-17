@@ -21,6 +21,11 @@ def df_filter(df, colns, vals):
     rem_colns = [i for i in df.columns.tolist() if i not in colns]
     return df[rem_colns]
 
+def df_ext(df, colns, vals):
+    cols = np.asarray([np.asarray(vals) for i in range(df.shape[0])])
+    new_df = pd.DataFrame(np.c_[cols, df.values], columns=colns + df.columns.tolist())
+    return new_df
+
 # The index of df should be 0, 1, 2, 3, ... in advance by df = df.reset_index(drop=True)
 def get_top_idx(df, coln, topn):
     topn = int(topn)

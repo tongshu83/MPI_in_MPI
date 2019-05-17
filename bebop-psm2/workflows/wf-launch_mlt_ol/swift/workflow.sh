@@ -39,7 +39,6 @@ if [[ $1 = "workflow-lv" ]]
 then
 	cd $TURBINE_OUTPUT
 	cp -f ../lmp_voro_time.csv lmp_voro_time.csv
-	cp -f ../in.quench.short in.quench.short
 	cp -f ../in.quench in.quench
 	cp -f ../restart.liquid restart.liquid
 	cp -f ../CuZr.fs CuZr.fs

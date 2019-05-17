@@ -17,24 +17,28 @@ def run():
     :param pool_size: pool size
     :param num_iter: number of iterations
     :param prec_rand: precentage of random samples
-    :param prec_init: precentage of initial samples replaced by equivalent samples
     :param csv_file_name: csv file name of test data set (e.g., "lmp_voro_time.csv")
     """
     try:
-        conf_colns, pool_df = cm.init_pool()
+        cm.init()
         app_name = cm.app_name
         perf_coln = cm.perf_coln
         num_smpl = cm.num_smpl
+        pool_size = cm.pool_size
         num_iter = cm.num_iter
         prec_rand = cm.prec_rand
     
+        if (app_name == "lv"):
+            conf_colns = data.lv_conf_colns 
+            pool_df = data.gen_lv_smpl(pool_size)
+        elif (app_name == "hs"):
+            conf_colns = data.hs_conf_colns
+            pool_df = data.gen_hs_smpl(pool_size)
+
         num_rand = int(num_smpl * prec_rand)
         nspi = int((num_smpl - num_rand) / num_iter)
         conf_df = pool_df.head(num_rand)
-        if (app_name == "lv"):
-            train_df = cm.measure_perf(conf_df, "LAMMPS_VORO++")
-        elif (app_name == "hs"):
-            train_df = cm.measure_perf(conf_df, "HeatTransfer_StageWrite")
+        train_df = cm.measure_perf(conf_df, app_name)
 
         for iter_idx in range(num_iter):
             num_curr = num_smpl - nspi * (num_iter - 1 - iter_idx)
@@ -50,10 +54,7 @@ def run():
                 new_conf_df = pred_top_smpl[conf_colns].head(last)
                 conf_df = pd.concat([conf_df, new_conf_df]).drop_duplicates().reset_index(drop=True)
     
-            if (app_name == "lv"):
-                new_train_df = cm.measure_perf(new_conf_df, "LAMMPS_VORO++")
-            elif (app_name == "hs"):
-                new_train_df = cm.measure_perf(new_conf_df, "HeatTransfer_StageWrite")
+            new_train_df = cm.measure_perf(new_conf_df, app_name)
             train_df = pd.concat([train_df, new_train_df]).reset_index(drop=True)
     
         mdl_chk, mdl = learn.train_mdl_chk(train_df, conf_colns, perf_coln)

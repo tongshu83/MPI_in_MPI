@@ -49,7 +49,7 @@ location ML = locationFromRank(turbine_workers() - 1);
 		else
 		{
 			printf("Swift: message: %s", message);
-			if (message == "LAMMPS_VORO++" || message == "LAMMPS_VORO++_input" || message == "LAMMPS" || message == "VORO++")
+			if (message == "lv" || message == "lvi" || message == "lmp" || message == "vr")
 			{
 				samples = EQPy_get(ML);
 				printf("Swift: samples: %s", samples);
@@ -59,30 +59,30 @@ location ML = locationFromRank(turbine_workers() - 1);
 				{
 					int params[] = strarr2intarr(split(conf, ","));
 					boolean vld_params;
-					if (message == "LAMMPS_VORO++") {
+					if (message == "lv") {
 						vld_params = lv_chk_params(params);
-					} else if (message == "LAMMPS") {
+					} else if (message == "lmp") {
 						vld_params = lmp_chk_params(params);
-					} else if (message == "VORO++") {
+					} else if (message == "vr") {
 						vld_params = vr_chk_params(params);
-					} else {  // message == "LAMMPS_VORO++_input"
+					} else {  // message == "lvi"
 						vld_params = lvi_chk_params(params);
 					}
 					if (vld_params) {
 						float exectime[];
-						if (message == "LAMMPS_VORO++") {
+						if (message == "lv") {
 							exectime[i] = lv_launch_wrapper("%0.4i_%0.2i_%0.1i_%0.3i_%0.4i_%0.2i_%0.1i" 
 								% (params[0], params[1], params[2], params[3], params[4], params[5], params[6]), 
 								params);
-						} else if (message == "LAMMPS") {
+						} else if (message == "lmp") {
 							exectime[i] = lmp_launch_wrapper("%0.4i_%0.2i_%0.1i_%0.4i" 
 								% (params[0], params[1], params[2], params[3]),
 								params);
-						} else if (message == "VORO++") {
+						} else if (message == "vr") {
 							exectime[i] = vr_launch_wrapper("%0.4i_%0.2i_%0.1i_%0.4i"
 								% (params[0], params[1], params[2], params[3]),
 								params);
-						} else {  // message == "LAMMPS_VORO++_input")
+						} else {  // message == "lvi")
 							exectime[i] = lvi_launch_wrapper("%0.5i_%0.5i_%0.4i_%0.2i_%0.1i_%0.3i_%0.4i_%0.2i_%0.1i" 
 								% (params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8]), 
 								params);

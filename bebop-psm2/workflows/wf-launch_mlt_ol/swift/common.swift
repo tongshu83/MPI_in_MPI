@@ -5,7 +5,7 @@
 	file delete -force -- <<dir>>
 	file mkdir <<dir>>
 	cd <<dir>>
-	file copy -force -- <<infile1>> in.quench.short
+	file copy -force -- <<infile1>> in.quench
 	file copy -force -- <<infile2>> restart.liquid
 	file copy -force -- <<infile3>> CuZr.fs
 """

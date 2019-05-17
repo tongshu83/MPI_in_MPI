@@ -10,7 +10,7 @@ import learn
 import search
 
 # Global variable names we are going to set from the JSON settings file
-global_settings = ["app_name", "perf_coln", "num_core", "num_node", "rand_seed", "num_smpl", "pool_size", "num_iter", "prec_rand", "prec_init", "csv_file_name"]
+global_settings = ["app_name", "perf_coln", "num_core", "num_node", "rand_seed", "num_smpl", "pool_size", "num_iter", "prec_rand", "prec_init", "csv_file_name", "lmp_l2s", "lmp_sld", "ht_x", "ht_y", "ht_iter"]
 
 def load_settings(settings_filename):
     print("Reading settings: '%s'" % settings_filename)
@@ -28,6 +28,8 @@ def load_settings(settings_filename):
         random.seed(rand_seed)
         data.num_core = num_core
         data.num_node = num_node
+        data.lmp_in_params = [lmp_l2s, lmp_sld]
+        data.ht_in_params = [ht_x, ht_y, ht_iter]
     except KeyError as e:
         print("Settings file (%s) does not contain key: %s" % (settings_filename, str(e)))
         sys.exit(1)
@@ -38,15 +40,24 @@ def init():
     settings_filename = eqpy.IN_get()
     load_settings(settings_filename)
 
-def init_pool():
-    init()
+def app_in_name(app_name):
+    return app_name + "i"
+
+def app1_name(app_name):
     if (app_name == "lv"):
-        conf_colns = data.lv_conf_colns 
-        pool_df = data.gen_lv_smpl(pool_size, "lv_conf_pool.csv")
+        return "lmp"
     elif (app_name == "hs"):
-        conf_colns = data.hs_conf_colns
-        pool_df = data.gen_hs_smpl(pool_size, "hs_conf_pool.csv")
-    return conf_colns, pool_df
+        return "ht"
+    else:
+        return "none"
+
+def app2_name(app_name):
+    if (app_name == "lv"):
+        return "vr"
+    elif (app_name == "hs"):
+        return "sw"
+    else:
+        return "none"
 
 def measure_perf(conf_df, type_smpl):
     conf_colns = conf_df.columns.tolist()
@@ -62,7 +73,7 @@ def measure_perf(conf_df, type_smpl):
 def find_top(mdl_chk, mdl, conf_colns, perf_coln):
     top_pred_df = search.get_pred_top_smpl((mdl_chk, mdl, ), conf_colns, perf_coln)
     top_conf_df = top_pred_df[conf_colns]
-    top_df = measure_perf(top_conf_df, "LAMMPS_VORO++")
+    top_df = measure_perf(top_conf_df, app_name)
     top_df = top_df.sort_values([perf_coln]).reset_index(drop=True)
     data.df2csv(top_df, app_name + "_top.csv")
     return top_df

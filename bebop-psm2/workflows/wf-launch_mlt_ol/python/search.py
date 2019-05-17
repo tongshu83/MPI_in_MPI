@@ -9,18 +9,18 @@ def obj_func_lv(x, *params):
     lmp_ppw = round(x[1])
     lmp_nthread = round(x[2])
     lmp_io_step = round(x[3]) * 50
-    voro_nproc = round(x[4])
-    voro_ppw = round(x[5])
-    voro_nthread = round(x[6])
-    x_chk = np.array([lmp_nproc, lmp_ppw, lmp_nthread, lmp_io_step, voro_nproc, voro_ppw, voro_nthread])
+    vr_nproc = round(x[4])
+    vr_ppw = round(x[5])
+    vr_nthread = round(x[6])
+    x_chk = np.array([lmp_nproc, lmp_ppw, lmp_nthread, lmp_io_step, vr_nproc, vr_ppw, vr_nthread])
     y = float('inf')
-    if (lmp_nproc >= lmp_ppw and voro_nproc >= voro_ppw):
-        if (lmp_nproc % lmp_ppw == 0 and voro_nproc % voro_ppw == 0):
-            nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw
-        elif (lmp_nproc % lmp_ppw == 0 or voro_nproc % voro_ppw == 0):
-            nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 1
+    if (lmp_nproc >= lmp_ppw and vr_nproc >= vr_ppw):
+        if (lmp_nproc % lmp_ppw == 0 and vr_nproc % vr_ppw == 0):
+            nodes = lmp_nproc // lmp_ppw + vr_nproc // vr_ppw
+        elif (lmp_nproc % lmp_ppw == 0 or vr_nproc % vr_ppw == 0):
+            nodes = lmp_nproc // lmp_ppw + vr_nproc // vr_ppw + 1
         else:
-            nodes = lmp_nproc // lmp_ppw + voro_nproc // voro_ppw + 2
+            nodes = lmp_nproc // lmp_ppw + vr_nproc // vr_ppw + 2
         if (nodes <= data.num_node):
             if (len(params) == 4):
                 mdl1_chk = params[0]
