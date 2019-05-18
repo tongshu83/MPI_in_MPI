@@ -88,6 +88,25 @@ def csv2df(csv_file_name, conf_colns):
     df = df.sort_values(conf_colns).reset_index(drop=True)
     return df
 
+def gen_smpl(app_name, num_smpl, smpl_filename=''):
+    if (app_name == 'lv'):
+        smpls_df = gen_lv_smpl(num_smpl, smpl_filename)
+    elif (app_name == 'lv_in'):
+        smpls_df = gen_lv_in_smpl(num_smpl, smpl_filename)
+    elif (app_name == 'lmp'):
+        smpls_df = gen_lmp_smpl(num_smpl, smpl_filename)
+    elif (app_name == 'vr'):
+        smpls_df = gen_vr_smpl(num_smpl, smpl_filename)
+    elif (app_name == 'hs'):
+        smpls_df = gen_hs_smpl(num_smpl, smpl_filename)
+    elif (app_name == 'hs_in'):
+        smpls_df = gen_hs_in_smpl(num_smpl, smpl_filename)
+    elif (app_name == 'ht'):
+        smpls_df = gen_ht_smpl(num_smpl, smpl_filename)
+    elif (app_name == 'sw'):
+        smpls_df = gen_sw_smpl(num_smpl, smpl_filename)
+    return smpls_df
+
 def gen_lv_smpl(num_smpl, smpl_filename=''):
     random.seed(2019)
     lv_smpls = set([])

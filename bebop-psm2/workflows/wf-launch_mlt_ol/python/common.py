@@ -59,10 +59,11 @@ def app2_name(app_name):
     else:
         return "none"
 
-def measure_perf(conf_df, type_smpl):
+def measure_perf(conf_df):
     conf_colns = conf_df.columns.tolist()
     conf_df = conf_df.astype(int)
-    eqpy.OUT_put(type_smpl)
+    app_name = data.get_name(conf_df.columns.tolist())
+    eqpy.OUT_put(app_name)
     eqpy.OUT_put(data.df2string(conf_df))
     result = eqpy.IN_get()
     time_df = data.string2df(result, ['run_time'])
@@ -73,7 +74,7 @@ def measure_perf(conf_df, type_smpl):
 def find_top(mdl_chk, mdl, conf_colns, perf_coln):
     top_pred_df = search.get_pred_top_smpl((mdl_chk, mdl, ), conf_colns, perf_coln)
     top_conf_df = top_pred_df[conf_colns]
-    top_df = measure_perf(top_conf_df, app_name)
+    top_df = measure_perf(top_conf_df)
     top_df = top_df.sort_values([perf_coln]).reset_index(drop=True)
     data.df2csv(top_df, app_name + "_top.csv")
     return top_df

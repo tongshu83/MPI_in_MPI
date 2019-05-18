@@ -15,7 +15,7 @@ def run():
     :param num_node: number of computing nodes
     :param rand_seed: random seed
     :param num_smpl: number of samples
-    :param csv_file_name: csv file name of test data set (e.g., "lmp_voro_time.csv")
+    :param csv_file_name: csv file name of test data set (e.g., "lv_time.csv")
     """
     try:
         cm.init()
@@ -25,12 +25,11 @@ def run():
 
         if (app_name == "lv"):
             conf_colns = data.lv_conf_colns 
-            conf_df = data.gen_lv_smpl(num_smpl)
         elif (app_name == "hs"):
             conf_colns = data.hs_conf_colns
-            conf_df = data.gen_hs_smpl(num_smpl)
 
-        train_df = cm.measure_perf(conf_df, app_name)
+        conf_df = data.gen_smpl(app_name, num_smpl)
+        train_df = cm.measure_perf(conf_df)
         mdl_chk, mdl = learn.train_mdl_chk(train_df, conf_colns, perf_coln)
         top_df = cm.find_top(mdl_chk, mdl, conf_colns, perf_coln)
 

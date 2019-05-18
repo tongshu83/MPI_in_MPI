@@ -33,46 +33,43 @@ def run():
     
         if (app_name == "lv"):
             conf_colns = data.lv_conf_colns
-            in_conf_colns = data.lv_in_conf_colns
-            in_params = data.lmp_in_params 
+            conf1_colns = data.lmp_conf_colns
+            conf2_colns = data.vr_conf_colns
         elif (app_name == "hs"):
             conf_colns = data.hs_conf_colns
-            in_conf_colns = data.hs_in_conf_colns
-            in_params = data.ht_in_params
+            conf1_colns = data.ht_conf_colns
+            conf2_colns = data.sw_conf_colns
 
         pool_df = data.gen_smpl(app_name, pool_size)
         num_rand = int(num_smpl * prec_rand)
         conf_df = pool_df.head(num_rand)
-
-        in_colns = [i for i in in_conf_colns if i not in conf_colns]
-        in_conf_df = tool.df_ext(conf_df, in_colns, in_params)
+        train_df = cm.measure_perf(conf_df)
 
         num_init = int(num_smpl * prec_init)
-        in_pool_df = data.gen_smpl(cm.app_in_name(app_name), num_init * 100)
-        in_pool_df = pd.concat([in_pool_df, in_conf_df]).drop_duplicates(keep=False).reset_index(drop=True)
-        in_conf_df = pd.concat([in_conf_df, in_pool_df.head(num_init)]).reset_index(drop=True)
-        in_df = cm.measure_perf(in_conf_df)
+        pool1_df = data.gen_smpl(cm.app1_name(app_name), num_init * 100)
+        conf1_df = pool1_df.head(num_init)
+        train1_df = cm.measure_perf(conf1_df)
+        pool2_df = data.gen_smpl(cm.app2_name(app_name), num_init * 100)
+        conf2_df = pool2_df.head(num_init)
+        train2_df = cm.measure_perf(conf2_df)
 
-        train_df = tool.df_filter(in_df, in_colns, in_params)
-        avg_mach_time = data.sa_mach_time(train_df) / train_df.shape[0]
+        avg_mach_time = data.sa_mach_time(train_df) / num_rand
+        avg_sprt_mach_time = (data.app_mach_time(train1_df) + \
+                              data.app_mach_time(train2_df)) / num_init
+        factor = max(1, avg_mach_time / avg_sprt_mach_time)
+        if (factor > 1):
+            num_sprt = int(num_init * factor)
+            new_conf1_df = pool1_df.head(num_sprt).tail(num_sprt - num_init)
+            new_train1_df = cm.measure_perf(new_conf1_df)
+            train1_df = pd.concat([train1_df, new_train1_df]).reset_index(drop=True)
+            new_conf2_df = pool2_df.head(num_sprt).tail(num_sprt - num_init)
+            new_train2_df = cm.measure_perf(new_conf2_df)
+            train2_df = pd.concat([train2_df, new_train2_df]).reset_index(drop=True)
 
-        init_df = tool.df_intersection(in_df, in_pool_df.head(num_init), in_conf_colns)
-        avg_in_mach_time = data.sa_mach_time(init_df) / num_init
+        pred_top_smpl = learn.sprt_pred_top_eval(train1_df, train2_df, pool_df, conf1_colns, conf2_colns, conf_colns, perf_coln, num_smpl, 0) 
 
-        factor = max(1, avg_mach_time / avg_in_mach_time)
-	if (factor > 1):
-            num_in = int(num_init * factor)
-            new_in_conf_df = in_pool_df.head(num_in).tail(num_in - num_init)
-            new_in_df = cm.measure_perf(new_in_conf_df)
-            in_df = pd.concat([in_df, new_in_df]).reset_index(drop=True)
-
-        pred_top_smpl = learn.whl_in_pred_top_eval(in_df, pool_df, in_params, in_conf_colns, conf_colns, perf_coln, num_smpl, 0)
-
-        train_df = tool.df_filter(in_df, in_colns, in_params)
-        conf_df = train_df[conf_colns]
-        incr_num = train_df.shape[0] - num_rand
         nspi = int((num_smpl - num_init - num_rand) / num_iter)
-    
+
         for iter_idx in range(num_iter):
             num_curr = num_smpl - num_init - nspi * (num_iter - 1 - iter_idx)
 
@@ -81,7 +78,7 @@ def run():
             conf_df = pd.concat([conf_df, new_conf_df]).drop_duplicates().reset_index(drop=True)
 
             last = nspi
-            while (conf_df.shape[0] < num_curr + incr_num):
+            while (conf_df.shape[0] < num_curr):
                 last = last + 1
                 new_conf_df = pred_top_smpl[conf_colns].head(last)
                 conf_df = pd.concat([conf_df, new_conf_df]).drop_duplicates().reset_index(drop=True)

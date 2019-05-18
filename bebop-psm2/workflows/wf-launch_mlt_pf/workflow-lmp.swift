@@ -179,8 +179,8 @@ main()
 	// 5) Voro: num of processes per worker
 	// 6) Voro: num of threads per process
 	int params_start[] = [16, 16, 2, 100, 16, 16, 2];
-	int params_stop[] = [128, 32, 4, 100, 128, 32, 4];
-	int params_step[] = [16, 16, 2, 900, 16, 16, 2];
+	int params_stop[] = [16, 16, 4, 400, 16, 16, 4];
+	int params_step[] = [16, 16, 2, 100, 16, 16, 2];
 	int params_num[] = [ (params_stop[0] - params_start[0]) %/ params_step[0] + 1,
 	    (params_stop[1] - params_start[1]) %/ params_step[1] + 1,
 	    (params_stop[2] - params_start[2]) %/ params_step[2] + 1,
