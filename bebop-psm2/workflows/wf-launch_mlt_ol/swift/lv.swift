@@ -27,7 +27,7 @@ import common;
 	// 5) Voro: num of processes per worker
 	// 6) Voro: num of threads per process
 
-	if ((params[1] <= ppw) && (params[5] <= ppw))
+	if ((params[1] <= ppw) && (params[5] <= ppw) && (params[0] >= params[1]) && (params[4] >= params[5]))
 	{
 		int nwork;
 		if (params[0] %% params[1] == 0 && params[4] %% params[5] == 0) {
@@ -190,7 +190,7 @@ import common;
 
 (float exectime) lv_get_exectime(string run_id, int params[], int count = 0)
 {
-	int time_limit = 3;
+	int time_limit = 2;
 	if (count < time_limit)
 	{
 		string turbine_output = getenv("TURBINE_OUTPUT");

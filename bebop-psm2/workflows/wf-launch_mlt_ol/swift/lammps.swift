@@ -24,7 +24,7 @@ import common;
 	// 2) Lammps: num of threads per process
 	// 3) Lammps: IO interval in steps
 
-	if (params[1] <= ppw)
+	if ((params[1] <= ppw) && (params[0] >= params[1]))
 	{
 		int nwork;
 		if (params[0] %% params[1] == 0) {
@@ -158,7 +158,7 @@ import common;
 
 (float exectime) lmp_get_exectime(string run_id, int params[], int count = 0)
 {
-	int time_limit = 3;
+	int time_limit = 2;
 	if (count < time_limit)
 	{
 		string turbine_output = getenv("TURBINE_OUTPUT");
