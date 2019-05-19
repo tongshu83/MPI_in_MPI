@@ -77,7 +77,7 @@ import common;
 		string infile3 = "%s/CuZr.fs" % turbine_output;
 
 		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", int2string(lmp_l2s), int2string(lmp_sld), dir/"in.quench" ];
-		setup_run(dir, infile1, infile2, infile3) =>
+		setup_run_lmp(dir, infile1, infile2, infile3) =>
 			(output0, exit_code0) = system(cmd0);
 
 		if (exit_code0 != 0)

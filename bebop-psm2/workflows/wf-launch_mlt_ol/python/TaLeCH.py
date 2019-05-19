@@ -71,7 +71,7 @@ def run():
                 pred_top_smpl = learn.whl_pred_top_eval(train_df, pool_df, conf_colns, perf_coln, num_smpl, 0)
 
         mdl_chk, mdl = learn.train_mdl_chk(train_df, conf_colns, perf_coln)
-        top_df = cm.find_top(mdl_chk, mdl, conf_colns, perf_coln)
+        top_df = cm.find_top('TaLeCH', (mdl_chk, mdl, ), conf_colns, perf_coln)
     
         # cm.test(train_df, conf_colns, perf_coln, cm.csv_file_name)
         cm.finish(train_df, top_df)

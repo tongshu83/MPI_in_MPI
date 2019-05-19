@@ -23,7 +23,7 @@ hs_in_conf_colns = ['ht_x', 'ht_y', 'ht_iter', 'ht_x_nproc', 'ht_y_nproc', 'ht_p
 # colns = df.columns.tolist()
 def get_name(colns):
     if (all([x in colns for x in lv_in_conf_colns])):
-        return 'lv_in'
+        return 'lvi'
     elif (all([x in colns for x in lv_conf_colns])):
         return 'lv'
     elif (all([x in colns for x in lmp_conf_colns])):
@@ -31,7 +31,7 @@ def get_name(colns):
     elif (all([x in colns for x in vr_conf_colns])):
         return 'vr'
     elif (all([x in colns for x in hs_in_conf_colns])):
-        return 'hs_in'
+        return 'hsi'
     elif (all([x in colns for x in hs_conf_colns])):
         return 'hs'
     elif (all([x in colns for x in ht_conf_colns])):
@@ -71,7 +71,7 @@ def csv2df(csv_file_name, conf_colns):
     app_name = get_name(conf_colns)
     if (app_name == 'lv'):
         df = lv_load(glob.glob(csv_file_name), conf_colns)
-    elif (app_name == 'lv_in'):
+    elif (app_name == 'lvi'):
         df = lv_in_load(glob.glob(csv_file_name), conf_colns)
     elif (app_name == 'lmp'):
         df = lmp_load(glob.glob(csv_file_name), conf_colns)
@@ -79,7 +79,7 @@ def csv2df(csv_file_name, conf_colns):
         df = vr_load(glob.glob(csv_file_name), conf_colns)
     elif (app_name == 'hs'):
         df = hs_load(glob.glob(csv_file_name), conf_colns)
-    elif (app_name == 'hs_in'):
+    elif (app_name == 'hsi'):
         df = hs_in_load(glob.glob(csv_file_name), conf_colns)
     elif (app_name == 'ht'):
         df = ht_load(glob.glob(csv_file_name), conf_colns)
@@ -91,7 +91,7 @@ def csv2df(csv_file_name, conf_colns):
 def gen_smpl(app_name, num_smpl, smpl_filename=''):
     if (app_name == 'lv'):
         smpls_df = gen_lv_smpl(num_smpl, smpl_filename)
-    elif (app_name == 'lv_in'):
+    elif (app_name == 'lvi'):
         smpls_df = gen_lv_in_smpl(num_smpl, smpl_filename)
     elif (app_name == 'lmp'):
         smpls_df = gen_lmp_smpl(num_smpl, smpl_filename)
@@ -99,7 +99,7 @@ def gen_smpl(app_name, num_smpl, smpl_filename=''):
         smpls_df = gen_vr_smpl(num_smpl, smpl_filename)
     elif (app_name == 'hs'):
         smpls_df = gen_hs_smpl(num_smpl, smpl_filename)
-    elif (app_name == 'hs_in'):
+    elif (app_name == 'hsi'):
         smpls_df = gen_hs_in_smpl(num_smpl, smpl_filename)
     elif (app_name == 'ht'):
         smpls_df = gen_ht_smpl(num_smpl, smpl_filename)
@@ -422,8 +422,8 @@ def get_exec_mach_df(exec_df):
         return exec_df
 
     df_name = get_name(exec_df.columns.tolist())
-    if (df_name != 'lmp' and df_name != 'vr' and df_name != 'lv' and df_name != 'lv_in' \
-        and df_name != 'ht' and df_name != 'sw' and df_name != 'hs' and df_name != 'hs_in'):
+    if (df_name != 'lmp' and df_name != 'vr' and df_name != 'lv' and df_name != 'lvi' \
+        and df_name != 'ht' and df_name != 'sw' and df_name != 'hs' and df_name != 'hsi'):
         print "Error: unknown dataframe!"
         return exec_df
     
@@ -443,7 +443,7 @@ def get_exec_mach_df(exec_df):
             ppn = exec_df['sw_ppw'].values
         mach_time = get_mach_time(nproc, ppn, runtime)
     else:
-        if (df_name == 'lv' or df_name == 'lv_in'):
+        if (df_name == 'lv' or df_name == 'lvi'):
             sim_nproc = exec_df['lmp_nproc'].values
             sim_ppn = exec_df['lmp_ppw'].values
             anal_nproc = exec_df['vr_nproc'].values
@@ -512,12 +512,12 @@ def sa_mach_time(df, timeout=0.0):
         return 0.0
     
     df_name = get_name(df)
-    if (df_name != 'lv' and df_name != 'lv_in' and df_name != 'hs' and df_name != 'hs_in'):
-        print "Error: in sa_mach_time(), df is not lv, lv_in, hs, or hs_in!"
+    if (df_name != 'lv' and df_name != 'lvi' and df_name != 'hs' and df_name != 'hsi'):
+        print "Error: in sa_mach_time(), df is not lv, lvi, hs, or hsi!"
         return -1.0
     
     vld_df = get_vld_df(df)
-    if (df_name == 'lv' or df_name == 'lv_in'):
+    if (df_name == 'lv' or df_name == 'lvi'):
         vld_sim_nproc = vld_df['lmp_nproc'].values
         vld_sim_ppn = vld_df['lmp_ppw'].values
         vld_anal_nproc = vld_df['vr_nproc'].values
@@ -532,7 +532,7 @@ def sa_mach_time(df, timeout=0.0):
                + get_mach_time(vld_anal_nproc, vld_anal_ppn, vld_runtime).sum()
     
     invld_df = get_invld_df(df)
-    if (df_name == 'lv' or df_name == 'lv_in'):
+    if (df_name == 'lv' or df_name == 'lvi'):
         invld_sim_nproc = invld_df['lmp_nproc'].values
         invld_sim_ppn = invld_df['lmp_ppw'].values
         invld_anal_nproc = invld_df['vr_nproc'].values

@@ -1,5 +1,5 @@
 
-(void v) setup_run(string dir, string infile1, string infile2, string infile3) "turbine" "0.0"
+(void v) setup_run_lmp(string dir, string infile1, string infile2, string infile3) "turbine" "0.0"
 [
 """
 	file delete -force -- <<dir>>
@@ -8,6 +8,16 @@
 	file copy -force -- <<infile1>> in.quench
 	file copy -force -- <<infile2>> restart.liquid
 	file copy -force -- <<infile3>> CuZr.fs
+"""
+];
+
+(void v) setup_run_ht(string dir, string infile) "turbine" "0.0"
+[
+"""
+	file delete -force -- <<dir>>
+	file mkdir <<dir>>
+	cd <<dir>>
+	file link -symbolic heat_transfer.xml <<infile>>
 """
 ];
 

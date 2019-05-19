@@ -31,7 +31,7 @@ def run():
         conf_df = data.gen_smpl(app_name, num_smpl)
         train_df = cm.measure_perf(conf_df)
         mdl_chk, mdl = learn.train_mdl_chk(train_df, conf_colns, perf_coln)
-        top_df = cm.find_top(mdl_chk, mdl, conf_colns, perf_coln)
+        top_df = cm.find_top('baseline', (mdl_chk, mdl, ), conf_colns, perf_coln)
 
         # cm.test(train_df, conf_colns, perf_coln, cm.csv_file_name)
         cm.finish(train_df, top_df)

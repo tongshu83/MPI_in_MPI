@@ -60,9 +60,9 @@ def run():
         avg_in_mach_time = data.sa_mach_time(init_df) / num_init
 
         factor = max(1, avg_mach_time / avg_in_mach_time)
-	if (factor > 1):
-            num_in = int(num_init * factor)
-            new_in_conf_df = in_pool_df.head(num_in).tail(num_in - num_init)
+        num = int(num_init * factor)
+	if (num > num_init):
+            new_in_conf_df = in_pool_df.head(num).tail(num - num_init)
             new_in_df = cm.measure_perf(new_in_conf_df)
             in_df = pd.concat([in_df, new_in_df]).reset_index(drop=True)
 
@@ -92,7 +92,7 @@ def run():
                 pred_top_smpl = learn.whl_pred_top_eval(train_df, pool_df, conf_colns, perf_coln, num_smpl, 0)
 
         mdl_chk, mdl = learn.train_mdl_chk(train_df, conf_colns, perf_coln)
-        top_df = cm.find_top(mdl_chk, mdl, conf_colns, perf_coln)
+        top_df = cm.find_top('ATaLeW', (mdl_chk, mdl, ), conf_colns, perf_coln)
     
         # cm.test(train_df, conf_colns, perf_coln, cm.csv_file_name)
         cm.finish(train_df, top_df)

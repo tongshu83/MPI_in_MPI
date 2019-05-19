@@ -73,7 +73,7 @@ import common;
 
 		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", "32", "32", dir/"in.quench" ];
 		// string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", dir/"in.quench" ];
-		setup_run(dir, infile1, infile2, infile3) =>
+		setup_run_lmp(dir, infile1, infile2, infile3) =>
 			(output0, exit_code0) = system(cmd0);
 
 		if (exit_code0 != 0)

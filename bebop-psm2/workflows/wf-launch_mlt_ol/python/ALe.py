@@ -57,7 +57,7 @@ def run():
             train_df = pd.concat([train_df, new_train_df]).reset_index(drop=True)
     
         mdl_chk, mdl = learn.train_mdl_chk(train_df, conf_colns, perf_coln)
-        top_df = cm.find_top(mdl_chk, mdl, conf_colns, perf_coln)
+        top_df = cm.find_top('ALe', (mdl_chk, mdl, ), conf_colns, perf_coln)
     
         # cm.test(train_df, conf_colns, perf_coln, cm.csv_file_name)
         cm.finish(train_df, top_df)
