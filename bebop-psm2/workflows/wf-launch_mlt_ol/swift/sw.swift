@@ -66,7 +66,7 @@ import common;
 		}
 		int timeout = 360 * float2int(2 ** count);
 
-		string cmd1 = "../../../../../../Example-Heat_Transfer/stage_write/stage_write";
+		string cmd1 = "../../../../../../../Example-Heat_Transfer/stage_write/stage_write";
 
 		// mpiexec -n 70 stage_write/stage_write heat.bp staged.bp MPI "" MPI ""
 		string args1[] = split("heat.bp staged.bp MPI \"\" MPI \"\"", " ");
