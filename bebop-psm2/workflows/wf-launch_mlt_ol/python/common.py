@@ -71,8 +71,8 @@ def measure_perf(conf_df):
     conf_perf_df = data.get_exec_mach_df(data.get_runnable_df(conf_perf_df, conf_colns))
     return conf_perf_df
 
-def find_top(mdl_chk, mdl, conf_colns, perf_coln):
-    top_pred_df = search.get_pred_top_smpl((mdl_chk, mdl, ), conf_colns, perf_coln)
+def find_top(algo, mdls, conf_colns, perf_coln):
+    top_pred_df = search.get_pred_top_smpl(algo, mdls, conf_colns, perf_coln)
     top_conf_df = top_pred_df[conf_colns]
     top_df = measure_perf(top_conf_df)
     top_df = top_df.sort_values([perf_coln]).reset_index(drop=True)

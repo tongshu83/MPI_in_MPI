@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import pandas as pd
 from scipy.optimize import differential_evolution
@@ -22,35 +23,45 @@ def obj_func_lv(x, *params):
         else:
             nodes = lmp_nproc // lmp_ppw + vr_nproc // vr_ppw + 2
         if (nodes <= data.num_node):
-            if (len(params) == 4):
-                mdl1_chk = params[0]
-                mdl2_chk = params[1]
-                mdl1 = params[2]
-                mdl2 = params[3]
-                
-                x1_chk = x_chk[:4]
-                x2_chk = np.hstack((x_chk[4:7], [x_chk[3]]))
-                y1_chk = mdl1_chk.predict([x1_chk])[0]
-                y2_chk = mdl2_chk.predict([x2_chk])[0]
-                y_chk = min(y1_chk, y2_chk)
-                if (y_chk > 0.0005):
-                    y1 = mdl1.predict([x1_chk])[0]
-                    y2 = mdl2.predict([x2_chk])[0]
-                    y = 0.5 * (y1 + y2) + 0.5 * max(y1, y2)
-                else:
-                    y = float('inf')
+            algo = params[0]
+            mdls = params[1:]
+            if (algo == 'cmtl_ch'):
+                mdl1_chk, mdl1, mdl2_chk, mdl2 = mdls[0], mdls[1], mdls[2], mdls[3]
+                mdl_chk, mdl = mdls[4], mdls[5]
+                y1, y2 = float('inf'), float('inf')
+                x1 = x_chk[:4]
+                y1_chk = mdl1_chk.predict([x1])[0]
+                if (y1_chk >= 0.0005):
+                    y1 = mdl1.predict([x1])[0]
+                x2 = np.hstack((x_chk[4:7], [x_chk[3]]))
+                y2_chk = mdl2_chk.predict([x2])[0]
+                if (y2_chk >= 0.0005):
+                    y2 = mdl2.predict([x2])[0]
+                x_p = np.concatenate((x_chk, np.array([y1, y2])), axis=0)
+                y_chk = mdl_chk.predict([x_p])[0]
+                if (y_chk >= 0.0005):
+                    y = mdl.predict([x_p])[0]
+            elif (algo == 'cmtl_wh'):
+                in_mdl_chk, in_mdl = mdls[0], mdls[1]
+                mdl_chk, mdl = mdls[2], mdls[3]
+                y_in = float('inf')
+                x_in = np.concatenate((np.array(data.lmp_in_params), x_chk), axis=0)
+                y_in_chk = in_mdl_chk.predict([x_in])[0]
+                if (y_in_chk >= 0.0005):
+                    y_in = in_mdl.predict([x_in])[0]
+                x_p = np.concatenate((x_chk, np.array([y_in])), axis=0)
+                y_chk = mdl_chk.predict([x_p])[0]
+                if (y_chk >= 0.0005):
+                    y = mdl.predict([x_p])[0]
             else:
-                mdl_chk = params[0]
-                mdl = params[1]
-                
+                mdl_chk = mdls[0]
+                mdl = mdls[1]
                 y_chk = mdl_chk.predict([x_chk])[0]
-                if (y_chk > 0.0005):
+                if (y_chk >= 0.0005):
                     y = mdl.predict([x_chk])[0]
-                else:
-                    y = float('inf')
     return y
 
-def pred_top_lv(mdls):
+def pred_top_lv(algo, mdls):
     bounds = [(2.0 - 0.1, (data.num_core - 1.0) * (data.num_node - 1.0) + 0.1), \
               (1.0 - 0.1, data.num_core - 1 + 0.1), \
               (1.0 - 0.1, 4.0 + 0.1), \
@@ -58,12 +69,15 @@ def pred_top_lv(mdls):
               (2.0 - 0.1, (data.num_core - 1.0) * (data.num_node - 1.0) + 0.1), \
               (1.0 - 0.1, data.num_core - 1 + 0.1), \
               (1.0 - 0.1, 4.0 + 0.1)]
-    result = differential_evolution(obj_func_lv, bounds, args=mdls)
+    params = (algo, ) + mdls
+    result = differential_evolution(obj_func_lv, bounds, args=params)
     x = np.rint(result.x)
-    if (len(mdls) == 4):
-        y = obj_func_lv(x, mdls[0], mdls[1], mdls[2], mdls[3])
+    if (algo == 'cmtl_ch'):
+        y = obj_func_lv(x, algo, mdls[0], mdls[1], mdls[2], mdls[3], mdls[4], mdls[5])
+    elif (algo == 'cmtl_wh'):
+        y = obj_func_lv(x, algo, mdls[0], mdls[1], mdls[2], mdls[3])
     else:
-        y = obj_func_lv(x, mdls[0], mdls[1])
+        y = obj_func_lv(x, algo, mdls[0], mdls[1])
     x[3] *= 50
     smpl_arr = np.hstack((x, [y]))
     return smpl_arr
@@ -87,61 +101,76 @@ def obj_func_hs(x, *params):
         else:
             nodes = ht_nproc // ht_ppw + sw_nproc // sw_ppw + 2
         if (nodes <= data.num_node):
-            if (len(params) == 4):
-                mdl1_chk = params[0]
-                mdl2_chk = params[1]
-                mdl1 = params[2]
-                mdl2 = params[3]
-                
-                x1_chk = x_chk[:5]
-                x2_chk = np.hstack((x_chk[5:7], [x_chk[3]]))
-                y1_chk = mdl1_chk.predict([x1_chk])[0]
-                y2_chk = mdl2_chk.predict([x2_chk])[0]
-                y_chk = min(y1_chk, y2_chk)
-                if (y_chk > 0.0005):
-                    y1 = mdl1.predict([x1_chk])[0]
-                    y2 = mdl2.predict([x2_chk])[0]
-                    y = 0.5 * (y1 + y2) + 0.5 * max(y1, y2)
-                else:
-                    y = float('inf')
+            algo = params[0]
+            mdls = params[1:]
+
+            if (algo == 'cmtl_ch'):
+                mdl1_chk, mdl1, mdl2_chk, mdl2 = mdls[0], mdls[1], mdls[2], mdls[3]
+                mdl_chk, mdl = mdls[4], mdls[5]
+                y1, y2 = float('inf'), float('inf')
+                x1 = x_chk[:5]
+                y1_chk = mdl1_chk.predict([x1])[0]
+                if (y1_chk >= 0.0005):
+                    y1 = mdl1.predict([x1])[0]
+                x2 = np.hstack((x_chk[5:7], [x_chk[3]]))
+                y2_chk = mdl2_chk.predict([x2])[0]
+                if (y2_chk >= 0.0005):
+                    y2 = mdl2.predict([x2])[0]
+                x_p = np.concatenate((x_chk, np.array([y1, y2])), axis=0)
+                y_chk = mdl_chk.predict([x_p])[0]
+                if (y_chk >= 0.0005):
+                    y = mdl.predict([x_p])[0]
+            elif (algo == 'cmtl_wh'):
+                in_mdl_chk, in_mdl = mdls[0], mdls[1]
+                mdl_chk, mdl = mdls[2], mdls[3]
+                y_in = float('inf')
+                x_in = np.concatenate((np.array(data.ht_in_params), x_chk), axis=0)
+                y_in_chk = in_mdl_chk.predict([x_in])[0]
+                if (y_in_chk >= 0.0005):
+                    y_in = in_mdl.predict([x_in])[0]
+                x_p = np.concatenate((x_chk, np.array([y_in])), axis=0)
+                y_chk = mdl_chk.predict([x_p])[0]
+                if (y_chk >= 0.0005):
+                    y = mdl.predict([x_p])[0]
             else:
-                mdl_chk = params[0]
-                mdl = params[1]
-                
+                mdl_chk = mdls[0]
+                mdl = mdls[1]
                 y_chk = mdl_chk.predict([x_chk])[0]
-                if (y_chk > 0.0005):
+                if (y_chk >= 0.0005):
                     y = mdl.predict([x_chk])[0]
-                else:
-                    y = float('inf')
     return y
 
-def pred_top_hs(mdls):
-    bounds = [(2.0 - 0.1, 32.0 + 0.1), \
-              (2.0 - 0.1, 32.0 + 0.1), \
+def pred_top_hs(algo, mdls):
+    max_nproc = (data.num_core - 1.0) * (data.num_node - 1.0)
+    bounds = [(2.0 - 0.1, math.floor(math.sqrt(max_nproc)) + 0.1), \
+              (2.0 - 0.1, math.floor(math.sqrt(max_nproc)) + 0.1), \
               (1.0 - 0.1, data.num_core - 1 + 0.1), \
               (1.0 - 0.1, 8.0 + 0.1), \
               (1.0 - 0.1, 40.0 + 0.1), \
-              (2.0 - 0.1, (data.num_core - 1.0) * (data.num_node - 1.0) + 0.1), \
+              (2.0 - 0.1, max_nproc + 0.1), \
               (1.0 - 0.1, data.num_core - 1 + 0.1)]
-    result = differential_evolution(obj_func_hs, bounds, args=mdls)
+    params = (algo, ) + mdls
+    result = differential_evolution(obj_func_hs, bounds, args=params)
     x = np.rint(result.x)
-    if (len(mdls) == 4):
-        y = obj_func_hs(x, mdls[0], mdls[1], mdls[2], mdls[3])
+    if (algo == 'cmtl_ch'):
+        y = obj_func_hs(x, algo, mdls[0], mdls[1], mdls[2], mdls[3], mdls[4], mdls[5])
+    elif (algo == 'cmtl_wh'):
+        y = obj_func_hs(x, algo, mdls[0], mdls[1], mdls[2], mdls[3])
     else:
-        y = obj_func_hs(x, mdls[0], mdls[1])
+        y = obj_func_hs(x, algo, mdls[0], mdls[1])
     x[3] *= 4
     smpl_arr = np.hstack((x, [y]))
     return smpl_arr
 
-def get_pred_top_smpl(mdls, conf_colns, perf_coln, topn=10):
+def get_pred_top_smpl(algo, mdls, conf_colns, perf_coln, topn=10):
     slctR = 0.5
     cnddtn = int(float(topn) / slctR)
     app_name = data.get_name(conf_colns)
     for i in range(cnddtn):
         if (app_name == 'lv'):
-            smpl_arr = pred_top_lv(mdls)
+            smpl_arr = pred_top_lv(algo, mdls)
         elif (app_name == 'hs'):
-            smpl_arr = pred_top_hs(mdls)
+            smpl_arr = pred_top_hs(algo, mdls)
 
         if (i == 0):
             smpls_arr = smpl_arr

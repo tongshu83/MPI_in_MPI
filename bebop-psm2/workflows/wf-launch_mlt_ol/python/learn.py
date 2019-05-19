@@ -74,10 +74,10 @@ def sprt_pred_vld_val(mdl1, mdl2, test_df, conf1_colns, conf2_colns, conf_colns,
     
     return pred_df_vld
 
-def sprt_pred_top_eval(train_df1, train_df2, test_df, \
+def sprt_pred_top_eval(train1_df, train2_df, test_df, \
                        conf1_colns, conf2_colns, conf_colns, perf_coln, topn=1, eval_flag=1):
-    mdl1_chk, mdl1 = train_mdl_chk(train_df1, conf1_colns, perf_coln)
-    mdl2_chk, mdl2 = train_mdl_chk(train_df2, conf2_colns, perf_coln)
+    mdl1_chk, mdl1 = train_mdl_chk(train1_df, conf1_colns, perf_coln)
+    mdl2_chk, mdl2 = train_mdl_chk(train2_df, conf2_colns, perf_coln)
     
     pred_df_chk = sprt_pred_chk(mdl1_chk, mdl2_chk, test_df, conf1_colns, conf2_colns, conf_colns)
     pred_df = sprt_pred_val(pred_df_chk, mdl1, mdl2, conf1_colns, conf2_colns, conf_colns, perf_coln)
@@ -141,12 +141,12 @@ def whl_pred_top_eval(train_df, test_df, conf_colns, perf_coln, topn=1, eval_fla
     else:
         return top_smpl
     
-def whl_in_pred_top_eval(train_df, test_df, inparams, in_conf_colns, conf_colns, perf_coln, \
+def whl_in_pred_top_eval(train_df, test_df, in_params, in_conf_colns, conf_colns, perf_coln, \
                          topn=1, eval_flag=1):
     mdl_chk, mdl = train_mdl_chk(train_df, in_conf_colns, perf_coln)
     
     test_num_chk = test_df.shape[0]
-    in_X_chk = np.asarray([np.asarray(inparams) for i in range(test_num_chk)])
+    in_X_chk = np.asarray([np.asarray(in_params) for i in range(test_num_chk)])
     test_X_chk = np.concatenate((in_X_chk, test_df[conf_colns].values), axis=1)
     pred_y_chk = mdl_chk.predict(test_X_chk)
     for i in range(test_num_chk):
@@ -159,7 +159,7 @@ def whl_in_pred_top_eval(train_df, test_df, inparams, in_conf_colns, conf_colns,
     
     pred_df = pred_df_chk[(pred_df_chk.runnable == 1.0)]
     test_num = pred_df.shape[0]
-    in_X = np.asarray([np.asarray(inparams) for i in range(test_num)])
+    in_X = np.asarray([np.asarray(in_params) for i in range(test_num)])
     test_X = np.concatenate((in_X, pred_df[conf_colns].values), axis=1)
     pred_y = mdl.predict(test_X)
     pred_df = pd.DataFrame(np.c_[pred_df[conf_colns].values, pred_y], \
@@ -176,7 +176,7 @@ def whl_in_pred_top_eval(train_df, test_df, inparams, in_conf_colns, conf_colns,
 
         test_df_vld = data.get_vld_df(test_df)
         test_num_vld = test_df_vld.shape[0]
-        in_X_vld = np.asarray([np.asarray(inparams) for i in range(test_num_vld)])
+        in_X_vld = np.asarray([np.asarray(in_params) for i in range(test_num_vld)])
         test_X_vld = np.concatenate((in_X_vld, test_df_vld[conf_colns].values), axis=1)
         pred_y_vld = mdl.predict(test_X_vld)
         pred_df_vld = pd.DataFrame(np.c_[test_df_vld[conf_colns].values, pred_y_vld], \
@@ -189,4 +189,33 @@ def whl_in_pred_top_eval(train_df, test_df, inparams, in_conf_colns, conf_colns,
     else:
         return top_smpl
 
+def pred_perf_chk(X_arr, mdl_chk, mdl):
+    pred_y_chk = mdl_chk.predict(X_arr)
+    pred_y = mdl.predict(X_arr)
+    for i in range(len(pred_y_chk)):
+        if (pred_y_chk[i] < 0.0005):
+            pred_y[i] = float('inf')
+    return pred_y
+
+def add_layer_sprt_pred(df, conf1_colns, conf2_colns, conf_colns, perf_coln, \
+                        mdl1_chk, mdl1, mdl2_chk, mdl2): 
+    X1 = df[conf1_colns].values
+    pred_y1 = pred_perf_chk(X1, mdl1_chk, mdl1)
+
+    X2 = df[conf2_colns].values
+    pred_y2 = pred_perf_chk(X2, mdl2_chk, mdl2)
+
+    pred_df = pd.DataFrame(np.c_[df[conf_colns].values, pred_y1, pred_y2, \
+                                 df['runnable'].values, df[perf_coln].values], \
+                           columns=conf_colns + [perf_coln+'1', perf_coln+'2', 'runnable', perf_coln])
+    return pred_df
+
+def add_layer_shrt_pred(df, in_params, conf_colns, perf_coln, mdl_chk, mdl):
+    in_X = np.asarray([np.asarray(in_params) for i in range(df.shape[0])])
+    X = np.concatenate((in_X, df[conf_colns].values), axis=1)
+    pred_y = pred_perf_chk(X, mdl_chk, mdl)
+    pred_df = pd.DataFrame(np.c_[df[conf_colns].values, pred_y, df['runnable'].values, \
+                                 df[perf_coln].values], \
+                           columns=conf_colns + [perf_coln+'0', 'runnable', perf_coln])
+    return pred_df
 

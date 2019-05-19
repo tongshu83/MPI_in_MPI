@@ -59,7 +59,7 @@ def run():
         mdl_chk, mdl = learn.train_mdl_chk(train_df, conf_colns, perf_coln)
         top_df = cm.find_top(mdl_chk, mdl, conf_colns, perf_coln)
     
-        # test(train_df, conf_colns, perf_coln, cm.csv_file_name)
+        # cm.test(train_df, conf_colns, perf_coln, cm.csv_file_name)
         cm.finish(train_df, top_df)
     except:
         traceback.print_exc()
