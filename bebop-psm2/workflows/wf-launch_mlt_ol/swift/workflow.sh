@@ -36,14 +36,18 @@ cp -f ../vr_time.csv vr_time.csv
 cp -f ../in.quench in.quench
 cp -f ../restart.liquid restart.liquid
 cp -f ../CuZr.fs CuZr.fs
+cp -f ../hs_time.csv hs_time.csv
+cp -f ../hsi_time.csv hsi_time.csv
+cp -f ../ht_time.csv ht_time.csv
+cp -f ../sw_time.csv sw_time.csv
 cp -f ../heat_transfer.xml heat_transfer.xml
 cd -
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=${PROCS:-4}
+export PROCS=${PROCS:-34}
 export PPN=1
-export WALLTIME=00:10:00
+export WALLTIME=12:00:00
 export PROJECT=PACC
 export QUEUE=bdw
 

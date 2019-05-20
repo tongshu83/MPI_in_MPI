@@ -71,7 +71,7 @@ import common;
 		string infile2 = "%s/restart.liquid" % turbine_output;
 		string infile3 = "%s/CuZr.fs" % turbine_output;
 
-		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", "32", "32", dir/"in.quench" ];
+		string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", "16000", "20000", dir/"in.quench" ];
 		// string cmd0[] = [ workflow_root/"lmp.sh", int2string(lmp_frqIO), "FLEXPATH", dir/"in.quench" ];
 		setup_run_lmp(dir, infile1, infile2, infile3) =>
 			(output0, exit_code0) = system(cmd0);

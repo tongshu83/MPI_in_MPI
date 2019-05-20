@@ -84,10 +84,12 @@ def find_top(algo, mdls, conf_colns, perf_coln):
 def test(train_df, conf_colns, perf_coln):
     test_df = data.csv2df(app_name + "_time.csv", conf_colns)
     test_df = data.get_exec_mach_df(data.get_runnable_df(test_df, conf_colns))
+'''
     pred_top_df, err_df, rs_df = learn.whl_pred_top_eval(train_df, test_df, conf_colns, perf_coln, 10)
     data.df2csv(pred_top_df, app_name + "_test.csv")
     data.df2csv(rs_df, app_name + "_rs")
     data.df2csv(err_df, app_name + "_err.csv")
+'''
 
 def finish(train_df, top_df):
     eqpy.OUT_put("FINAL")

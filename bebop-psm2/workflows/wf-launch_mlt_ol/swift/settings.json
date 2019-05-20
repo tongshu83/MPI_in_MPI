@@ -1,17 +1,17 @@
 {
-	"app_name":      "hs",
+	"app_name":      "lv",
 	"perf_coln":     "run_time",
 	"num_core":      36,
-	"num_node":      2,
-	"rand_seed":     2019,
-	"num_smpl":      10,
+	"num_node":      32,
+	"rand_seed":     1983,
+	"num_smpl":      200,
 	"pool_size":     2000,
-	"num_iter":      2,
+	"num_iter":      1,
 	"prec_rand":     0.3,
-	"prec_init":     0.1,
-	"lmp_l2s":       32,
-	"lmp_sld":       32,
-	"ht_x":          64,
-	"ht_y":          64,
-	"ht_iter":       32
+	"prec_init":     0.2,
+	"lmp_l2s":       16000,
+	"lmp_sld":       20000,
+	"ht_x":          2048,
+	"ht_y":          2048,
+	"ht_iter":       1024
 }

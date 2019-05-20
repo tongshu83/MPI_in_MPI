@@ -107,9 +107,9 @@ import common;
 			string args[][];
 
 			// Problem Size of HeatTransfer
-			int ht_x = 64;
-			int ht_y = 64;
-			int ht_iter = 32;
+			int ht_x = 2048;
+			int ht_y = 2048;
+			int ht_iter = 1024;
 			int ht_las_x = ht_x %/ ht_proc_x;
 			int ht_las_y = ht_y %/ ht_proc_y;
 			int ht_ips = ht_iter %/ ht_step;

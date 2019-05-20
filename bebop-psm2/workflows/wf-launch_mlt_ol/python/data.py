@@ -108,7 +108,7 @@ def gen_smpl(app_name, num_smpl, smpl_filename=''):
     return smpls_df
 
 def gen_lv_smpl(num_smpl, smpl_filename=''):
-    random.seed(2019)
+#    random.seed(2019)
     lv_smpls = set([])
     while (len(lv_smpls) < num_smpl):
         lmp_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
@@ -135,7 +135,7 @@ def gen_lv_smpl(num_smpl, smpl_filename=''):
     return lv_smpls_df
 
 def gen_lv_in_smpl(num_smpl, smpl_filename=''):
-    random.seed(2020)
+#    random.seed(2020)
     lv_smpls = set([])
     while (len(lv_smpls) < num_smpl):
         lmp_l2s = lmp_in_params[0] / (2 ** random.randint(0, 5))
@@ -164,7 +164,7 @@ def gen_lv_in_smpl(num_smpl, smpl_filename=''):
     return smpls_df
 
 def gen_lmp_smpl(smpl_num, smpl_filename=''):
-    random.seed(2021)
+#    random.seed(2021)
     smpls = set([])
     while (len(smpls) < smpl_num):
         lmp_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
@@ -184,7 +184,7 @@ def gen_lmp_smpl(smpl_num, smpl_filename=''):
     return smpls_df
 
 def gen_vr_smpl(smpl_num, smpl_filename):
-    random.seed(2022)
+#    random.seed(2022)
     smpls = set([])
     while (len(smpls) < smpl_num):
         vr_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
@@ -248,7 +248,7 @@ def lv_in_load(fns, conf_colns, perfn='run_time'):
     return pd.DataFrame(val, columns=colns)
 
 def gen_hs_smpl(num_smpl, smpl_filename=''):
-    random.seed(2019)
+#    random.seed(2019)
     hs_smpls = set([])
     while (len(hs_smpls) < num_smpl):
         ht_x_nproc = random.randint(2, 32)
@@ -276,7 +276,7 @@ def gen_hs_smpl(num_smpl, smpl_filename=''):
     return hs_smpls_df
 
 def gen_hs_in_smpl(num_smpl, smpl_filename=''):
-    random.seed(2020)
+#    random.seed(2020)
     hs_smpls = set([])
     while (len(hs_smpls) < num_smpl):
         ht_x = ht_in_params[0] / (2 ** random.randint(0, 5))
@@ -308,7 +308,7 @@ def gen_hs_in_smpl(num_smpl, smpl_filename=''):
     return smpls_df
 
 def gen_ht_smpl(smpl_num, smpl_filename=''):
-    random.seed(2021)
+#    random.seed(2021)
     smpls = set([])
     while (len(smpls) < smpl_num):
         ht_x_nproc = random.randint(2, 32)
@@ -331,7 +331,7 @@ def gen_ht_smpl(smpl_num, smpl_filename=''):
     return smpls_df
 
 def gen_sw_smpl(smpl_num, smpl_filename=''):
-    random.seed(2022)
+#    random.seed(2022)
     smpls = set([])
     while (len(smpls) < smpl_num):
         sw_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
