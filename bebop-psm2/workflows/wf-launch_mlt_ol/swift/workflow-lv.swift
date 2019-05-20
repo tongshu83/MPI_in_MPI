@@ -49,7 +49,8 @@ location ML = locationFromRank(turbine_workers() - 1);
 		else
 		{
 			printf("Swift: message: %s", message);
-			if (message == "lv" || message == "lvi" || message == "lmp" || message == "vr")
+			if (message == "lv" || message == "lvi" || message == "lmp" || message == "vr"
+				|| message == "hs" || message == "hsi" || message == "ht" || message == "sw")
 			{
 				samples = EQPy_get(ML);
 				printf("Swift: samples: %s", samples);
@@ -61,18 +62,30 @@ location ML = locationFromRank(turbine_workers() - 1);
 					boolean vld_params;
 					if (message == "lv") {
 						vld_params = lv_chk_params(params);
+					} else if (message == "lvi") {
+						vld_params = lvi_chk_params(params);
 					} else if (message == "lmp") {
 						vld_params = lmp_chk_params(params);
-					} else if (message == "vr") {
+					} else if (message == "vr")
 						vld_params = vr_chk_params(params);
-					} else {  // message == "lvi"
-						vld_params = lvi_chk_params(params);
+					} else if (message == "hs") {
+						vld_params = hs_chk_params(params);
+					} else if (message == "hsi") {
+						vld_params = hsi_chk_params(params);
+					} else if (message == "ht") {
+						vld_params = ht_chk_params(params);
+					} else {  // message == "sw"
+						vld_params = sw_chk_params(params);
 					}
 					if (vld_params) {
 						float exectime[];
 						if (message == "lv") {
 							exectime[i] = lv_launch_wrapper("%0.4i_%0.2i_%0.1i_%0.3i_%0.4i_%0.2i_%0.1i" 
 								% (params[0], params[1], params[2], params[3], params[4], params[5], params[6]), 
+								params);
+						} else if (message == "lvi") {
+							exectime[i] = lvi_launch_wrapper("%0.5i_%0.5i_%0.4i_%0.2i_%0.1i_%0.3i_%0.4i_%0.2i_%0.1i" 
+								% (params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8]), 
 								params);
 						} else if (message == "lmp") {
 							exectime[i] = lmp_launch_wrapper("%0.4i_%0.2i_%0.1i_%0.4i" 
@@ -82,9 +95,22 @@ location ML = locationFromRank(turbine_workers() - 1);
 							exectime[i] = vr_launch_wrapper("%0.4i_%0.2i_%0.1i_%0.4i"
 								% (params[0], params[1], params[2], params[3]),
 								params);
-						} else {  // message == "lvi")
-							exectime[i] = lvi_launch_wrapper("%0.5i_%0.5i_%0.4i_%0.2i_%0.1i_%0.3i_%0.4i_%0.2i_%0.1i" 
-								% (params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8]), 
+						} else if (message == "hs") {
+							exectime[i] = hs_launch_wrapper("%0.2i_%0.2i_%0.2i_%0.2i_%0.2i_%0.4i_%0.2i"
+								% (params[0], params[1], params[2], params[3], params[4], params[5], params[6]),
+								params);
+						} else if (message == "hsi") {
+							exectime[i] = hsi_launch_wrapper("%0.4i_%0.4i_%0.4i_%0.2i_%0.2i_%0.2i_%0.2i_%0.2i_%0.4i_%0.2i"
+								% (params[0], params[1], params[2], params[3], params[4],
+								params[5], params[6], params[7], params[8], params[9]),
+								params);
+						} else if (message == "ht") {
+							exectime[i] = ht_launch_wrapper("%0.2i_%0.2i_%0.2i_%0.2i_%0.2i"
+								% (params[0], params[1], params[2], params[3], params[4]),
+								params);
+						} else {  // message == "sw"
+							exectime[i] = sw_launch_wrapper("%0.4i_%0.2i_%0.2i"
+								% (params[0], params[1], params[2]),
 								params);
 						}
 						if (exectime[i] >= 0.0) {
