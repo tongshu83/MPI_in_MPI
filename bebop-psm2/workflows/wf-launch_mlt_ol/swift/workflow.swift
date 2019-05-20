@@ -12,8 +12,12 @@ import EQPy;
 import common;
 import lv;
 import lvi;
-import lammps;
-import voro;
+import lmp;
+import vr;
+import hs;
+import hsi;
+import ht;
+import sw
 
 location ML = locationFromRank(turbine_workers() - 1);
 
@@ -66,7 +70,7 @@ location ML = locationFromRank(turbine_workers() - 1);
 						vld_params = lvi_chk_params(params);
 					} else if (message == "lmp") {
 						vld_params = lmp_chk_params(params);
-					} else if (message == "vr")
+					} else if (message == "vr") {
 						vld_params = vr_chk_params(params);
 					} else if (message == "hs") {
 						vld_params = hs_chk_params(params);
