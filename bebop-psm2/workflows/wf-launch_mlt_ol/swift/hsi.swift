@@ -8,7 +8,6 @@ import sys;
 import common;
 
 (boolean vld) hsi_chk_params(int params[])
-main()
 {
 	int ppn = 36;   // bebop
 	int wpn = string2int(getenv("PPN"));

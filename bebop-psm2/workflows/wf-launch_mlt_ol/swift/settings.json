@@ -1,5 +1,5 @@
 {
-	"app_name":      "lv",
+	"app_name":      "hs",
 	"perf_coln":     "run_time",
 	"num_core":      36,
 	"num_node":      2,
@@ -9,7 +9,6 @@
 	"num_iter":      2,
 	"prec_rand":     0.3,
 	"prec_init":     0.1,
-	"csv_file_name": "lv_time.csv",
 	"lmp_l2s":       32,
 	"lmp_sld":       32,
 	"ht_x":          64,

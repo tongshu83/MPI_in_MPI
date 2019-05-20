@@ -10,7 +10,9 @@ import learn
 import search
 
 # Global variable names we are going to set from the JSON settings file
-global_settings = ["app_name", "perf_coln", "num_core", "num_node", "rand_seed", "num_smpl", "pool_size", "num_iter", "prec_rand", "prec_init", "csv_file_name", "lmp_l2s", "lmp_sld", "ht_x", "ht_y", "ht_iter"]
+global_settings = ["app_name", "perf_coln", "num_core", "num_node", "rand_seed", \
+                   "num_smpl", "pool_size", "num_iter", "prec_rand", "prec_init", \
+                   "lmp_l2s", "lmp_sld", "ht_x", "ht_y", "ht_iter"]
 
 def load_settings(settings_filename):
     print("Reading settings: '%s'" % settings_filename)
@@ -79,12 +81,13 @@ def find_top(algo, mdls, conf_colns, perf_coln):
     data.df2csv(top_df, app_name + "_top.csv")
     return top_df
 
-def test(train_df, conf_colns, perf_coln, csv_file_name):
-    test_df = data.csv2df(csv_file_name, conf_colns)
+def test(train_df, conf_colns, perf_coln):
+    test_df = data.csv2df(app_name + "_time.csv", conf_colns)
     test_df = data.get_exec_mach_df(data.get_runnable_df(test_df, conf_colns))
-    pred_top_smpl, err_prcntl_df, top_rs_df = learn.whl_pred_top_eval(train_df, test_df, conf_colns, perf_coln)
-    data.df2csv(pred_top_smpl, app_name + "_top_test.csv")
-    print top_rs_df, err_prcntl_df
+    pred_top_df, err_df, rs_df = learn.whl_pred_top_eval(train_df, test_df, conf_colns, perf_coln, 10)
+    data.df2csv(pred_top_df, app_name + "_test.csv")
+    data.df2csv(rs_df, app_name + "_rs")
+    data.df2csv(err_df, app_name + "_err.csv")
 
 def finish(train_df, top_df):
     eqpy.OUT_put("FINAL")

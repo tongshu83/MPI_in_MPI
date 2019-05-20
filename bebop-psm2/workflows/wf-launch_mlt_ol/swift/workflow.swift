@@ -17,7 +17,7 @@ import vr;
 import hs;
 import hsi;
 import ht;
-import sw
+import sw;
 
 location ML = locationFromRank(turbine_workers() - 1);
 

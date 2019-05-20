@@ -28,25 +28,16 @@ export TURBINE_OUTPUT=$WORKFLOW_ROOT/experiment/$EXPID
 mkdir -pv $TURBINE_OUTPUT
 cp -f $WORKFLOW_ROOT/get_maxtime.sh $TURBINE_OUTPUT/get_maxtime.sh
 
-if [[ $1 = "workflow-hs" ]]
-then
-	cd $TURBINE_OUTPUT
-	cp -f ../heat_transfer.xml heat_transfer.xml
-	cd -
-fi
-
-if [[ $1 = "workflow-lv" ]]
-then
-	cd $TURBINE_OUTPUT
-	cp -f ../lv_time.csv lv_time.csv
-	cp -f ../lvi_time.csv lvi_time.csv
-	cp -f ../lmp_time.csv lmp_time.csv
-	cp -f ../vr_time.csv vr_time.csv
-	cp -f ../in.quench in.quench
-	cp -f ../restart.liquid restart.liquid
-	cp -f ../CuZr.fs CuZr.fs
-	cd -
-fi
+cd $TURBINE_OUTPUT
+cp -f ../lv_time.csv lv_time.csv
+cp -f ../lvi_time.csv lvi_time.csv
+cp -f ../lmp_time.csv lmp_time.csv
+cp -f ../vr_time.csv vr_time.csv
+cp -f ../in.quench in.quench
+cp -f ../restart.liquid restart.liquid
+cp -f ../CuZr.fs CuZr.fs
+cp -f ../heat_transfer.xml heat_transfer.xml
+cd -
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system

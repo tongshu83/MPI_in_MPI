@@ -15,7 +15,6 @@ def run():
     :param num_node: number of computing nodes
     :param rand_seed: random seed
     :param num_smpl: number of samples
-    :param csv_file_name: csv file name of test data set (e.g., "lv_time.csv")
     """
     try:
         cm.init()
@@ -39,16 +38,22 @@ def run():
 
         conf_df = data.gen_smpl(app_name, num_smpl)
         train_df = cm.measure_perf(conf_df)
+        data.df2csv(train_df, app_name + "_train.csv")
         train_intrmdt_df = learn.add_layer_shrt_pred(train_df, in_params, conf_colns, perf_coln, \
                                                      in_mdl_chk, in_mdl)
         mdl_chk, mdl = learn.train_mdl_chk(train_intrmdt_df, conf_colns + [perf_coln+'0'], perf_coln)
         top_df = cm.find_top('cmtl_wh', (in_mdl_chk, in_mdl, mdl_chk, mdl, ), conf_colns, perf_coln)
-
-	# test_df = data.csv2df(app_name + "_time.csv", conf_colns)
-        # test_intrmdt_df = learn.add_layer_shrt_pred(test_df, in_params, conf_colns, perf_coln, \
-        #                                             in_mdl_chk, in_mdl)
-        # learn.whl_pred_top_eval(train_intrmdt_df, test_intrmdt_df, 
-        #                         conf_colns + [perf_coln+'0'], perf_coln)
+        '''
+	test_df = data.csv2df(app_name + "_time.csv", conf_colns)
+        test_df = data.get_exec_mach_df(data.get_runnable_df(test_df, conf_colns))
+        test_intrmdt_df = learn.add_layer_shrt_pred(test_df, in_params, conf_colns, perf_coln, \
+                                                    in_mdl_chk, in_mdl)
+        pred_top, err, rs = learn.whl_pred_top_eval(train_intrmdt_df, test_intrmdt_df, \
+                                                    conf_colns + [perf_coln+'0'], perf_coln, 10)
+        data.df2csv(pred_top, app_name + "_test.csv")
+        data.df2csv(rs, app_name + "_rs")
+        data.df2csv(err, app_name + "_err.csv")
+        '''
         cm.finish(train_df, top_df)
     except:
         traceback.print_exc()
