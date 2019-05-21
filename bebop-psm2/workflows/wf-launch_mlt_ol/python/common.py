@@ -8,6 +8,7 @@ import data
 import eqpy
 import learn
 import search
+import tool
 
 # Global variable names we are going to set from the JSON settings file
 global_settings = ["app_name", "perf_coln", "num_core", "num_node", "rand_seed", \
@@ -63,17 +64,24 @@ def app2_name(app_name):
 
 def measure_perf(conf_df):
     conf_colns = conf_df.columns.tolist()
-    conf_df = conf_df.astype(int)
-    app_name = data.get_name(conf_df.columns.tolist())
+    app_name = data.get_name(conf_colns)
+    data_df = data.csv2df(app_name + "_time.csv", conf_colns)
     eqpy.OUT_put(app_name)
-    eqpy.OUT_put(data.df2string(conf_df))
+    conf_perf_df = tool.df_intersection(data_df, conf_df, conf_colns)
+    new_conf_df = tool.df_sub(conf_df, conf_perf_df, conf_colns)
+    new_conf_df = new_conf_df.astype(int)
+    eqpy.OUT_put(data.df2string(new_conf_df))
     result = eqpy.IN_get()
     time_df = data.string2df(result, ['run_time'])
-    conf_perf_df = pd.concat([conf_df, time_df], axis=1)
+    new_conf_perf_df = pd.concat([new_conf_df, time_df], axis=1)
+    conf_perf_df = tool.df_union(conf_perf_df, new_conf_perf_df)
     conf_perf_df = data.get_exec_mach_df(data.get_runnable_df(conf_perf_df, conf_colns))
+    if (conf_df.shape[0] != conf_perf_df.shape[0]):
+        print "Error:", conf_df.shape[0], conf_perf_df.shape[0]
     return conf_perf_df
 
 def find_top(algo, mdls, conf_colns, perf_coln):
+    print "Start searching for the top!"
     top_pred_df = search.get_pred_top_smpl(algo, mdls, conf_colns, perf_coln)
     top_conf_df = top_pred_df[conf_colns]
     top_df = measure_perf(top_conf_df)

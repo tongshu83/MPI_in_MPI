@@ -11,6 +11,15 @@ def df_intersection(df1, df2, cols):
     intsct_df = df1.reset_index(drop=True)
     return intsct_df
 
+def df_sub(df1, df2, cols):
+    intsct_df = df_intersection(df1, df2, cols)
+    diff_df = pd.concat([df1, intsct_df]).drop_duplicates(keep=False).reset_index(drop=True)
+    return diff_df
+
+def df_union(df1, df2):
+    union_df = pd.concat([df1, df2]).drop_duplicates().reset_index(drop=True)
+    return union_df
+
 def df_filter(df, colns, vals):
     num = len(colns)
     if (num != len(vals)):

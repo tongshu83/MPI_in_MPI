@@ -5,6 +5,7 @@ import traceback
 import common as cm
 import data
 import learn
+import tool
 
 def run():
     """
@@ -44,16 +45,16 @@ def run():
             pred_top_smpl = learn.whl_pred_top_eval(train_df, pool_df, conf_colns, perf_coln, num_smpl, 0)
             pred_top_smpl = pred_top_smpl.sort_values([perf_coln]).reset_index(drop=True)
             new_conf_df = pred_top_smpl[conf_colns].head(nspi)
-            conf_df = pd.concat([conf_df, new_conf_df]).drop_duplicates().reset_index(drop=True)
+            conf_df = tool.df_union(conf_df, new_conf_df) 
     
             last = nspi
             while (conf_df.shape[0] < num_curr):
                 last = last + 1
                 new_conf_df = pred_top_smpl[conf_colns].head(last)
-                conf_df = pd.concat([conf_df, new_conf_df]).drop_duplicates().reset_index(drop=True)
+                conf_df = tool.df_union(conf_df, new_conf_df)
     
             new_train_df = cm.measure_perf(new_conf_df)
-            train_df = pd.concat([train_df, new_train_df]).reset_index(drop=True)
+            train_df = tool.df_union(train_df, new_train_df)
     
         data.df2csv(train_df, app_name + "_train.csv")
         mdl_chk, mdl = learn.train_mdl_chk(train_df, conf_colns, perf_coln)

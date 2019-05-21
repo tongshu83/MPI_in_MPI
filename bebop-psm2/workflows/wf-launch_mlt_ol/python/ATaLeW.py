@@ -48,8 +48,8 @@ def run():
 
         num_init = int(num_smpl * prec_init)
         in_pool_df = data.gen_smpl(cm.app_in_name(app_name), num_init * 100)
-        in_pool_df = pd.concat([in_pool_df, in_conf_df]).drop_duplicates(keep=False).reset_index(drop=True)
-        in_conf_df = pd.concat([in_conf_df, in_pool_df.head(num_init)]).reset_index(drop=True)
+        in_pool_df = tool.df_sub(in_pool_df, in_conf_df, in_conf_colns)
+        in_conf_df = tool.df_union(in_conf_df, in_pool_df.head(num_init))
         in_df = cm.measure_perf(in_conf_df)
 
         train_df = tool.df_filter(in_df, in_colns, in_params)
@@ -63,7 +63,7 @@ def run():
 	if (num > num_init):
             new_in_conf_df = in_pool_df.head(num).tail(num - num_init)
             new_in_df = cm.measure_perf(new_in_conf_df)
-            in_df = pd.concat([in_df, new_in_df]).reset_index(drop=True)
+            in_df = tool.df_union(in_df, new_in_df)
 
         pred_top_smpl = learn.whl_in_pred_top_eval(in_df, pool_df, in_params, in_conf_colns, conf_colns, perf_coln, num_smpl, 0)
 
@@ -77,16 +77,16 @@ def run():
 
             pred_top_smpl = pred_top_smpl.sort_values([perf_coln]).reset_index(drop=True)
             new_conf_df = pred_top_smpl[conf_colns].head(nspi)
-            conf_df = pd.concat([conf_df, new_conf_df]).drop_duplicates().reset_index(drop=True)
+            conf_df = tool.df_union(conf_df, new_conf_df)
 
             last = nspi
             while (conf_df.shape[0] < num_curr + incr_num):
                 last = last + 1
                 new_conf_df = pred_top_smpl[conf_colns].head(last)
-                conf_df = pd.concat([conf_df, new_conf_df]).drop_duplicates().reset_index(drop=True)
+                conf_df = tool.df_union(conf_df, new_conf_df)
 
             new_train_df = cm.measure_perf(new_conf_df)
-            train_df = pd.concat([train_df, new_train_df]).reset_index(drop=True)
+            train_df = tool.df_union(train_df, new_train_df)
             if (iter_idx < num_iter - 1):
                 pred_top_smpl = learn.whl_pred_top_eval(train_df, pool_df, conf_colns, perf_coln, num_smpl, 0)
 

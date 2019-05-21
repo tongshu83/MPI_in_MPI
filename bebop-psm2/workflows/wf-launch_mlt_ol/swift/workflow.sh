@@ -45,9 +45,9 @@ cd -
 
 # Total number of processes available to Swift/T
 # Of these, 2 are reserved for the system
-export PROCS=${PROCS:-34}
+export PROCS=${PROCS:-18}
 export PPN=1
-export WALLTIME=12:00:00
+export WALLTIME=10:00:00
 export PROJECT=PACC
 export QUEUE=bdw
 
@@ -69,7 +69,7 @@ CMD_LINE_ARGS=(	--algorithm=$algorithm
 
 MACHINE="-m slurm" # -m (machine) option that accepts pbs, cobalt, cray, lsf, theta, or slurm. The empty string means the local machine.
 
-ENVS="" # "-e <key>=<value>" Set an environment variable in the job environment.
+ENVS="-e TURBINE_STDOUT=out-%r.txt" # "-e <key>=<value>" Set an environment variable in the job environment.
 
 set -x
 stc -p -O0 -I $EQP -r $EQP $WORKFLOW_ROOT/$WORKFLOW_SWIFT

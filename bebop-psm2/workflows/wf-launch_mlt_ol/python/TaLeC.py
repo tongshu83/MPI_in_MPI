@@ -60,10 +60,10 @@ def run():
             num_sprt = int(num_init * factor)
             new_conf1_df = pool1_df.head(num_sprt).tail(num_sprt - num_init)
             new_train1_df = cm.measure_perf(new_conf1_df)
-            train1_df = pd.concat([train1_df, new_train1_df]).reset_index(drop=True)
+            train1_df = tool.df_union(train1_df, new_train1_df)
             new_conf2_df = pool2_df.head(num_sprt).tail(num_sprt - num_init)
             new_train2_df = cm.measure_perf(new_conf2_df)
-            train2_df = pd.concat([train2_df, new_train2_df]).reset_index(drop=True)
+            train2_df = tool.df_union(train2_df, new_train2_df)
 
         pred_top_smpl = learn.sprt_pred_top_eval(train1_df, train2_df, pool_df, conf1_colns, conf2_colns, conf_colns, perf_coln, num_smpl, 0) 
 
@@ -74,16 +74,16 @@ def run():
 
             pred_top_smpl = pred_top_smpl.sort_values([perf_coln]).reset_index(drop=True)
             new_conf_df = pred_top_smpl[conf_colns].head(nspi)
-            conf_df = pd.concat([conf_df, new_conf_df]).drop_duplicates().reset_index(drop=True)
+            conf_df = tool.df_union(conf_df, new_conf_df)
 
             last = nspi
             while (conf_df.shape[0] < num_curr):
                 last = last + 1
                 new_conf_df = pred_top_smpl[conf_colns].head(last)
-                conf_df = pd.concat([conf_df, new_conf_df]).drop_duplicates().reset_index(drop=True)
+                conf_df = tool.df_union(conf_df, new_conf_df)
 
             new_train_df = cm.measure_perf(new_conf_df)
-            train_df = pd.concat([train_df, new_train_df]).reset_index(drop=True)
+            train_df = tool.df_union(train_df, new_train_df)
             if (iter_idx < num_iter - 1):
                 pred_top_smpl = learn.whl_pred_top_eval(train_df, pool_df, conf_colns, perf_coln, num_smpl, 0)
 
