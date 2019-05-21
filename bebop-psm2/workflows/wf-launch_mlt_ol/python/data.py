@@ -4,6 +4,7 @@ import random
 import numpy as np
 import pandas as pd
 
+rand_seed = 1983
 num_core = 36
 num_node = 32
 
@@ -64,7 +65,7 @@ def string2df(string, colns, super_delim=';', sub_delim=','):
     return df
 
 def df2csv(df, csv_file_name):
-    fp = open(csv_file_name, "w")
+    fp = open(csv_file_name, "a")
     fp.write(df.to_csv(sep='\t', header=False, index=False))
     fp.close()
 
@@ -108,8 +109,12 @@ def gen_smpl(app_name, num_smpl, smpl_filename=''):
         smpls_df = gen_sw_smpl(num_smpl, smpl_filename)
     return smpls_df
 
+def incr_rand_seed():
+    rand_seed = rand_seed + 1
+    random.seed(rand_seed)
+
 def gen_lv_smpl(num_smpl, smpl_filename=''):
-    random.seed(2019)
+    incr_rand_seed()
     lv_smpls = set([])
     while (len(lv_smpls) < num_smpl):
         lmp_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
@@ -249,7 +254,7 @@ def lv_in_load(fns, conf_colns, perfn='run_time'):
     return pd.DataFrame(val, columns=colns)
 
 def gen_hs_smpl(num_smpl, smpl_filename=''):
-    random.seed(2019)
+    incr_rand_seed()
     hs_smpls = set([])
     while (len(hs_smpls) < num_smpl):
         max_nproc = (num_core - 1) * (num_node - 1)

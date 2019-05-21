@@ -28,6 +28,7 @@ def load_settings(settings_filename):
         for s in global_settings:
             globals()[s] = settings[s]
             print("%s: %s" % (s, str(settings[s])))
+        data.rand_seed = rand_seed
         random.seed(rand_seed)
         data.num_core = num_core
         data.num_node = num_node
@@ -74,10 +75,11 @@ def measure_perf(conf_df):
     result = eqpy.IN_get()
     time_df = data.string2df(result, ['run_time'])
     new_conf_perf_df = pd.concat([new_conf_df, time_df], axis=1)
+    data.df2csv(new_conf_perf_df, app_name + "_time_new.csv")
     conf_perf_df = tool.df_union(conf_perf_df, new_conf_perf_df)
     conf_perf_df = data.get_exec_mach_df(data.get_runnable_df(conf_perf_df, conf_colns))
     if (conf_df.shape[0] != conf_perf_df.shape[0]):
-        print "Error:", conf_df.shape[0], conf_perf_df.shape[0]
+        print "Error: conf_df.shape[0] != conf_perf_df.shape[0]", conf_df.shape[0], conf_perf_df.shape[0]
     return conf_perf_df
 
 def find_top(algo, mdls, conf_colns, perf_coln):

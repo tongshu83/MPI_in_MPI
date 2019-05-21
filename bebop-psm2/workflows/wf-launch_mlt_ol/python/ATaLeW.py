@@ -39,9 +39,10 @@ def run():
             in_conf_colns = data.hs_in_conf_colns
             in_params = data.ht_in_params
 
-        pool_df = data.gen_smpl(app_name, pool_size)
         num_rand = int(num_smpl * prec_rand)
-        conf_df = pool_df.head(num_rand)
+        # pool_df = data.gen_smpl(app_name, pool_size)
+        # conf_df = pool_df.head(num_rand)
+        conf_df = data.gen_smpl(app_name, num_rand)
 
         in_colns = [i for i in in_conf_colns if i not in conf_colns]
         in_conf_df = tool.df_ext(conf_df, in_colns, in_params)
@@ -65,6 +66,7 @@ def run():
             new_in_df = cm.measure_perf(new_in_conf_df)
             in_df = tool.df_union(in_df, new_in_df)
 
+        pool_df = data.gen_smpl(app_name, pool_size)
         pred_top_smpl = learn.whl_in_pred_top_eval(in_df, pool_df, in_params, in_conf_colns, conf_colns, perf_coln, num_smpl, 0)
 
         train_df = tool.df_filter(in_df, in_colns, in_params)
@@ -88,6 +90,7 @@ def run():
             new_train_df = cm.measure_perf(new_conf_df)
             train_df = tool.df_union(train_df, new_train_df)
             if (iter_idx < num_iter - 1):
+                pool_df = data.gen_smpl(app_name, pool_size)
                 pred_top_smpl = learn.whl_pred_top_eval(train_df, pool_df, conf_colns, perf_coln, num_smpl, 0)
 
         data.df2csv(train_df, app_name + "_train.csv")

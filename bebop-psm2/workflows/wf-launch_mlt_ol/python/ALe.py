@@ -33,15 +33,17 @@ def run():
         elif (app_name == "hs"):
             conf_colns = data.hs_conf_colns
 
-        pool_df = data.gen_smpl(app_name, pool_size)
         num_rand = int(num_smpl * prec_rand)
         nspi = int((num_smpl - num_rand) / num_iter)
-        conf_df = pool_df.head(num_rand)
+        # pool_df = data.gen_smpl(app_name, pool_size)
+        # conf_df = pool_df.head(num_rand)
+        conf_df = data.gen_smpl(app_name, num_rand)
         train_df = cm.measure_perf(conf_df)
 
         for iter_idx in range(num_iter):
             num_curr = num_smpl - nspi * (num_iter - 1 - iter_idx)
-    
+ 
+            pool_df = data.gen_smpl(app_name, pool_size)
             pred_top_smpl = learn.whl_pred_top_eval(train_df, pool_df, conf_colns, perf_coln, num_smpl, 0)
             pred_top_smpl = pred_top_smpl.sort_values([perf_coln]).reset_index(drop=True)
             new_conf_df = pred_top_smpl[conf_colns].head(nspi)

@@ -48,8 +48,10 @@ def run():
 
         num_rand = int(num_smpl * prec_rand)
         nspi = int((num_smpl - num_rand) / num_iter)
-        conf_df = pool_df.head(num_rand)
+        # conf_df = pool_df.head(num_rand)
+        conf_df = data.gen_smpl(app_name, num_rand)
         train_df = cm.measure_perf(conf_df)
+        print "train_df.shape[0] = %s" % train_df.shape[0]
 
         for iter_idx in range(num_iter):
             num_curr = num_smpl - nspi * (num_iter - 1 - iter_idx)
@@ -66,7 +68,10 @@ def run():
 
             new_train_df = cm.measure_perf(new_conf_df)
             train_df = tool.df_union(train_df, new_train_df)
+            print "num_curr = %s" % num_curr
+            print "train_df.shape[0] = %s" % train_df.shape[0]
             if (iter_idx < num_iter - 1):
+                pool_df = data.gen_smpl(app_name, pool_size)
                 pred_top_smpl = learn.whl_pred_top_eval(train_df, pool_df, conf_colns, perf_coln, num_smpl, 0)
 
         data.df2csv(train_df, app_name + "_train.csv")
