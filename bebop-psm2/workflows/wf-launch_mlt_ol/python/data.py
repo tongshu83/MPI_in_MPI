@@ -110,6 +110,7 @@ def gen_smpl(app_name, num_smpl, smpl_filename=''):
     return smpls_df
 
 def incr_rand_seed():
+    global rand_seed
     rand_seed = rand_seed + 1
     random.seed(rand_seed)
 
@@ -415,12 +416,12 @@ def get_runnable_df(df, conf_colns, perf_coln='run_time'):
 
 def get_mach_time(nproc, ppn, runtime):
     nnode = np.negative(np.floor_divide(np.negative(nproc), ppn))
-    mach_time = np.multiply(nnode, runtime) * num_core / 3600
+    mach_time = np.multiply(nnode, runtime) * num_core / 3600.0
     return mach_time
 
 def invld_mach_time(nproc, ppn, timeout):
     nnode = np.negative(np.floor_divide(np.negative(nproc), ppn))
-    return nnode * timeout * num_core / 3600
+    return nnode * timeout * num_core / 3600.0
 
 def get_exec_mach_df(exec_df):
     if ('run_time' not in exec_df.columns.tolist()):

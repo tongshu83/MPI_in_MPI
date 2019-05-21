@@ -16,7 +16,7 @@ WORKFLOW_TIC=${WORKFLOW_SWIFT%.swift}.tic
 export EXPID=$3
 
 # Turn off Swift/T debugging
-export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
+export TURBINE_LOG=1 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
 # Find the directory of ./workflow.sh
 export WORKFLOW_ROOT=$( cd $( dirname $0 ) ; /bin/pwd )
