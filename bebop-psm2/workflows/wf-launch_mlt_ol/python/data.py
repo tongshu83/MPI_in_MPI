@@ -45,6 +45,8 @@ def get_name(colns):
 
 def df2string(df2D, super_delim=";", sub_delim=","):
     # super list elements separated by ;
+    if (df2D.shape[0] <= 0):
+        return ""
     L = []
     for index, data in df2D.iterrows():
         L.append(sub_delim.join(str(n) for n in data.tolist()))
