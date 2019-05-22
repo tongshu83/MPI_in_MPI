@@ -95,7 +95,7 @@ def run():
 
         data.df2csv(train_df, app_name + "_train.csv")
         mdl_chk, mdl = learn.train_mdl_chk(train_df, conf_colns, perf_coln)
-        top_df = cm.find_top('ATaLeW', (mdl_chk, mdl, ), conf_colns, perf_coln)
+        top_df = cm.find_top('ATaLeW', (mdl_chk, mdl, ), conf_colns, perf_coln, train_df)
     
         cm.test(train_df, conf_colns, perf_coln)
         cm.finish(train_df, top_df)

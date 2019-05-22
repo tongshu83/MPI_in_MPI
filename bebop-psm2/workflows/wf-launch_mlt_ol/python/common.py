@@ -83,12 +83,14 @@ def measure_perf(conf_df):
         print "Error: conf_df.shape[0] != conf_perf_df.shape[0]", conf_df.shape[0], conf_perf_df.shape[0]
     return conf_perf_df
 
-def find_top(algo, mdls, conf_colns, perf_coln):
+def find_top(algo, mdls, conf_colns, perf_coln, train_df):
     print "Start searching for the top!"
     top_pred_df = search.get_pred_top_smpl(algo, mdls, conf_colns, perf_coln)
     top_conf_df = top_pred_df[conf_colns]
     top_df = measure_perf(top_conf_df)
+    top_df = tool.df_union(top_df, train_df)
     top_df = top_df.sort_values([perf_coln]).reset_index(drop=True)
+    top_df = top_df.head(1)
     data.df2csv(top_df, app_name + "_top.csv")
     return top_df
 

@@ -42,7 +42,7 @@ def run():
         train_intrmdt_df = learn.add_layer_shrt_pred(train_df, in_params, conf_colns, perf_coln, \
                                                      in_mdl_chk, in_mdl)
         mdl_chk, mdl = learn.train_mdl_chk(train_intrmdt_df, conf_colns + [perf_coln+'0'], perf_coln)
-        top_df = cm.find_top('cmtl_wh', (in_mdl_chk, in_mdl, mdl_chk, mdl, ), conf_colns, perf_coln)
+        top_df = cm.find_top('cmtl_wh', (in_mdl_chk, in_mdl, mdl_chk, mdl, ), conf_colns, perf_coln, train_df)
 
         test_df = data.csv2df(app_name + "_time.csv", conf_colns)
         test_df = data.get_exec_mach_df(data.get_runnable_df(test_df, conf_colns))

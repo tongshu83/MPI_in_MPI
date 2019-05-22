@@ -48,7 +48,7 @@ def run():
                                                      perf_coln, mdl1_chk, mdl1, mdl2_chk, mdl2)
         mdl_chk, mdl = learn.train_mdl_chk(train_intrmdt_df, \
                                            conf_colns + [perf_coln+'1', perf_coln+'2'], perf_coln)
-        top_df = cm.find_top('cmtl_ch', (mdl1_chk, mdl1, mdl2_chk, mdl2, mdl_chk, mdl, ), conf_colns, perf_coln)
+        top_df = cm.find_top('cmtl_ch', (mdl1_chk, mdl1, mdl2_chk, mdl2, mdl_chk, mdl, ), conf_colns, perf_coln, train_df)
 
         test_df = data.csv2df(app_name + "_time.csv", conf_colns)
         test_df = data.get_exec_mach_df(data.get_runnable_df(test_df, conf_colns))
