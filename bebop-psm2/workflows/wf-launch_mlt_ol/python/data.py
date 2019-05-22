@@ -115,7 +115,8 @@ def incr_rand_seed():
     random.seed(rand_seed)
 
 def gen_lv_smpl(num_smpl, smpl_filename=''):
-    incr_rand_seed()
+    # incr_rand_seed()
+    random.seed(2019)
     lv_smpls = set([])
     while (len(lv_smpls) < num_smpl):
         lmp_nproc = random.randint(2, (num_core - 1) * (num_node - 1))
@@ -255,7 +256,8 @@ def lv_in_load(fns, conf_colns, perfn='run_time'):
     return pd.DataFrame(val, columns=colns)
 
 def gen_hs_smpl(num_smpl, smpl_filename=''):
-    incr_rand_seed()
+    # incr_rand_seed()
+    random.seed(2019)
     hs_smpls = set([])
     while (len(hs_smpls) < num_smpl):
         max_nproc = (num_core - 1) * (num_node - 1)
